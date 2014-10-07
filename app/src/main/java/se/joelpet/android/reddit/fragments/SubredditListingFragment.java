@@ -1,13 +1,5 @@
 package se.joelpet.android.reddit.fragments;
 
-import android.app.Fragment;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,8 +11,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Fragment;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.activities.SubredditActivity;
+import se.joelpet.android.reddit.domain.Listing;
+import se.joelpet.android.reddit.domain.ListingWrapper;
+import se.joelpet.android.reddit.domain.SubredditWrapper;
+import se.joelpet.android.reddit.gson.ListingRequest;
 
 public class SubredditListingFragment extends Fragment {
 
@@ -31,7 +35,7 @@ public class SubredditListingFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
         textView1 = (TextView) rootView.findViewById(R.id.textView1);
         return rootView;
@@ -43,6 +47,7 @@ public class SubredditListingFragment extends Fragment {
 
         // TODO: Create model according to https://github.com/reddit/reddit/wiki/JSON
         RequestQueue queue = Volley.newRequestQueue(getActivity());
+
         JSONObject jsonObject = new JSONObject();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 "http://www.reddit.com/top.json", jsonObject, new Response.Listener<JSONObject>() {
@@ -51,7 +56,8 @@ public class SubredditListingFragment extends Fragment {
                 System.out.print(jsonObject);
                 try {
                     JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("children");
-                    String title = ((JSONObject) jsonArray.get(0)).getJSONObject("data").getString("title");
+                    String title = ((JSONObject) jsonArray.get(0)).getJSONObject("data")
+                            .getString("title");
                     textView1.setText(title);
                     Log.d(SubredditActivity.class.getSimpleName(),
                             String.format("Fetched top post and updated title to '%s'", title));
@@ -66,7 +72,26 @@ public class SubredditListingFragment extends Fragment {
             }
         });
 
-        queue.add(jsonObjectRequest);
+        ListingRequest<ListingWrapper> listingRequest = new ListingRequest<ListingWrapper>(
+                "http://www.reddit.com/hot.json", ListingWrapper.class, null,
+                new Response.Listener<ListingWrapper>() {
+                    @Override
+                    public void onResponse(ListingWrapper listingWrapper) {
+                        Listing<SubredditWrapper> listing = listingWrapper.getData();
+                        Object title = listing.getAfter();
+                        textView1.setText(title.toString());
+                        Log.d(SubredditActivity.class.getSimpleName(),
+                                String.format("Fetched top post and updated title to '%s'", title));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                volleyError.printStackTrace();
+            }
+        });
+
+//        queue.add(jsonObjectRequest);
+        queue.add(listingRequest);
     }
 
     @Override
