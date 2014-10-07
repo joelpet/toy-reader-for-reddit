@@ -21,9 +21,9 @@ import android.widget.TextView;
 
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.activities.SubredditActivity;
-import se.joelpet.android.reddit.domain.Listing;
-import se.joelpet.android.reddit.domain.ListingWrapper;
 import se.joelpet.android.reddit.domain.SubredditWrapper;
+import se.joelpet.android.reddit.domain.SubredditWrapperListing;
+import se.joelpet.android.reddit.domain.SubredditListingWrapper;
 import se.joelpet.android.reddit.gson.ListingRequest;
 
 public class SubredditListingFragment extends Fragment {
@@ -72,16 +72,22 @@ public class SubredditListingFragment extends Fragment {
             }
         });
 
-        ListingRequest<ListingWrapper> listingRequest = new ListingRequest<ListingWrapper>(
-                "http://www.reddit.com/hot.json", ListingWrapper.class, null,
-                new Response.Listener<ListingWrapper>() {
+        ListingRequest<SubredditListingWrapper> listingRequest = new ListingRequest<SubredditListingWrapper>(
+                "http://www.reddit.com/hot.json", SubredditListingWrapper.class, null,
+                new Response.Listener<SubredditListingWrapper>() {
                     @Override
-                    public void onResponse(ListingWrapper listingWrapper) {
-                        Listing<SubredditWrapper> listing = listingWrapper.getData();
-                        Object title = listing.getAfter();
-                        textView1.setText(title.toString());
+                    public void onResponse(SubredditListingWrapper listingWrapper) {
+                        SubredditWrapperListing subredditWrapperListing = listingWrapper.getData();
+                        StringBuilder sb = new StringBuilder();
+
+                        for (SubredditWrapper subredditWrapper : subredditWrapperListing.getChildren()) {
+                            sb.append(subredditWrapper.getData().getTitle());
+                            sb.append('\n');
+                        }
+
+                        textView1.setText(sb.toString());
                         Log.d(SubredditActivity.class.getSimpleName(),
-                                String.format("Fetched top post and updated title to '%s'", title));
+                                String.format("Fetched top post and updated titles"));
                     }
                 }, new Response.ErrorListener() {
             @Override

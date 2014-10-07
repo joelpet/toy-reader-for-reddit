@@ -9,18 +9,17 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import se.joelpet.android.reddit.domain.Listing;
-import se.joelpet.android.reddit.domain.SubredditWrapper;
+import se.joelpet.android.reddit.domain.SubredditWrapperListing;
 
-public class ListingDeserializer implements JsonDeserializer<Listing<SubredditWrapper>> {
+public class ListingDeserializer implements JsonDeserializer<SubredditWrapperListing> {
 
     private static final Gson GSON = new Gson();
 
     @Override
-    public Listing<SubredditWrapper> deserialize(JsonElement json, Type typeOfT,
+    public SubredditWrapperListing deserialize(JsonElement json, Type typeOfT,
             JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         JsonElement data = jsonObject.get("data");
-        return GSON.fromJson(data, Listing.class);
+        return GSON.fromJson(data, SubredditWrapperListing.class);
     }
 }

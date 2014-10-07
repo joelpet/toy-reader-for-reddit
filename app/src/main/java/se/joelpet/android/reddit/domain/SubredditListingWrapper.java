@@ -2,11 +2,11 @@ package se.joelpet.android.reddit.domain;
 
 import java.io.Serializable;
 
-public class ListingWrapper implements Serializable {
+public class SubredditListingWrapper implements Serializable {
 
     String kind;
 
-    Listing<SubredditWrapper> data;
+    SubredditWrapperListing data;
 
     public String getKind() {
         return kind;
@@ -16,11 +16,11 @@ public class ListingWrapper implements Serializable {
         this.kind = kind;
     }
 
-    public Listing<SubredditWrapper> getData() {
+    public SubredditWrapperListing getData() {
         return data;
     }
 
-    public void setData(Listing<SubredditWrapper> data) {
+    public void setData(SubredditWrapperListing data) {
         this.data = data;
     }
 }

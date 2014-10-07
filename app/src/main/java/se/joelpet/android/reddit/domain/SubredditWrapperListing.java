@@ -3,7 +3,7 @@ package se.joelpet.android.reddit.domain;
 import java.io.Serializable;
 import java.util.List;
 
-public class Listing<S> implements Serializable {
+public class SubredditWrapperListing implements Serializable {
 
     /**
      * The fullname of the listing that follows before this page. null if there is no previous
