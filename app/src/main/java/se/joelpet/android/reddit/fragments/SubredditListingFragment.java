@@ -37,7 +37,7 @@ public class SubredditListingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
-        textView1 = (TextView) rootView.findViewById(R.id.textView1);
+//        textView1 = (TextView) rootView.findViewById(R.id.textView1);
         return rootView;
     }
 
@@ -85,7 +85,7 @@ public class SubredditListingFragment extends Fragment {
                             sb.append('\n');
                         }
 
-                        textView1.setText(sb.toString());
+//                        textView1.setText(sb.toString());
                         Log.d(SubredditActivity.class.getSimpleName(),
                                 String.format("Fetched top post and updated titles"));
                     }
