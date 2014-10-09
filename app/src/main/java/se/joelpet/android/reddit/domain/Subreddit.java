@@ -14,6 +14,8 @@ public class Subreddit {
 
     String score;
 
+    String thumbnail;
+
     String subredditId;
 
     String name;
@@ -76,6 +78,14 @@ public class Subreddit {
 
     public void setScore(String score) {
         this.score = score;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public String getSubredditId() {
