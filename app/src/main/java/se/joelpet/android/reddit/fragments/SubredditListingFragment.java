@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,20 @@ public class SubredditListingFragment extends ListFragment {
             NetworkImageView thumbnail = (NetworkImageView) view.findViewById(R.id.thumbnail);
 
             registerForContextMenu(overflowButton);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Toast.makeText(getContext(), "Long clicked", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
 
             overflowButton.setOnClickListener(new View.OnClickListener() {
                 @Override
