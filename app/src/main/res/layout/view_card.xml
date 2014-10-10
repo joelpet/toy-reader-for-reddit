@@ -3,13 +3,24 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:paddingBottom="0dp"
+    android:paddingEnd="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/background_light"
-        android:orientation="vertical">
+        android:background="@drawable/rounded_corners"
+        android:orientation="vertical"
+        android:paddingBottom="4dp"
+        android:paddingEnd="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,15 +34,16 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="start|center"
-                android:padding="8dp"
-                android:text="imgur.com" />
+                android:padding="4dp"
+                android:text="imgur.com"
+                android:textColor="@android:color/secondary_text_light" />
 
             <ImageButton
                 android:id="@+id/overflow_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:background="@null"
+                android:background="@android:color/transparent"
                 android:contentDescription="descr_overflow_button"
                 android:padding="4dp"
                 android:src="@drawable/ic_action_overflow" />
@@ -40,44 +52,51 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
+            android:alpha="0.5"
             android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <com.android.volley.toolbox.NetworkImageView
-                android:id="@+id/thumbnail"
-                android:layout_width="96dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/iama" />
+            <View
+                android:layout_width="0px"
+                android:layout_height="96dp"
+                android:layout_weight="0" />
 
             <TextView
                 android:id="@+id/title"
-                style="@android:style/TextAppearance.Holo.Medium"
+                style="@android:style/TextAppearance.Holo"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:text="Florida inmate reports threats by guard, turns up dead: Yet another suspicious death — this one at a women’s prison in Ocala last week — has civil rights groups calling for a Justice Department probe into prison abuse."
                 android:textColor="@android:color/secondary_text_light" />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/thumbnail"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginTop="6dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/iama" />
+
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/darker_gray"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
