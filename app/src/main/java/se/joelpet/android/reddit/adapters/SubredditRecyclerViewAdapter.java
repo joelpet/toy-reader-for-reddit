@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
@@ -24,6 +25,10 @@ import se.joelpet.android.reddit.fragments.SubredditListingFragment;
 
 public class SubredditRecyclerViewAdapter
         extends RecyclerView.Adapter<SubredditRecyclerViewAdapter.ViewHolder> {
+
+    private static final String TAG = SubredditRecyclerViewAdapter.class.getSimpleName();
+
+    public static final Pattern VALID_URL_PATTERN = Pattern.compile("^https?://.*$");
 
     private final List<Subreddit> mSubreddits;
 
@@ -49,7 +54,8 @@ public class SubredditRecyclerViewAdapter
         vh.domain.setText(subreddit.getDomain());
         vh.title.setText(subreddit.getTitle());
 
-        if (!subreddit.getThumbnail().isEmpty()) {
+        if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
+            Log.d(TAG, "Setting thumbnail image: " + subreddit.getThumbnail());
             vh.thumbnail.setImageUrl(subreddit.getThumbnail(), volleySingleton.getImageLoader());
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
