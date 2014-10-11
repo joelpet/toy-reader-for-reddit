@@ -27,7 +27,6 @@ public class SubredditRecyclerViewAdapter
 
     public SubredditRecyclerViewAdapter(List<Subreddit> subreddits) {
         mSubreddits = subreddits;
-
     }
 
     @Override
@@ -46,7 +45,13 @@ public class SubredditRecyclerViewAdapter
 
         vh.domain.setText(subreddit.getDomain());
         vh.title.setText(subreddit.getTitle());
-        vh.thumbnail.setImageUrl(subreddit.getThumbnail(), volleySingleton.getImageLoader());
+
+        if (!subreddit.getThumbnail().isEmpty()) {
+            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), volleySingleton.getImageLoader());
+            vh.thumbnail.setVisibility(View.VISIBLE);
+        } else {
+            vh.thumbnail.setVisibility(View.GONE);
+        }
 
         vh.root.setOnClickListener(new View.OnClickListener() {
             @Override
