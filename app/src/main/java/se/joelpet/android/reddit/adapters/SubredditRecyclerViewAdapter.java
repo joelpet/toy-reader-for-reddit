@@ -2,7 +2,9 @@ package se.joelpet.android.reddit.adapters;
 
 import com.android.volley.toolbox.NetworkImageView;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -39,9 +41,10 @@ public class SubredditRecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder vh, final int i) {
+        Context context = vh.root.getContext();
         Subreddit subreddit = mSubreddits.get(i);
         VolleySingleton volleySingleton = VolleySingleton
-                .getInstance(vh.root.getContext().getApplicationContext());
+                .getInstance(context.getApplicationContext());
 
         vh.domain.setText(subreddit.getDomain());
         vh.title.setText(subreddit.getTitle());
@@ -52,6 +55,17 @@ public class SubredditRecyclerViewAdapter
         } else {
             vh.thumbnail.setVisibility(View.GONE);
         }
+
+        CharSequence relativeDateTimeString = DateUtils.getRelativeDateTimeString(context,
+                subreddit.getCreatedUtc().longValue() * DateUtils.SECOND_IN_MILLIS,
+                DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
+        String submittedInfoText = context
+                .getString(R.string.submitted_info_text, relativeDateTimeString,
+                        subreddit.getAuthor(), subreddit.getSubreddit());
+        vh.submittedInfoText.setText(submittedInfoText);
+
+        vh.numComments
+                .setText(context.getString(R.string.num_comments, subreddit.getNumComments()));
 
         vh.root.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,21 +102,27 @@ public class SubredditRecyclerViewAdapter
 
         final View root;
 
-        final TextView title;
+        final TextView domain;
 
         final ImageButton overflowButton;
 
-        final TextView domain;
+        final TextView title;
 
         final NetworkImageView thumbnail;
+
+        final TextView submittedInfoText;
+
+        final TextView numComments;
 
         public ViewHolder(View itemView) {
             super(itemView);
             root = itemView;
-            title = (TextView) itemView.findViewById(R.id.title);
-            overflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
             domain = (TextView) itemView.findViewById(R.id.domain);
+            overflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
+            title = (TextView) itemView.findViewById(R.id.title);
             thumbnail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
+            submittedInfoText = (TextView) itemView.findViewById(R.id.submitted_info_text);
+            numComments = (TextView) itemView.findViewById(R.id.num_comments);
         }
     }
 }

@@ -28,9 +28,11 @@ public class Subreddit {
 
     String title;
 
+    Double createdUtc;
+
     String ups;
 
-    String numComments;
+    Integer numComments;
 
     public String getDomain() {
         return domain;
@@ -136,6 +138,14 @@ public class Subreddit {
         this.title = title;
     }
 
+    public Double getCreatedUtc() {
+        return createdUtc;
+    }
+
+    public void setCreatedUtc(Double createdUtc) {
+        this.createdUtc = createdUtc;
+    }
+
     public String getUps() {
         return ups;
     }
@@ -144,11 +154,11 @@ public class Subreddit {
         this.ups = ups;
     }
 
-    public String getNumComments() {
+    public Integer getNumComments() {
         return numComments;
     }
 
-    public void setNumComments(String numComments) {
+    public void setNumComments(Integer numComments) {
         this.numComments = numComments;
     }
 }

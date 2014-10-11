@@ -29,10 +29,10 @@
             <TextView
                 android:id="@+id/domain"
                 style="@android:style/TextAppearance.Holo.Small"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="start|center"
                 android:padding="4dp"
                 android:text="imgur.com"
                 android:textColor="@android:color/tertiary_text_light" />
@@ -63,39 +63,55 @@
 
             <View
                 android:layout_width="0px"
-                android:layout_height="96dp"
+                android:layout_height="72dp"
                 android:layout_weight="0" />
 
             <TextView
                 android:id="@+id/title"
-                style="@android:style/TextAppearance.Holo"
+                style="@android:style/TextAppearance.Holo.Medium"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Florida inmate reports threats by guard, turns up dead: Yet another suspicious death — this one at a women’s prison in Ocala last week — has civil rights groups calling for a Justice Department probe into prison abuse."
                 android:textColor="@android:color/secondary_text_light" />
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="match_parent" />
-
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/thumbnail"
                 android:layout_width="72dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="6dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/iama" />
-
+                android:layout_marginBottom="6dp"
+                android:adjustViewBounds="true" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@android:color/darker_gray"
-            android:visibility="gone" />
+            android:layout_marginBottom="4dp"
+            android:alpha="0.5"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/submitted_info_text"
+            style="@android:style/TextAppearance.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="submitted 5 hours ago by Fugernut93 to /r/funny"
+            android:textColor="@android:color/tertiary_text_light" />
+
+        <TextView
+            android:id="@+id/num_comments"
+            style="@android:style/TextAppearance.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="386 comments"
+            android:textColor="@android:color/tertiary_text_light" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -108,7 +124,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@null"
                 android:text="Upvote" />
 
             <Button
@@ -116,7 +131,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@null"
                 android:text="Downvote" />
 
         </LinearLayout>
