@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="se.joelpet.android.reddit">
+<manifest
+    package="se.joelpet.android.reddit"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- http://www.reddit.com/r/androiddev/comments/297xli/howto_use_the_v21_support_libs_on_older_versions/ -->
+    <!-- Prevent (preview) dependencies from lockin minSdkVersion and targetSdkVersion to the preview API level. -->
+    <uses-sdk tools:node="replace" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
