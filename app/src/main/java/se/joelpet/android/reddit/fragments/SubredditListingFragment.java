@@ -36,11 +36,6 @@ public class SubredditListingFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_subreddit, container, false);
@@ -52,11 +47,6 @@ public class SubredditListingFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         ListingRequest<SubredditListingWrapper> listingRequest = new ListingRequest<>(
                 "http://www.reddit.com/hot.json", SubredditListingWrapper.class, null,
@@ -84,11 +74,6 @@ public class SubredditListingFragment extends Fragment {
 
         VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(
                 listingRequest);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
 }
