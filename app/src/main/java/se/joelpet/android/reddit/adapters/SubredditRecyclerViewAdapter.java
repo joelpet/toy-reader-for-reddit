@@ -3,6 +3,8 @@ package se.joelpet.android.reddit.adapters;
 import com.android.volley.toolbox.NetworkImageView;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -13,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -73,19 +74,6 @@ public class SubredditRecyclerViewAdapter
         vh.numComments
                 .setText(context.getString(R.string.num_comments, subreddit.getNumComments()));
 
-        vh.root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Clicked " + i, Toast.LENGTH_SHORT).show();
-            }
-        });
-        vh.root.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(v.getContext(), "Long clicked " + i, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
         vh.overflowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +85,33 @@ public class SubredditRecyclerViewAdapter
             }
         });
 
+        vh.mainContentArea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Subreddit subreddit = mSubreddits.get(i);
+                Log.d(TAG, "Clicked " + subreddit.getUrl());
+                v.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(subreddit.getUrl())));
+            }
+        });
+        vh.mainContentArea.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Subreddit subreddit = mSubreddits.get(i);
+                Log.d(TAG, "Long clicked " + subreddit.getUrl());
+                return true;
+            }
+        });
+
+        vh.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Subreddit subreddit = mSubreddits.get(i);
+                Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
+                Log.d(TAG, "Opening " + uri);
+                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            }
+        });
     }
 
     @Override
@@ -112,6 +127,8 @@ public class SubredditRecyclerViewAdapter
 
         final ImageButton overflowButton;
 
+        final View mainContentArea;
+
         final TextView title;
 
         final NetworkImageView thumbnail;
@@ -125,6 +142,7 @@ public class SubredditRecyclerViewAdapter
             root = itemView;
             domain = (TextView) itemView.findViewById(R.id.domain);
             overflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
+            mainContentArea = itemView.findViewById(R.id.main_content_area);
             title = (TextView) itemView.findViewById(R.id.title);
             thumbnail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
             submittedInfoText = (TextView) itemView.findViewById(R.id.submitted_info_text);
