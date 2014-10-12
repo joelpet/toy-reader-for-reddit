@@ -14,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="4dp"
         android:paddingEnd="8dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
@@ -58,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
+            android:background="@drawable/background_clickable"
             android:orientation="horizontal"
             android:padding="8dp">
 
@@ -91,7 +91,6 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:layout_marginBottom="4dp"
             android:alpha="0.5"
             android:background="@android:color/darker_gray" />
 
@@ -108,19 +107,24 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:text="submitted 5 hours ago by Fugernut93"
+                android:text="5 hours ago\nby Fugernut93"
                 android:textColor="@android:color/tertiary_text_light" />
 
             <Button
                 android:id="@+id/comments_button"
-                style="@android:style/TextAppearance.Holo.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="0"
-                android:drawableLeft="@drawable/ic_action_view_as_list"
+                android:background="@drawable/background_image_button"
+                android:drawableLeft="@drawable/comments"
+                android:drawablePadding="6dp"
+                android:gravity="center"
                 android:maxLines="1"
+                android:padding="6dp"
                 android:text="355"
-                android:textColor="@android:color/secondary_text_light" />
+                android:textColor="@android:color/tertiary_text_light"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
