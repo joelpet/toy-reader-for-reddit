@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Florida inmate reports threats by guard, turns up dead: Yet another suspicious death — this one at a women’s prison in Ocala last week — has civil rights groups calling for a Justice Department probe into prison abuse."
-                android:textColor="@android:color/secondary_text_light" />
+                android:textColor="@android:color/primary_text_light" />
 
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/thumbnail"
@@ -113,13 +113,14 @@
 
             <Button
                 android:id="@+id/comments_button"
-                style="@android:style/TextAppearance.Holo.Small"
+                style="@android:style/TextAppearance.Holo.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:drawableLeft="@drawable/ic_action_view_as_list"
                 android:maxLines="1"
-                android:text="355" />
+                android:text="355"
+                android:textColor="@android:color/secondary_text_light" />
 
         </LinearLayout>
 
