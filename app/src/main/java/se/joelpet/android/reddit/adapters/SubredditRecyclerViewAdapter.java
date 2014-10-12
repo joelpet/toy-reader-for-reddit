@@ -9,11 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.List;
@@ -22,7 +19,6 @@ import java.util.regex.Pattern;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
 import se.joelpet.android.reddit.domain.Subreddit;
-import se.joelpet.android.reddit.fragments.SubredditListingFragment;
 
 public class SubredditRecyclerViewAdapter
         extends RecyclerView.Adapter<SubredditRecyclerViewAdapter.ViewHolder> {
@@ -53,6 +49,7 @@ public class SubredditRecyclerViewAdapter
                 .getInstance(context.getApplicationContext());
 
         vh.domain.setText(subreddit.getDomain());
+        vh.subreddit.setText("/r/" + subreddit.getSubreddit());
         vh.title.setText(subreddit.getTitle());
 
         if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
@@ -68,20 +65,19 @@ public class SubredditRecyclerViewAdapter
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
         String submittedInfoText = context
                 .getString(R.string.submitted_info_text, relativeDateTimeString,
-                        subreddit.getAuthor(), subreddit.getSubreddit());
+                        subreddit.getAuthor());
         vh.submittedInfoText.setText(submittedInfoText);
 
-        vh.numComments
+        vh.commentsButton
                 .setText(context.getString(R.string.num_comments, subreddit.getNumComments()));
 
-        vh.overflowButton.setOnClickListener(new View.OnClickListener() {
+        vh.commentsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(SubredditListingFragment.TAG, "clicked context menu");
-                PopupMenu popup = new PopupMenu(v.getContext(), v);
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.subreddit, popup.getMenu());
-                popup.show();
+                Subreddit subreddit = mSubreddits.get(i);
+                Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
+                Log.d(TAG, "Opening " + uri);
+                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, uri));
             }
         });
 
@@ -94,22 +90,13 @@ public class SubredditRecyclerViewAdapter
                         new Intent(Intent.ACTION_VIEW, Uri.parse(subreddit.getUrl())));
             }
         });
+
         vh.mainContentArea.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Subreddit subreddit = mSubreddits.get(i);
                 Log.d(TAG, "Long clicked " + subreddit.getUrl());
                 return true;
-            }
-        });
-
-        vh.root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Subreddit subreddit = mSubreddits.get(i);
-                Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
-                Log.d(TAG, "Opening " + uri);
-                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, uri));
             }
         });
     }
@@ -125,7 +112,7 @@ public class SubredditRecyclerViewAdapter
 
         final TextView domain;
 
-        final ImageButton overflowButton;
+        final TextView subreddit;
 
         final View mainContentArea;
 
@@ -135,18 +122,18 @@ public class SubredditRecyclerViewAdapter
 
         final TextView submittedInfoText;
 
-        final TextView numComments;
+        final TextView commentsButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
             root = itemView;
             domain = (TextView) itemView.findViewById(R.id.domain);
-            overflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
+            subreddit = (TextView) itemView.findViewById(R.id.subreddit);
             mainContentArea = itemView.findViewById(R.id.main_content_area);
             title = (TextView) itemView.findViewById(R.id.title);
             thumbnail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
             submittedInfoText = (TextView) itemView.findViewById(R.id.submitted_info_text);
-            numComments = (TextView) itemView.findViewById(R.id.num_comments);
+            commentsButton = (TextView) itemView.findViewById(R.id.comments_button);
         }
     }
 }
