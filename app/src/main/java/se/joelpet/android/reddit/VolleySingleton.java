@@ -42,9 +42,6 @@ public class VolleySingleton {
 
     /**
      * Returns the VolleySingleton instance.
-     *
-     * @param context The application context.
-     * @return The singleton instance.
      */
     public static synchronized VolleySingleton getInstance(Context context) {
         if (mInstance == null) {
