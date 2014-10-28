@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +29,8 @@ import se.joelpet.android.reddit.domain.SubredditWrapper;
 import se.joelpet.android.reddit.domain.SubredditWrapperListing;
 import se.joelpet.android.reddit.gson.ListingRequest;
 
-public class SubredditListingFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener, Response.Listener<SubredditListingWrapper>,
-        Response.ErrorListener {
+public class SubredditListingFragment extends Fragment
+        implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = SubredditActivity.class.getSimpleName();
 
@@ -39,6 +39,13 @@ public class SubredditListingFragment extends Fragment implements
     private RecyclerView mRecyclerView;
 
     private ListingRequest<SubredditListingWrapper> mListingRequest;
+
+    private LinearLayoutManager mLinearLayoutManager;
+
+    private String mAfter;
+
+    private SubredditRecyclerViewAdapter
+            mSubredditRecyclerViewAdapter;
 
     public SubredditListingFragment() {
     }
@@ -63,46 +70,98 @@ public class SubredditListingFragment extends Fragment implements
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.setOnScrollListener(new OnScrollListener());
     }
 
     @Override
     public void onRefresh() {
+        mAfter = null;
         queueListingRequest();
     }
 
-    @Override
-    public void onResponse(SubredditListingWrapper subredditListingWrapper) {
-        SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
-        List<Subreddit> subreddits = new ArrayList<>(
-                subredditWrapperListing.getChildren().size());
-
-        for (SubredditWrapper subredditWrapper : subredditWrapperListing
-                .getChildren()) {
-            subreddits.add(subredditWrapper.getData());
-        }
-
-        Log.d(TAG, String.format("Fetched %d items", subreddits.size()));
-
-        mRecyclerView.setAdapter(new SubredditRecyclerViewAdapter(subreddits));
-
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError volleyError) {
-        Log.e(TAG, "Listing request failed", volleyError);
-        Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
-
     private void queueListingRequest() {
-        if (mListingRequest == null) {
-            mListingRequest = new ListingRequest<>("http://www.reddit.com/hot.json",
-                    SubredditListingWrapper.class, null, this, this);
+        String url = "http://www.reddit.com/hot.json";
+
+        if (!TextUtils.isEmpty(mAfter)) {
+            if (mListingRequest != null && mListingRequest.getUrl().endsWith(mAfter)) {
+                Log.d(TAG, String.format("Avoided queuing duplicate listing request for after={%s}",
+                        mAfter));
+                return;
+            }
+            url += "?after=" + mAfter;
         }
+
+        ResponseListener listener = new ResponseListener(url);
+        mListingRequest = new ListingRequest<>(url, SubredditListingWrapper.class, null,
+                listener, listener);
 
         VolleySingleton.getInstance(getActivity()).addToRequestQueue(mListingRequest);
         Log.d(TAG, "Added listing request to queue: " + mListingRequest);
+    }
+
+    private class ResponseListener implements Response.Listener<SubredditListingWrapper>,
+            Response.ErrorListener {
+
+        private final String mRequestedUrl;
+
+        private ResponseListener(String requestedUrl) {
+            mRequestedUrl = requestedUrl;
+        }
+
+        @Override
+        public void onResponse(SubredditListingWrapper subredditListingWrapper) {
+            SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
+            List<Subreddit> subreddits = new ArrayList<>(
+                    subredditWrapperListing.getChildren().size());
+
+            for (SubredditWrapper subredditWrapper : subredditWrapperListing
+                    .getChildren()) {
+                subreddits.add(subredditWrapper.getData());
+            }
+
+            mAfter = subredditWrapperListing.getAfter();
+
+            if (mSubredditRecyclerViewAdapter == null || !mRequestedUrl.contains("?after=")) {
+                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(subreddits);
+                mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
+            } else {
+                int position = mSubredditRecyclerViewAdapter.getItemCount();
+                mSubredditRecyclerViewAdapter.addItems(subreddits, position);
+            }
+
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            Log.d(TAG,
+                    String.format("Fetched %d items with after={%s}.", subreddits.size(), mAfter));
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError volleyError) {
+            Log.e(TAG, "Listing request failed", volleyError);
+            Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private class OnScrollListener extends RecyclerView.OnScrollListener {
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+            int itemCount = mLinearLayoutManager.getItemCount();
+            int remainingItemsToShow = itemCount - (lastVisibleItemPosition + 1);
+
+            if (remainingItemsToShow < 5) {
+                Log.d(TAG, String.format(
+                        "Scrolled close to end of list. Remaining items to show is %d",
+                        remainingItemsToShow));
+                // start loading new items
+                queueListingRequest();
+            }
+        }
     }
 }

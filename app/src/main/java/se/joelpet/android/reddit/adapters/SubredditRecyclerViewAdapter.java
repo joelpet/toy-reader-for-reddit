@@ -106,6 +106,11 @@ public class SubredditRecyclerViewAdapter
         return mSubreddits.size();
     }
 
+    public void addItems(List<Subreddit> subreddits, int position) {
+        mSubreddits.addAll(position, subreddits);
+        notifyItemRangeInserted(position, subreddits.size());
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         final View root;
