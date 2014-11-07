@@ -19,6 +19,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
 import se.joelpet.android.reddit.activities.SubredditActivity;
@@ -34,9 +36,11 @@ public class SubredditListingFragment extends Fragment
 
     public static final String TAG = SubredditActivity.class.getSimpleName();
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    @InjectView(R.id.my_swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private RecyclerView mRecyclerView;
+    @InjectView(R.id.my_recycler_view)
+    RecyclerView mRecyclerView;
 
     private ListingRequest<SubredditListingWrapper> mListingRequest;
 
@@ -44,8 +48,7 @@ public class SubredditListingFragment extends Fragment
 
     private String mAfter;
 
-    private SubredditRecyclerViewAdapter
-            mSubredditRecyclerViewAdapter;
+    private SubredditRecyclerViewAdapter mSubredditRecyclerViewAdapter;
 
     public SubredditListingFragment() {
     }
@@ -59,20 +62,23 @@ public class SubredditListingFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_subreddit, container, false);
+        View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
+        ButterKnife.inject(this, view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.my_swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setOnScrollListener(new OnScrollListener());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
     }
 
     @Override
