@@ -16,6 +16,8 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
 import se.joelpet.android.reddit.domain.Subreddit;
@@ -113,32 +115,33 @@ public class SubredditRecyclerViewAdapter
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        final View root;
+        @InjectView(R.id.card_view)
+        View root;
 
-        final TextView domain;
+        @InjectView(R.id.domain)
+        TextView domain;
 
-        final TextView subreddit;
+        @InjectView(R.id.subreddit)
+        TextView subreddit;
 
-        final View mainContentArea;
+        @InjectView(R.id.main_content_area)
+        View mainContentArea;
 
-        final TextView title;
+        @InjectView(R.id.title)
+        TextView title;
 
-        final NetworkImageView thumbnail;
+        @InjectView(R.id.thumbnail)
+        NetworkImageView thumbnail;
 
-        final TextView submittedInfoText;
+        @InjectView(R.id.submitted_info_text)
+        TextView submittedInfoText;
 
-        final TextView commentsButton;
+        @InjectView(R.id.comments_button)
+        TextView commentsButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            root = itemView;
-            domain = (TextView) itemView.findViewById(R.id.domain);
-            subreddit = (TextView) itemView.findViewById(R.id.subreddit);
-            mainContentArea = itemView.findViewById(R.id.main_content_area);
-            title = (TextView) itemView.findViewById(R.id.title);
-            thumbnail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
-            submittedInfoText = (TextView) itemView.findViewById(R.id.submitted_info_text);
-            commentsButton = (TextView) itemView.findViewById(R.id.comments_button);
+            ButterKnife.inject(this, root);
         }
     }
 }
