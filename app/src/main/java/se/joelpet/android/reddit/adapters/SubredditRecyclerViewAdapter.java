@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +20,10 @@ import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
 import se.joelpet.android.reddit.domain.Subreddit;
+import timber.log.Timber;
 
 public class SubredditRecyclerViewAdapter
         extends RecyclerView.Adapter<SubredditRecyclerViewAdapter.ViewHolder> {
-
-    private static final String TAG = SubredditRecyclerViewAdapter.class.getSimpleName();
 
     public static final Pattern VALID_URL_PATTERN = Pattern.compile("^https?://.*$");
 
@@ -55,7 +53,7 @@ public class SubredditRecyclerViewAdapter
         vh.title.setText(subreddit.getTitle());
 
         if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
-            Log.d(TAG, "Setting thumbnail image: " + subreddit.getThumbnail());
+            Timber.d("Settings thumbnail image: %s", subreddit.getThumbnail());
             vh.thumbnail.setImageUrl(subreddit.getThumbnail(), volleySingleton.getImageLoader());
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
@@ -78,7 +76,7 @@ public class SubredditRecyclerViewAdapter
             public void onClick(View v) {
                 Subreddit subreddit = mSubreddits.get(i);
                 Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
-                Log.d(TAG, "Opening " + uri);
+                Timber.d("Opening %s", uri);
                 v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, uri));
             }
         });
@@ -87,7 +85,7 @@ public class SubredditRecyclerViewAdapter
             @Override
             public void onClick(View v) {
                 Subreddit subreddit = mSubreddits.get(i);
-                Log.d(TAG, "Clicked " + subreddit.getUrl());
+                Timber.d("Clicked ", subreddit.getUrl());
                 v.getContext().startActivity(
                         new Intent(Intent.ACTION_VIEW, Uri.parse(subreddit.getUrl())));
             }
@@ -97,7 +95,7 @@ public class SubredditRecyclerViewAdapter
             @Override
             public boolean onLongClick(View v) {
                 Subreddit subreddit = mSubreddits.get(i);
-                Log.d(TAG, "Long clicked " + subreddit.getUrl());
+                Timber.d("Long clicked %s", subreddit.getUrl());
                 return true;
             }
         });

@@ -10,7 +10,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +29,10 @@ import se.joelpet.android.reddit.domain.SubredditListingWrapper;
 import se.joelpet.android.reddit.domain.SubredditWrapper;
 import se.joelpet.android.reddit.domain.SubredditWrapperListing;
 import se.joelpet.android.reddit.gson.ListingRequest;
+import timber.log.Timber;
 
 public class SubredditListingFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener {
-
-    public static final String TAG = SubredditActivity.class.getSimpleName();
 
     @InjectView(R.id.my_swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -92,8 +90,7 @@ public class SubredditListingFragment extends Fragment
 
         if (!TextUtils.isEmpty(mAfter)) {
             if (mListingRequest != null && mListingRequest.getUrl().endsWith(mAfter)) {
-                Log.d(TAG, String.format("Avoided queuing duplicate listing request for after={%s}",
-                        mAfter));
+                Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
                 return;
             }
             url += "?after=" + mAfter;
@@ -104,7 +101,7 @@ public class SubredditListingFragment extends Fragment
                 listener, listener);
 
         VolleySingleton.getInstance(getActivity()).addToRequestQueue(mListingRequest);
-        Log.d(TAG, "Added listing request to queue: " + mListingRequest);
+        Timber.d("Added listing request to queue: ", mListingRequest);
     }
 
     private class ResponseListener implements Response.Listener<SubredditListingWrapper>,
@@ -139,13 +136,12 @@ public class SubredditListingFragment extends Fragment
 
             mSwipeRefreshLayout.setRefreshing(false);
 
-            Log.d(TAG,
-                    String.format("Fetched %d items with after={%s}.", subreddits.size(), mAfter));
+            Timber.d("Fetched %d items with after={%s}.", subreddits.size(), mAfter);
         }
 
         @Override
         public void onErrorResponse(VolleyError volleyError) {
-            Log.e(TAG, "Listing request failed", volleyError);
+            Timber.e(volleyError, "Listing request failed");
             Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
         }
@@ -162,9 +158,8 @@ public class SubredditListingFragment extends Fragment
             int remainingItemsToShow = itemCount - (lastVisibleItemPosition + 1);
 
             if (remainingItemsToShow < 5) {
-                Log.d(TAG, String.format(
-                        "Scrolled close to end of list. Remaining items to show is %d",
-                        remainingItemsToShow));
+                Timber.d("Scrolled close to end of list. Remaining items to show is %d",
+                        remainingItemsToShow);
                 // start loading new items
                 queueListingRequest();
             }
