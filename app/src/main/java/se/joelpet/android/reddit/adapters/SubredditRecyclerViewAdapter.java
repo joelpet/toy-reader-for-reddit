@@ -141,7 +141,7 @@ public class SubredditRecyclerViewAdapter
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, root);
+            ButterKnife.inject(this, root = itemView);
         }
     }
 }
