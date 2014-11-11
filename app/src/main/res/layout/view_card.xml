@@ -119,6 +119,7 @@
                 android:background="@drawable/background_image_button"
                 android:drawableLeft="@drawable/comments"
                 android:drawablePadding="6dp"
+                android:drawableStart="@drawable/comments"
                 android:gravity="center"
                 android:maxLines="1"
                 android:padding="6dp"
