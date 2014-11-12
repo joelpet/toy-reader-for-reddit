@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView
-    android:id="@+id/card_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="8dp"
-    card_view:cardCornerRadius="4dp">
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,37 +27,32 @@
 
             <TextView
                 android:id="@+id/domain"
-                style="@android:style/TextAppearance.Holo.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:text="imgur.com"
-                android:textColor="@android:color/tertiary_text_light" />
+                android:text="imgur.com" />
 
-            <TextView
+            <Button
                 android:id="@+id/subreddit"
+                style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:background="@drawable/button_background"
                 android:padding="8dp"
                 android:text="/r/funny"
-                android:textColor="@android:color/holo_blue_light" />
-
+                android:textAllCaps="true"
+                android:textColor="@color/link_text_material_light" />
         </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:alpha="0.5"
-            android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:id="@+id/main_content_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:background="@drawable/background_clickable"
+            android:background="@drawable/button_background"
             android:orientation="horizontal"
             android:padding="8dp">
 
@@ -72,8 +67,9 @@
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:alpha="0.87"
                 android:text="Florida inmate reports threats by guard, turns up dead: Yet another suspicious death — this one at a women’s prison in Ocala last week — has civil rights groups calling for a Justice Department probe into prison abuse."
-                android:textColor="@android:color/primary_text_light" />
+                android:textColor="@android:color/black" />
 
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/thumbnail"
@@ -88,12 +84,6 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:alpha="0.5"
-            android:background="@android:color/darker_gray" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,31 +91,25 @@
 
             <TextView
                 android:id="@+id/submitted_info_text"
-                style="@android:style/TextAppearance.Small"
+                style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:text="5 hours ago\nby Fugernut93"
-                android:textColor="@android:color/tertiary_text_light" />
+                android:text="5 hours ago\nby Fugernut93" />
 
             <Button
                 android:id="@+id/comments_button"
+                style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0"
-                android:background="@drawable/background_image_button"
-                android:drawableLeft="@drawable/comments"
-                android:drawablePadding="6dp"
-                android:drawableStart="@drawable/comments"
                 android:gravity="center"
                 android:maxLines="1"
                 android:padding="6dp"
-                android:text="355"
-                android:textColor="@android:color/tertiary_text_light"
-                android:textStyle="bold" />
+                android:text="355 comments" />
 
         </LinearLayout>
 
