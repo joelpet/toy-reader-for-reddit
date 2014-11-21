@@ -23,13 +23,12 @@ public class WebActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.d("onCreate(%s); intent=%s", savedInstanceState, getIntent());
+        Timber.d("%s.onCreate(%s); intent=%s", this, savedInstanceState, getIntent());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
         if (savedInstanceState == null) {
-            WebFragment webFragment = WebFragment
-                    .newInstance((Uri) getIntent().getExtras().get("uri"));
+            WebFragment webFragment = WebFragment.newInstance(getUriArgument());
             getSupportFragmentManager().beginTransaction().add(R.id.container, webFragment)
                     .commit();
         }
@@ -57,5 +56,9 @@ public class WebActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Uri getUriArgument() {
+        return (Uri) getIntent().getExtras().get("uri");
     }
 }

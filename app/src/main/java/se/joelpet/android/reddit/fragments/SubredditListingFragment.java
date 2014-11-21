@@ -4,7 +4,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -165,13 +164,13 @@ public class SubredditListingFragment extends Fragment
         public void onClickCommentsButton(Subreddit subreddit) {
             Uri uri = Uri.parse("http://i.reddit.com").buildUpon()
                     .appendEncodedPath(subreddit.getPermalink()).build();
-            Timber.d("Opening %s", uri);
+            Timber.d("Clicked comments button for %s", uri);
             WebActivity.startActivity(getActivity(), uri);
         }
 
         @Override
         public void onClickMainContentArea(Subreddit subreddit) {
-            Timber.d("Clicked ", subreddit.getUrl());
+            Timber.d("Clicked main content area for %s", subreddit.getUrl());
             WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
         }
 
