@@ -2,15 +2,19 @@ package se.joelpet.android.reddit.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
+import timber.log.Timber;
 
 public class WebFragment extends Fragment {
 
@@ -18,6 +22,7 @@ public class WebFragment extends Fragment {
     protected WebView mWebView;
 
     public static WebFragment newInstance(Uri uri) {
+        Timber.d("newInstance(%s)", uri);
         WebFragment fragment = new WebFragment();
         Bundle args = new Bundle();
         args.putParcelable("uri", uri);
@@ -30,8 +35,8 @@ public class WebFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Timber.d("%s.onCreate(%s)", this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        getArguments();
     }
 
     @Override
@@ -43,7 +48,15 @@ public class WebFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mWebView.setWebChromeClient(new WebChromeClient());
+        mWebView.setWebViewClient(new WebViewClient());
+    }
+
+    @Override
     public void onStart() {
+        Timber.d("%s.onStart()", this);
         super.onStart();
         mWebView.loadUrl(getUriArgument().toString());
     }
