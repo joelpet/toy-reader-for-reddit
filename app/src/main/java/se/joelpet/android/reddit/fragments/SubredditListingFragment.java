@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
+import se.joelpet.android.reddit.activities.WebActivity;
 import se.joelpet.android.reddit.adapters.SubredditRecyclerViewAdapter;
 import se.joelpet.android.reddit.domain.Subreddit;
 import se.joelpet.android.reddit.domain.SubredditListingWrapper;
@@ -162,16 +163,16 @@ public class SubredditListingFragment extends Fragment
 
         @Override
         public void onClickCommentsButton(Subreddit subreddit) {
-            Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
+            Uri uri = Uri.parse("http://i.reddit.com").buildUpon()
+                    .appendEncodedPath(subreddit.getPermalink()).build();
             Timber.d("Opening %s", uri);
-            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            WebActivity.startActivity(getActivity(), uri);
         }
 
         @Override
         public void onClickMainContentArea(Subreddit subreddit) {
             Timber.d("Clicked ", subreddit.getUrl());
-            getActivity()
-                    .startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(subreddit.getUrl())));
+            WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
         }
 
         @Override
