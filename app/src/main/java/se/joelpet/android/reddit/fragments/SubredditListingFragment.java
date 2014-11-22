@@ -4,6 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import android.app.Fragment;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -22,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.VolleySingleton;
-import se.joelpet.android.reddit.activities.SubredditActivity;
+import se.joelpet.android.reddit.activities.WebActivity;
 import se.joelpet.android.reddit.adapters.SubredditRecyclerViewAdapter;
 import se.joelpet.android.reddit.domain.Subreddit;
 import se.joelpet.android.reddit.domain.SubredditListingWrapper;
@@ -47,6 +48,8 @@ public class SubredditListingFragment extends Fragment
     private String mAfter;
 
     private SubredditRecyclerViewAdapter mSubredditRecyclerViewAdapter;
+
+    private SubredditRecyclerViewAdapter.ClickListener mSubredditViewClickListener;
 
     public SubredditListingFragment() {
     }
@@ -104,6 +107,13 @@ public class SubredditListingFragment extends Fragment
         Timber.d("Added listing request to queue: ", mListingRequest);
     }
 
+    private SubredditRecyclerViewAdapter.ClickListener getSubredditViewClickListener() {
+        if (mSubredditViewClickListener == null) {
+            mSubredditViewClickListener = new SubredditViewClickListener();
+        }
+        return mSubredditViewClickListener;
+    }
+
     private class ResponseListener implements Response.Listener<SubredditListingWrapper>,
             Response.ErrorListener {
 
@@ -127,7 +137,8 @@ public class SubredditListingFragment extends Fragment
             mAfter = subredditWrapperListing.getAfter();
 
             if (mSubredditRecyclerViewAdapter == null || !mRequestedUrl.contains("?after=")) {
-                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(subreddits);
+                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(subreddits,
+                        getSubredditViewClickListener());
                 mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
             } else {
                 int position = mSubredditRecyclerViewAdapter.getItemCount();
@@ -144,6 +155,29 @@ public class SubredditListingFragment extends Fragment
             Timber.e(volleyError, "Listing request failed");
             Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private class SubredditViewClickListener implements SubredditRecyclerViewAdapter.ClickListener {
+
+        @Override
+        public void onClickCommentsButton(Subreddit subreddit) {
+            Uri uri = Uri.parse("http://i.reddit.com").buildUpon()
+                    .appendEncodedPath(subreddit.getPermalink()).build();
+            Timber.d("Clicked comments button for %s", uri);
+            WebActivity.startActivity(getActivity(), uri);
+        }
+
+        @Override
+        public void onClickMainContentArea(Subreddit subreddit) {
+            Timber.d("Clicked main content area for %s", subreddit.getUrl());
+            WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
+        }
+
+        @Override
+        public boolean onLongClickMainContentArea(Subreddit subreddit) {
+            Timber.d("Long clicked %s", subreddit.getUrl());
+            return true;
         }
     }
 

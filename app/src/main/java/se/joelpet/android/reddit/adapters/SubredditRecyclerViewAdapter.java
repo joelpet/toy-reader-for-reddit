@@ -1,16 +1,14 @@
 package se.joelpet.android.reddit.adapters;
 
-import com.android.volley.toolbox.NetworkImageView;
-
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,8 +27,11 @@ public class SubredditRecyclerViewAdapter
 
     private final List<Subreddit> mSubreddits;
 
-    public SubredditRecyclerViewAdapter(List<Subreddit> subreddits) {
+    private ClickListener mClickListener;
+
+    public SubredditRecyclerViewAdapter(List<Subreddit> subreddits, ClickListener clickListener) {
         mSubreddits = subreddits;
+        mClickListener = clickListener;
     }
 
     @Override
@@ -74,29 +75,21 @@ public class SubredditRecyclerViewAdapter
         vh.commentsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Subreddit subreddit = mSubreddits.get(i);
-                Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
-                Timber.d("Opening %s", uri);
-                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                mClickListener.onClickCommentsButton(mSubreddits.get(i));
             }
         });
 
         vh.mainContentArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Subreddit subreddit = mSubreddits.get(i);
-                Timber.d("Clicked ", subreddit.getUrl());
-                v.getContext().startActivity(
-                        new Intent(Intent.ACTION_VIEW, Uri.parse(subreddit.getUrl())));
+                mClickListener.onClickMainContentArea(mSubreddits.get(i));
             }
         });
 
         vh.mainContentArea.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Subreddit subreddit = mSubreddits.get(i);
-                Timber.d("Long clicked %s", subreddit.getUrl());
-                return true;
+                return mClickListener.onLongClickMainContentArea(mSubreddits.get(i));
             }
         });
     }
@@ -109,6 +102,14 @@ public class SubredditRecyclerViewAdapter
     public void addItems(List<Subreddit> subreddits, int position) {
         mSubreddits.addAll(position, subreddits);
         notifyItemRangeInserted(position, subreddits.size());
+    }
+
+    public static interface ClickListener {
+        void onClickCommentsButton(Subreddit subreddit);
+
+        void onClickMainContentArea(Subreddit subreddit);
+
+        boolean onLongClickMainContentArea(Subreddit subreddit);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
