@@ -29,8 +29,8 @@ public class WebActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             WebFragment webFragment = WebFragment.newInstance(getUriArgument());
-            getSupportFragmentManager().beginTransaction().add(R.id.container, webFragment)
-                    .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, webFragment, "web_fragment").commit();
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -56,6 +56,16 @@ public class WebActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        WebFragment webFragment = (WebFragment) getSupportFragmentManager()
+                .findFragmentByTag("web_fragment");
+
+        if (!webFragment.onBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
     private Uri getUriArgument() {

@@ -60,6 +60,20 @@ public class WebFragment extends Fragment {
         mWebView.loadUrl(getUriArgument().toString());
     }
 
+    /**
+     * Called by parent activity when used pressed back button.
+     *
+     * @return {@code true} if action was taken and the back press consumed, otherwise {@code false}
+     */
+    public boolean onBackPressed() {
+        Timber.d("onBackPressed(); mWebView.canGoBack=%b", mWebView.canGoBack());
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+        }
+        return false;
+    }
+
     private Uri getUriArgument() {
         return (Uri) getArguments().get("uri");
     }
