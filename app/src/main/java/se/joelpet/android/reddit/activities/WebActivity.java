@@ -15,10 +15,12 @@ import timber.log.Timber;
 
 public class WebActivity extends ActionBarActivity {
 
+    public static final String ARG_URI = "uri";
+
     public static void startActivity(Context context, Uri uri) {
         Timber.d("startActivity(%s, %s)", context, uri);
         Intent intent = new Intent(context, WebActivity.class);
-        intent.putExtra("uri", uri);
+        intent.putExtra(ARG_URI, uri);
         context.startActivity(intent);
 
         if (context instanceof Activity) {
@@ -33,8 +35,16 @@ public class WebActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
+        Uri uriArgument = getUriArgument();
+        String title = uriArgument.getHost();
+        int subtitleStart = uriArgument.toString().indexOf(title) + title.length();
+        String subtitle = uriArgument.toString().substring(subtitleStart);
+
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setSubtitle(subtitle);
+
         if (savedInstanceState == null) {
-            WebFragment webFragment = WebFragment.newInstance(getUriArgument());
+            WebFragment webFragment = WebFragment.newInstance(uriArgument);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, webFragment, "web_fragment").commit();
         }
@@ -74,6 +84,6 @@ public class WebActivity extends ActionBarActivity {
     }
 
     private Uri getUriArgument() {
-        return (Uri) getIntent().getExtras().get("uri");
+        return (Uri) getIntent().getExtras().get(ARG_URI);
     }
 }
