@@ -1,5 +1,6 @@
 package se.joelpet.android.reddit.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +20,11 @@ public class WebActivity extends ActionBarActivity {
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra("uri", uri);
         context.startActivity(intent);
+
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.slide_in_right,
+                    R.anim.slide_out_left);
+        }
     }
 
     @Override
@@ -45,16 +51,14 @@ public class WebActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        Timber.d("onOptionsItemSelected(%s)", item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // TODO: Is it possible to animate the back button action too?
+                break;
+            case R.id.action_settings:
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -65,6 +69,7 @@ public class WebActivity extends ActionBarActivity {
 
         if (!webFragment.onBackPressed()) {
             super.onBackPressed();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
     }
 
