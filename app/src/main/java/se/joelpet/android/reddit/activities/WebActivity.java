@@ -5,15 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.fragments.WebFragment;
 import timber.log.Timber;
 
-public class WebActivity extends ActionBarActivity {
+public class WebActivity extends ActionBarActivity implements WebFragment.WebViewCallback {
 
     public static final String ARG_URI = "uri";
 
@@ -35,28 +35,15 @@ public class WebActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        Uri uriArgument = getUriArgument();
-        String title = uriArgument.getHost();
-        int subtitleStart = uriArgument.toString().indexOf(title) + title.length();
-        String subtitle = uriArgument.toString().substring(subtitleStart);
-
-        getSupportActionBar().setTitle(title);
-        getSupportActionBar().setSubtitle(subtitle);
+        updateActionBarTitle(getSupportActionBar(), getUriArgument());
 
         if (savedInstanceState == null) {
-            WebFragment webFragment = WebFragment.newInstance(uriArgument);
+            WebFragment webFragment = WebFragment.newInstance(getUriArgument());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, webFragment, "web_fragment").commit();
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_web, menu);
-        return true;
     }
 
     @Override
@@ -66,8 +53,6 @@ public class WebActivity extends ActionBarActivity {
             case android.R.id.home:
                 // TODO: Is it possible to animate the back button action too?
                 break;
-            case R.id.action_settings:
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -81,6 +66,28 @@ public class WebActivity extends ActionBarActivity {
             super.onBackPressed();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
+    }
+
+    @Override
+    public void onWebViewPageFinished(String url) {
+        updateActionBarTitle(getSupportActionBar(), url);
+    }
+
+    @Override
+    public void onWebViewPageStarted(String url) {
+        updateActionBarTitle(getSupportActionBar(), url);
+    }
+
+    private static void updateActionBarTitle(ActionBar actionBar, String url) {
+        updateActionBarTitle(actionBar, Uri.parse(url));
+    }
+
+    private static void updateActionBarTitle(ActionBar actionBar, Uri uri) {
+        String title = uri.getHost();
+        int subtitleStart = uri.toString().indexOf(title) + title.length();
+        String subtitle = uri.toString().substring(subtitleStart);
+        actionBar.setTitle(title);
+        actionBar.setSubtitle(subtitle);
     }
 
     private Uri getUriArgument() {
