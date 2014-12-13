@@ -162,9 +162,8 @@ public class SubredditListingFragment extends Fragment
 
         @Override
         public void onClickCommentsButton(Subreddit subreddit) {
-            Uri uri = Uri.parse("http://i.reddit.com").buildUpon()
-                    .appendEncodedPath(subreddit.getPermalink()).build();
-            Timber.d("Clicked comments button for %s", uri);
+            Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
+            Timber.d("Clicked comments button for %s", subreddit);
             WebActivity.startActivity(getActivity(), uri);
         }
 

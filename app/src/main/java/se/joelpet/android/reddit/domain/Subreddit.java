@@ -161,4 +161,26 @@ public class Subreddit {
     public void setNumComments(Integer numComments) {
         this.numComments = numComments;
     }
+
+    @Override
+    public String toString() {
+        return "Subreddit{" +
+                "domain='" + domain + '\'' +
+                ", subreddit='" + subreddit + '\'' +
+                ", selftext='" + selftext + '\'' +
+                ", id='" + id + '\'' +
+                ", author='" + author + '\'' +
+                ", score='" + score + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", subredditId='" + subredditId + '\'' +
+                ", name='" + name + '\'' +
+                ", permalink='" + permalink + '\'' +
+                ", created=" + created +
+                ", url='" + url + '\'' +
+                ", title='" + title + '\'' +
+                ", createdUtc=" + createdUtc +
+                ", ups='" + ups + '\'' +
+                ", numComments=" + numComments +
+                '}';
+    }
 }
