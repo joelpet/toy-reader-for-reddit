@@ -87,6 +87,7 @@ public class WebFragment extends Fragment {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.getSettings().setUseWideViewPort(false);
+        mWebView.loadUrl(getUriArgument().toString());
         return rootView;
     }
 
@@ -94,13 +95,6 @@ public class WebFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.add(Menu.NONE, R.id.menu_item_copy_address, Menu.NONE, "Copy address");
-    }
-
-    @Override
-    public void onStart() {
-        Timber.d("%s.onStart()", this);
-        super.onStart();
-        mWebView.loadUrl(getUriArgument().toString());
     }
 
     /**
