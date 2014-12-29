@@ -83,6 +83,13 @@ public class SubredditListingFragment extends Fragment
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        VolleySingleton.getInstance(getActivity()).getRequestQueue()
+                .cancelAll(SubredditListingFragment.class.getName());
+    }
+
+    @Override
     public void onRefresh() {
         mAfter = null;
         queueListingRequest();
@@ -102,6 +109,7 @@ public class SubredditListingFragment extends Fragment
         ResponseListener listener = new ResponseListener(url);
         mListingRequest = new ListingRequest<>(url, SubredditListingWrapper.class, null,
                 listener, listener);
+        mListingRequest.setTag(SubredditListingFragment.class.getName());
 
         VolleySingleton.getInstance(getActivity()).addToRequestQueue(mListingRequest);
         Timber.d("Added listing request to queue: ", mListingRequest);
