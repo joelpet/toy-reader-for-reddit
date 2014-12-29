@@ -45,16 +45,16 @@ public class VolleySingleton {
      */
     public static synchronized VolleySingleton getInstance(Context context) {
         if (mInstance == null) {
-            mInstance = new VolleySingleton(context);
+            // getApplicationContext() is key, it keeps you from leaking the
+            // Activity or BroadcastReceiver if someone passes one in.
+            mInstance = new VolleySingleton(context.getApplicationContext());
         }
         return mInstance;
     }
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
-            // getApplicationContext() is key, it keeps you from leaking the
-            // Activity or BroadcastReceiver if someone passes one in.
-            mRequestQueue = Volley.newRequestQueue(mContext.getApplicationContext());
+            mRequestQueue = Volley.newRequestQueue(mContext);
         }
         return mRequestQueue;
     }
