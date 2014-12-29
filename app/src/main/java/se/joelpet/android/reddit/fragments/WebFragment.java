@@ -44,6 +44,12 @@ public class WebFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mWebView.saveState(outState);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         if (activity instanceof WebViewCallback) {
@@ -87,7 +93,13 @@ public class WebFragment extends Fragment {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.getSettings().setUseWideViewPort(false);
-        mWebView.loadUrl(getUriArgument().toString());
+
+        if (savedInstanceState == null) {
+            mWebView.loadUrl(getUriArgument().toString());
+        } else {
+            mWebView.restoreState(savedInstanceState);
+        }
+
         return rootView;
     }
 
