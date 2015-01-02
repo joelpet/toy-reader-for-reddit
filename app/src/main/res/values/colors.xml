@@ -10,9 +10,9 @@
     <color name="primary_light">@color/light_blue_100</color>
     <color name="primary">@color/light_blue_500</color>
     <color name="primary_dark">@color/light_blue_900</color>
-    <color name="accent">@color/pink_a200</color>
+    <color name="accent">@color/pink_a400</color>
     <color name="accent_fallback_light">@color/pink_a100</color>
-    <color name="accent_fallback_dark">@color/pink_a400</color>
+    <color name="accent_fallback_dark">@color/pink_a700</color>
 
     <!-- Material design color palettes
     These are not to be used other than selecting a UI Color Palette from. See notes above.

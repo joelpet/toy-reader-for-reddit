@@ -70,7 +70,12 @@ public class WebFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_web, container, false);
         ButterKnife.inject(this, rootView);
-        mWebView.setWebChromeClient(new WebChromeClient());
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                mWebViewCallback.onWebViewProgressChanged(view, newProgress);
+            }
+        });
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -149,6 +154,8 @@ public class WebFragment extends Fragment {
         void onWebViewPageFinished(String url);
 
         void onWebViewPageStarted(String url);
+
+        void onWebViewProgressChanged(WebView view, int newProgress);
     }
 
 }

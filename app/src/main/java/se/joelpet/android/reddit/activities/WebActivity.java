@@ -7,8 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import se.joelpet.android.reddit.R;
 import se.joelpet.android.reddit.fragments.WebFragment;
 import timber.log.Timber;
@@ -16,6 +22,12 @@ import timber.log.Timber;
 public class WebActivity extends ActionBarActivity implements WebFragment.WebViewCallback {
 
     public static final String ARG_URI = "uri";
+
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    @InjectView(R.id.toolbar_progress_bar)
+    ProgressBar mProgressBar;
 
     public static void startActivity(Context context, Uri uri) {
         Timber.d("startActivity(%s, %s)", context, uri);
@@ -34,7 +46,8 @@ public class WebActivity extends ActionBarActivity implements WebFragment.WebVie
         Timber.d("%s.onCreate(%s); intent=%s", this, savedInstanceState, getIntent());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
-
+        ButterKnife.inject(this);
+        setSupportActionBar(mToolbar);
         updateActionBarTitle(getSupportActionBar(), getUriArgument());
 
         if (savedInstanceState == null) {
@@ -76,6 +89,14 @@ public class WebActivity extends ActionBarActivity implements WebFragment.WebVie
     @Override
     public void onWebViewPageStarted(String url) {
         updateActionBarTitle(getSupportActionBar(), url);
+    }
+
+    @Override
+    public void onWebViewProgressChanged(WebView view, int newProgress) {
+        // TODO: Animate showing/hiding of progress bar.
+        // TODO: Interpolate progress change.
+        mProgressBar.setProgress(newProgress);
+        mProgressBar.setVisibility(newProgress < 100 ? View.VISIBLE : View.GONE);
     }
 
     private static void updateActionBarTitle(ActionBar actionBar, String url) {
