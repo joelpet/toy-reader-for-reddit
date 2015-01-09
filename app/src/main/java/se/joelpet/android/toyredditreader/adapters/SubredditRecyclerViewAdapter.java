@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.adapters;
+package se.joelpet.android.toyredditreader.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import se.joelpet.android.reddit.R;
-import se.joelpet.android.reddit.VolleySingleton;
-import se.joelpet.android.reddit.domain.Subreddit;
+import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.VolleySingleton;
+import se.joelpet.android.toyredditreader.domain.Subreddit;
 import timber.log.Timber;
 
 public class SubredditRecyclerViewAdapter

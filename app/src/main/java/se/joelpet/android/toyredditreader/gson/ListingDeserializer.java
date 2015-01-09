@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.gson;
+package se.joelpet.android.toyredditreader.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
@@ -9,7 +9,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import se.joelpet.android.reddit.domain.SubredditWrapperListing;
+import se.joelpet.android.toyredditreader.domain.SubredditWrapperListing;
 
 public class ListingDeserializer implements JsonDeserializer<SubredditWrapperListing> {
 

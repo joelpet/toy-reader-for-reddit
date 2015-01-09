@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.joelpet.android.reddit.gson.typeadapters;
+package se.joelpet.android.toyredditreader.gson.typeadapters;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

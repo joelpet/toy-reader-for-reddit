@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.activities;
+package se.joelpet.android.toyredditreader.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,8 +15,8 @@ import android.widget.ProgressBar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import se.joelpet.android.reddit.R;
-import se.joelpet.android.reddit.fragments.WebFragment;
+import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.fragments.WebFragment;
 import timber.log.Timber;
 
 public class WebActivity extends ActionBarActivity implements WebFragment.WebViewCallback {

@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit;
+package se.joelpet.android.toyredditreader;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;

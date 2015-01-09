@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.gson;
+package se.joelpet.android.toyredditreader.gson;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

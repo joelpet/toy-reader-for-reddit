@@ -1,8 +1,8 @@
-package se.joelpet.android.reddit;
+package se.joelpet.android.toyredditreader;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import se.joelpet.android.reddit.activities.SubredditActivity;
+import se.joelpet.android.toyredditreader.activities.SubredditActivity;
 
 public class SubredditActivityTest extends ActivityInstrumentationTestCase2<SubredditActivity> {
 

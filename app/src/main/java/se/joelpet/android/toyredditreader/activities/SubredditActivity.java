@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.activities;
+package se.joelpet.android.toyredditreader.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,8 +8,8 @@ import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import se.joelpet.android.reddit.R;
-import se.joelpet.android.reddit.fragments.SubredditListingFragment;
+import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
 
 public class SubredditActivity extends ActionBarActivity {
 

@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.domain;
+package se.joelpet.android.toyredditreader.domain;
 
 import java.io.Serializable;
 import java.util.List;

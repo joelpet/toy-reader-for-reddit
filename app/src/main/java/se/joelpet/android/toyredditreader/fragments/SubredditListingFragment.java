@@ -1,4 +1,4 @@
-package se.joelpet.android.reddit.fragments;
+package se.joelpet.android.toyredditreader.fragments;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -21,15 +21,15 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import se.joelpet.android.reddit.R;
-import se.joelpet.android.reddit.VolleySingleton;
-import se.joelpet.android.reddit.activities.WebActivity;
-import se.joelpet.android.reddit.adapters.SubredditRecyclerViewAdapter;
-import se.joelpet.android.reddit.domain.Subreddit;
-import se.joelpet.android.reddit.domain.SubredditListingWrapper;
-import se.joelpet.android.reddit.domain.SubredditWrapper;
-import se.joelpet.android.reddit.domain.SubredditWrapperListing;
-import se.joelpet.android.reddit.gson.ListingRequest;
+import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.VolleySingleton;
+import se.joelpet.android.toyredditreader.activities.WebActivity;
+import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
+import se.joelpet.android.toyredditreader.domain.Subreddit;
+import se.joelpet.android.toyredditreader.domain.SubredditListingWrapper;
+import se.joelpet.android.toyredditreader.domain.SubredditWrapper;
+import se.joelpet.android.toyredditreader.domain.SubredditWrapperListing;
+import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import timber.log.Timber;
 
 public class SubredditListingFragment extends Fragment
