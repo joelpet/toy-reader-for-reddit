@@ -64,8 +64,9 @@ public class WebActivity extends ActionBarActivity implements WebFragment.WebVie
         Timber.d("onOptionsItemSelected(%s)", item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                // TODO: Is it possible to animate the back button action too?
-                break;
+                super.onBackPressed();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
