@@ -8,7 +8,7 @@
 
     <!-- UI Color Palette -->
     <color name="primary_light">@color/light_blue_100</color>
-    <color name="primary">@color/light_blue_500</color>
+    <color name="primary">@color/light_blue_200</color>
     <color name="primary_dark">@color/light_blue_900</color>
     <color name="accent">@color/pink_a400</color>
     <color name="accent_fallback_light">@color/pink_a100</color>

@@ -6,11 +6,6 @@
     tools:context=".SubredditActivity"
     tools:ignore="MergeRootFrame">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/primary_light" />
-
     <include layout="@layout/layout_toolbar" />
 
     <FrameLayout
