@@ -71,6 +71,7 @@ public class SubredditListingFragment extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.accent);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setOnScrollListener(new OnScrollListener());
