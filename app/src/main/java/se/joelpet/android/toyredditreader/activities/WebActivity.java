@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
@@ -94,10 +96,29 @@ public class WebActivity extends ActionBarActivity implements WebFragment.WebVie
 
     @Override
     public void onWebViewProgressChanged(WebView view, int newProgress) {
-        // TODO: Animate showing/hiding of progress bar.
         // TODO: Interpolate progress change.
         mProgressBar.setProgress(newProgress);
-        mProgressBar.setVisibility(newProgress < 100 ? View.VISIBLE : View.GONE);
+
+        if (newProgress < 100) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.abc_fade_out);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            mProgressBar.startAnimation(animation);
+        }
     }
 
     private static void updateActionBarTitle(ActionBar actionBar, String url) {
