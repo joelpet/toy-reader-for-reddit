@@ -7,7 +7,7 @@
     </style>
 
     <style name="Button" parent="Base.TextAppearance.AppCompat.Button">
-        <item name="android:background">@drawable/button_background</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
     </style>
