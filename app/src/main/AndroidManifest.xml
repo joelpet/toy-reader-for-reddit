@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="se.joelpet.android.reddit"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="se.joelpet.android.toyredditreader">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".RedditApp"
+        android:name="se.joelpet.android.toyredditreader.RedditApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.SubredditActivity"
+            android:name="se.joelpet.android.toyredditreader.activities.SubredditActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="se.joelpet.android.toyredditreader.activities.WebActivity"
+            android:label="@string/title_activity_web"
+            android:parentActivityName="se.joelpet.android.toyredditreader.activities.SubredditActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="se.joelpet.android.toyredditreader.activities.SubredditActivity" />
         </activity>
     </application>
 
