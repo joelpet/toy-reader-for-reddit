@@ -25,6 +25,7 @@ proguard/
 
 # Log Files
 *.log
+manifest-merger-release-report.txt
 
 
 ### Gradle ###
