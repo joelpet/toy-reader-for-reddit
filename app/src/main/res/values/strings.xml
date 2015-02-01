@@ -7,5 +7,12 @@
     <string name="submitted_info_text">"%1$s\nby <b>%2$s</b>"</string>
     <string name="num_comments">%d comments</string>
     <string name="title_activity_web">WebActivity</string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+
+    <string-array name="navigation_drawer_list_items">
+        <item>Browse</item>
+        <item>Settings</item>
+    </string-array>
 
 </resources>
