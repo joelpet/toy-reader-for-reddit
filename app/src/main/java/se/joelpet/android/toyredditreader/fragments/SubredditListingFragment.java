@@ -3,7 +3,6 @@ package se.joelpet.android.toyredditreader.fragments;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,16 +40,16 @@ public class SubredditListingFragment extends BaseFragment
     public static final String TAG = SubredditListingFragment.class.getName();
 
     @InjectView(R.id.my_swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     @InjectView(R.id.my_recycler_view)
-    RecyclerView mRecyclerView;
+    protected RecyclerView mRecyclerView;
 
     @Inject
-    RedditApi mRedditApi;
+    protected RedditApi mRedditApi;
 
-    // TODO: @Inject
-    VolleySingleton mVolleySingleton;
+    @Inject
+    protected VolleySingleton mVolleySingleton;
 
     private ListingRequest<SubredditListingWrapper> mListingRequest;
 
@@ -66,14 +65,9 @@ public class SubredditListingFragment extends BaseFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mVolleySingleton = VolleySingleton.getInstance(activity);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        inject(this);
         queueListingRequest();
     }
 

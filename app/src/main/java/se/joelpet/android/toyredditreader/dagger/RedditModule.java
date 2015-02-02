@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import se.joelpet.android.toyredditreader.RedditApp;
-import se.joelpet.android.toyredditreader.activities.SubredditActivity;
+import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
 import se.joelpet.android.toyredditreader.net.RealRedditApi;
@@ -15,7 +15,6 @@ import se.joelpet.android.toyredditreader.net.RedditApi;
 
 @Module(
         injects = {
-                SubredditActivity.class,
                 SubredditListingFragment.class,
                 RealRedditApi.class,
                 SubredditRecyclerViewAdapter.class
@@ -40,13 +39,11 @@ public class RedditModule {
         return mRedditApp;
     }
 
-    /*
     @Provides
     @Singleton
-    VolleySingleton provideVolleySingleton(Context context) {
-        return VolleySingleton.getInstance(context);
+    VolleySingleton provideVolleySingleton() {
+        return VolleySingleton.getInstance(mRedditApp);
     }
-    */
 
     @Provides
     RedditApi provideRedditApi() {
