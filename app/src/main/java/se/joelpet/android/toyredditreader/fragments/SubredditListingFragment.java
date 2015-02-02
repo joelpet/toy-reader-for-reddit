@@ -3,7 +3,7 @@ package se.joelpet.android.toyredditreader.fragments;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
@@ -30,16 +32,25 @@ import se.joelpet.android.toyredditreader.domain.SubredditListingWrapper;
 import se.joelpet.android.toyredditreader.domain.SubredditWrapper;
 import se.joelpet.android.toyredditreader.domain.SubredditWrapperListing;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
+import se.joelpet.android.toyredditreader.net.RedditApi;
 import timber.log.Timber;
 
-public class SubredditListingFragment extends Fragment
+public class SubredditListingFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener {
+
+    public static final String TAG = SubredditListingFragment.class.getName();
 
     @InjectView(R.id.my_swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     @InjectView(R.id.my_recycler_view)
     RecyclerView mRecyclerView;
+
+    @Inject
+    RedditApi mRedditApi;
+
+    // TODO: @Inject
+    VolleySingleton mVolleySingleton;
 
     private ListingRequest<SubredditListingWrapper> mListingRequest;
 
@@ -52,6 +63,12 @@ public class SubredditListingFragment extends Fragment
     private SubredditRecyclerViewAdapter.ClickListener mSubredditViewClickListener;
 
     public SubredditListingFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mVolleySingleton = VolleySingleton.getInstance(activity);
     }
 
     @Override
@@ -86,8 +103,8 @@ public class SubredditListingFragment extends Fragment
     @Override
     public void onStop() {
         super.onStop();
-        VolleySingleton.getInstance(getActivity()).getRequestQueue()
-                .cancelAll(SubredditListingFragment.class.getName());
+        // TODO Offer from API
+        mVolleySingleton.getRequestQueue().cancelAll(TAG);
     }
 
     @Override
@@ -97,23 +114,16 @@ public class SubredditListingFragment extends Fragment
     }
 
     private void queueListingRequest() {
-        String url = "http://www.reddit.com/hot.json";
 
         if (!TextUtils.isEmpty(mAfter)) {
             if (mListingRequest != null && mListingRequest.getUrl().endsWith(mAfter)) {
                 Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
                 return;
             }
-            url += "?after=" + mAfter;
         }
 
-        ResponseListener listener = new ResponseListener(url);
-        mListingRequest = new ListingRequest<>(url, SubredditListingWrapper.class, null,
-                listener, listener);
-        mListingRequest.setTag(SubredditListingFragment.class.getName());
-
-        VolleySingleton.getInstance(getActivity()).addToRequestQueue(mListingRequest);
-        Timber.d("Added listing request to queue: ", mListingRequest);
+        ResponseListener listener = new ResponseListener();
+        mListingRequest = mRedditApi.getSubredditListing(mAfter, listener, listener);
     }
 
     private SubredditRecyclerViewAdapter.ClickListener getSubredditViewClickListener() {
@@ -125,12 +135,6 @@ public class SubredditListingFragment extends Fragment
 
     private class ResponseListener implements Response.Listener<SubredditListingWrapper>,
             Response.ErrorListener {
-
-        private final String mRequestedUrl;
-
-        private ResponseListener(String requestedUrl) {
-            mRequestedUrl = requestedUrl;
-        }
 
         @Override
         public void onResponse(SubredditListingWrapper subredditListingWrapper) {
@@ -145,9 +149,9 @@ public class SubredditListingFragment extends Fragment
 
             mAfter = subredditWrapperListing.getAfter();
 
-            if (mSubredditRecyclerViewAdapter == null || !mRequestedUrl.contains("?after=")) {
-                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(subreddits,
-                        getSubredditViewClickListener());
+            if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
+                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mVolleySingleton,
+                        subreddits, getSubredditViewClickListener());
                 mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
             } else {
                 int position = mSubredditRecyclerViewAdapter.getItemCount();

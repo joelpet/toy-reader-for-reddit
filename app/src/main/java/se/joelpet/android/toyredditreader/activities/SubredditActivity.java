@@ -18,7 +18,7 @@ import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment;
 import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
 
-public class SubredditActivity extends ActionBarActivity
+public class SubredditActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationItemClickListener {
 
     @InjectView(R.id.toolbar)
