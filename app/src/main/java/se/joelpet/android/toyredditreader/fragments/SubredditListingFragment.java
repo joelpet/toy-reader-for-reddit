@@ -108,10 +108,6 @@ public class SubredditListingFragment extends BaseFragment
     }
 
     private void queueListingRequest() {
-        if (mListingRequest != null) {
-            Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
-            return;
-        }
         mListingRequest = mRedditApi.getSubredditListing(mAfter, this, this);
     }
 
@@ -121,11 +117,9 @@ public class SubredditListingFragment extends BaseFragment
     @Override
     public void onResponse(SubredditListingWrapper subredditListingWrapper) {
         SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
-        List<Subreddit> subreddits = new ArrayList<>(
-                subredditWrapperListing.getChildren().size());
+        List<Subreddit> subreddits = new ArrayList<>(subredditWrapperListing.getChildren().size());
 
-        for (SubredditWrapper subredditWrapper : subredditWrapperListing
-                .getChildren()) {
+        for (SubredditWrapper subredditWrapper : subredditWrapperListing.getChildren()) {
             subreddits.add(subredditWrapper.getData());
         }
 
@@ -178,6 +172,11 @@ public class SubredditListingFragment extends BaseFragment
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
+
+            if (mListingRequest != null) {
+                Timber.i("Avoided queuing duplicate listing request for after={%s}", mAfter);
+                return;
+            }
 
             int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
             int itemCount = mLinearLayoutManager.getItemCount();
