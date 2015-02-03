@@ -35,7 +35,8 @@ import se.joelpet.android.toyredditreader.net.RedditApi;
 import timber.log.Timber;
 
 public class SubredditListingFragment extends BaseFragment
-        implements SwipeRefreshLayout.OnRefreshListener {
+        implements SwipeRefreshLayout.OnRefreshListener, Response.ErrorListener,
+        Response.Listener<SubredditListingWrapper>, SubredditRecyclerViewAdapter.ClickListener {
 
     public static final String TAG = SubredditListingFragment.class.getName();
 
@@ -51,15 +52,15 @@ public class SubredditListingFragment extends BaseFragment
     @Inject
     protected ImageLoader mImageLoader;
 
+    /** The currently (only) ongoing listing request, if any. */
     private ListingRequest<SubredditListingWrapper> mListingRequest;
+
+    /** The "after" portion received in the response to the last made request. */
+    private String mAfter;
 
     private LinearLayoutManager mLinearLayoutManager;
 
-    private String mAfter;
-
     private SubredditRecyclerViewAdapter mSubredditRecyclerViewAdapter;
-
-    private SubredditRecyclerViewAdapter.ClickListener mSubredditViewClickListener;
 
     public SubredditListingFragment() {
     }
@@ -107,83 +108,69 @@ public class SubredditListingFragment extends BaseFragment
     }
 
     private void queueListingRequest() {
-
-        if (!TextUtils.isEmpty(mAfter)) {
-            if (mListingRequest != null && mListingRequest.getUrl().endsWith(mAfter)) {
-                Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
-                return;
-            }
+        if (mListingRequest != null) {
+            Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
+            return;
         }
-
-        ResponseListener listener = new ResponseListener();
-        mListingRequest = mRedditApi.getSubredditListing(mAfter, listener, listener);
+        mListingRequest = mRedditApi.getSubredditListing(mAfter, this, this);
     }
 
-    private SubredditRecyclerViewAdapter.ClickListener getSubredditViewClickListener() {
-        if (mSubredditViewClickListener == null) {
-            mSubredditViewClickListener = new SubredditViewClickListener();
+    /**
+     * Callback for successful Subreddit Listing GET request.
+     */
+    @Override
+    public void onResponse(SubredditListingWrapper subredditListingWrapper) {
+        SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
+        List<Subreddit> subreddits = new ArrayList<>(
+                subredditWrapperListing.getChildren().size());
+
+        for (SubredditWrapper subredditWrapper : subredditWrapperListing
+                .getChildren()) {
+            subreddits.add(subredditWrapper.getData());
         }
-        return mSubredditViewClickListener;
+
+        mAfter = subredditWrapperListing.getAfter();
+
+        if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
+            mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mImageLoader,
+                    subreddits, this);
+            mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
+        } else {
+            int position = mSubredditRecyclerViewAdapter.getItemCount();
+            mSubredditRecyclerViewAdapter.addItems(subreddits, position);
+        }
+
+        mSwipeRefreshLayout.setRefreshing(false);
+        mListingRequest = null;
+
+        Timber.d("Fetched %d items with after={%s}.", subreddits.size(), mAfter);
     }
 
-    private class ResponseListener implements Response.Listener<SubredditListingWrapper>,
-            Response.ErrorListener {
-
-        @Override
-        public void onResponse(SubredditListingWrapper subredditListingWrapper) {
-            SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
-            List<Subreddit> subreddits = new ArrayList<>(
-                    subredditWrapperListing.getChildren().size());
-
-            for (SubredditWrapper subredditWrapper : subredditWrapperListing
-                    .getChildren()) {
-                subreddits.add(subredditWrapper.getData());
-            }
-
-            mAfter = subredditWrapperListing.getAfter();
-
-            if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
-                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mImageLoader,
-                        subreddits, getSubredditViewClickListener());
-                mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
-            } else {
-                int position = mSubredditRecyclerViewAdapter.getItemCount();
-                mSubredditRecyclerViewAdapter.addItems(subreddits, position);
-            }
-
-            mSwipeRefreshLayout.setRefreshing(false);
-
-            Timber.d("Fetched %d items with after={%s}.", subreddits.size(), mAfter);
-        }
-
-        @Override
-        public void onErrorResponse(VolleyError volleyError) {
-            Timber.e(volleyError, "Listing request failed");
-            Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
+    @Override
+    public void onErrorResponse(VolleyError volleyError) {
+        Timber.e(volleyError, "Listing request failed");
+        Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
+        mSwipeRefreshLayout.setRefreshing(false);
+        mListingRequest = null;
     }
 
-    private class SubredditViewClickListener implements SubredditRecyclerViewAdapter.ClickListener {
+    @Override
+    public void onClickCommentsButton(Subreddit subreddit) {
+        Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
+        Timber.d("Clicked comments button for %s", subreddit);
+        WebActivity.startActivity(getActivity(), uri);
+    }
 
-        @Override
-        public void onClickCommentsButton(Subreddit subreddit) {
-            Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
-            Timber.d("Clicked comments button for %s", subreddit);
-            WebActivity.startActivity(getActivity(), uri);
-        }
+    @Override
+    public void onClickMainContentArea(Subreddit subreddit) {
+        Timber.d("Clicked main content area for %s", subreddit.getUrl());
+        WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
+    }
 
-        @Override
-        public void onClickMainContentArea(Subreddit subreddit) {
-            Timber.d("Clicked main content area for %s", subreddit.getUrl());
-            WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
-        }
-
-        @Override
-        public boolean onLongClickMainContentArea(Subreddit subreddit) {
-            Timber.d("Long clicked %s", subreddit.getUrl());
-            return true;
-        }
+    @Override
+    public boolean onLongClickMainContentArea(Subreddit subreddit) {
+        Timber.d("Long clicked %s", subreddit.getUrl());
+        return true;
     }
 
     private class OnScrollListener extends RecyclerView.OnScrollListener {
