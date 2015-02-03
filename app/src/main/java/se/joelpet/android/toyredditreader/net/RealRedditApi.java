@@ -1,12 +1,10 @@
 package se.joelpet.android.toyredditreader.net;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import javax.inject.Inject;
 
 import se.joelpet.android.toyredditreader.VolleySingleton;
-import se.joelpet.android.toyredditreader.dagger.ForApplication;
 import se.joelpet.android.toyredditreader.domain.SubredditListingWrapper;
 import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
@@ -17,12 +15,12 @@ import static com.android.volley.Response.Listener;
 
 public class RealRedditApi implements RedditApi {
 
-    @Inject
-    @ForApplication
-    Context mApplicationContext;
+    private VolleySingleton mVolleySingleton;
 
-    // TODO: @Inject
-    VolleySingleton mVolleySingleton;
+    @Inject
+    public RealRedditApi(VolleySingleton volleySingleton) {
+        mVolleySingleton = volleySingleton;
+    }
 
     @Override
     public ListingRequest<SubredditListingWrapper> getSubredditListing(String after,
@@ -37,7 +35,7 @@ public class RealRedditApi implements RedditApi {
                 SubredditListingWrapper.class, null, listener, errorListener);
         request.setTag(SubredditListingFragment.class.getName());
 
-        VolleySingleton.getInstance(mApplicationContext).addToRequestQueue(request);
+        mVolleySingleton.addToRequestQueue(request);
         Timber.d("Added listing request to queue: ", request);
 
         return request;

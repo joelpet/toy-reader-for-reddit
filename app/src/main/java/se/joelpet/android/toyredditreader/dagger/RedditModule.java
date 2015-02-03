@@ -1,7 +1,5 @@
 package se.joelpet.android.toyredditreader.dagger;
 
-import android.content.Context;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -31,13 +29,13 @@ public class RedditModule {
     /**
      * Allow the application context to be injected but require that it be annotated with
      * {@link ForApplication @Annotation} to explicitly differentiate it from an activity context.
+     *
+     * @Provides
+     * @Singleton
+     * @ForApplication Context provideApplicationContext() {
+     * return mRedditApp;
+     * }
      */
-    @Provides
-    @Singleton
-    @ForApplication
-    Context provideApplicationContext() {
-        return mRedditApp;
-    }
 
     @Provides
     @Singleton
@@ -46,8 +44,8 @@ public class RedditModule {
     }
 
     @Provides
-    RedditApi provideRedditApi() {
-        return new RealRedditApi();
+    RedditApi provideRedditApi(VolleySingleton volleySingleton) {
+        return new RealRedditApi(volleySingleton);
     }
 
 }
