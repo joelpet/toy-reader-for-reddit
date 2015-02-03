@@ -10,4 +10,6 @@ public interface RedditApi {
 
     ListingRequest<SubredditListingWrapper> getSubredditListing(String after,
             Listener<SubredditListingWrapper> listener, ErrorListener errorListener);
+
+    void cancelAll(String tag);
 }

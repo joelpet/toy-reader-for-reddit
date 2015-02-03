@@ -1,5 +1,7 @@
 package se.joelpet.android.toyredditreader.dagger;
 
+import com.android.volley.toolbox.ImageLoader;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -41,6 +43,12 @@ public class RedditModule {
     @Singleton
     VolleySingleton provideVolleySingleton() {
         return VolleySingleton.getInstance(mRedditApp);
+    }
+
+    @Provides
+    @Singleton
+    ImageLoader provideImageLoader(VolleySingleton volleySingleton) {
+        return volleySingleton.getImageLoader();
     }
 
     @Provides

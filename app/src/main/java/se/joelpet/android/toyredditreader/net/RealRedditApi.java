@@ -40,4 +40,9 @@ public class RealRedditApi implements RedditApi {
 
         return request;
     }
+
+    @Override
+    public void cancelAll(String tag) {
+        mVolleySingleton.getRequestQueue().cancelAll(tag);
+    }
 }

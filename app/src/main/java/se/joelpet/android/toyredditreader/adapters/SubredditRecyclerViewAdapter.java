@@ -1,5 +1,6 @@
 package se.joelpet.android.toyredditreader.adapters;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import android.content.Context;
@@ -16,7 +17,6 @@ import java.util.regex.Pattern;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
-import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.domain.Subreddit;
 import timber.log.Timber;
 
@@ -25,15 +25,15 @@ public class SubredditRecyclerViewAdapter
 
     public static final Pattern VALID_URL_PATTERN = Pattern.compile("^https?://.*$");
 
-    private VolleySingleton mVolleySingleton;
+    private final ImageLoader mImageLoader;
 
     private final List<Subreddit> mSubreddits;
 
     private ClickListener mClickListener;
 
-    public SubredditRecyclerViewAdapter(VolleySingleton volleySingleton, List<Subreddit> subreddits,
+    public SubredditRecyclerViewAdapter(ImageLoader imageLoader, List<Subreddit> subreddits,
             ClickListener clickListener) {
-        mVolleySingleton = volleySingleton;
+        mImageLoader = imageLoader;
         mSubreddits = subreddits;
         mClickListener = clickListener;
     }
@@ -57,7 +57,7 @@ public class SubredditRecyclerViewAdapter
 
         if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
             Timber.d("Settings thumbnail image: %s", subreddit.getThumbnail());
-            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), mVolleySingleton.getImageLoader());
+            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), mImageLoader);
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
             vh.thumbnail.setVisibility(View.GONE);

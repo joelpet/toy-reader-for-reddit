@@ -2,6 +2,7 @@ package se.joelpet.android.toyredditreader.fragments;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +24,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
-import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.activities.WebActivity;
 import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.domain.Subreddit;
@@ -49,7 +49,7 @@ public class SubredditListingFragment extends BaseFragment
     protected RedditApi mRedditApi;
 
     @Inject
-    protected VolleySingleton mVolleySingleton;
+    protected ImageLoader mImageLoader;
 
     private ListingRequest<SubredditListingWrapper> mListingRequest;
 
@@ -97,8 +97,7 @@ public class SubredditListingFragment extends BaseFragment
     @Override
     public void onStop() {
         super.onStop();
-        // TODO Offer from API
-        mVolleySingleton.getRequestQueue().cancelAll(TAG);
+        mRedditApi.cancelAll(TAG);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class SubredditListingFragment extends BaseFragment
             mAfter = subredditWrapperListing.getAfter();
 
             if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
-                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mVolleySingleton,
+                mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mImageLoader,
                         subreddits, getSubredditViewClickListener());
                 mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
             } else {
