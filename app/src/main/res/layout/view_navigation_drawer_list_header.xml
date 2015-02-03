@@ -33,7 +33,7 @@
         android:layout_alignStart="@id/app_name_text_view"
         android:layout_below="@id/icon_image_view"
         android:layout_margin="4dp"
-        android:text="username"
+        android:text="@string/navigation_drawer_header_not_signed_in"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="@color/light_blue_50" />
 
