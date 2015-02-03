@@ -18,7 +18,9 @@ import se.joelpet.android.toyredditreader.R;
 public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     @InjectView(R.id.list_view)
-    ListView mListView;
+    protected ListView mListView;
+
+    private View mListViewHeader;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -45,6 +47,9 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
+        mListViewHeader = inflater
+                .inflate(R.layout.view_navigation_drawer_list_header, mListView, false);
+        mListView.addHeaderView(mListViewHeader);
         return view;
     }
 
