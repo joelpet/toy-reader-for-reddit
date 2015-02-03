@@ -47,9 +47,17 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
+
         mListViewHeader = inflater
                 .inflate(R.layout.view_navigation_drawer_list_header, mListView, false);
+
         mListView.addHeaderView(mListViewHeader);
+        mListView.addHeaderView(
+                inflater.inflate(R.layout.view_navigation_drawer_list_header_space, mListView,
+                        false));
+        mListView.addFooterView(
+                inflater.inflate(R.layout.view_navigation_drawer_list_footer, mListView, false));
+
         return view;
     }
 

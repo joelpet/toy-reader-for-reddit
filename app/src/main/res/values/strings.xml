@@ -9,10 +9,12 @@
     <string name="title_activity_web">WebActivity</string>
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
+    <string name="navigation_drawer_item_settings">Settings</string>
 
     <string-array name="navigation_drawer_list_items">
-        <item>Browse</item>
-        <item>Settings</item>
+        <item>Everything</item>
+        <item>Subscribed</item>
+        <item>Saved</item>
     </string-array>
 
 </resources>
