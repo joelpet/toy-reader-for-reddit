@@ -5,6 +5,7 @@
     android:minHeight="?attr/listPreferredItemHeight">
 
     <com.devspark.robototextview.widget.RobotoButton
+        android:id="@+id/navigation_drawer_list_footer_settings_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"

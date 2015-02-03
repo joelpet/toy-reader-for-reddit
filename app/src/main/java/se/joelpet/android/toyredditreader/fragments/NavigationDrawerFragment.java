@@ -14,13 +14,13 @@ import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
+import timber.log.Timber;
 
-public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener,
+        View.OnClickListener {
 
     @InjectView(R.id.list_view)
     protected ListView mListView;
-
-    private View mListViewHeader;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -48,15 +48,18 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
 
-        mListViewHeader = inflater
+        View listViewHeader = inflater
                 .inflate(R.layout.view_navigation_drawer_list_header, mListView, false);
-
-        mListView.addHeaderView(mListViewHeader);
+        mListView.addHeaderView(listViewHeader);
         mListView.addHeaderView(
                 inflater.inflate(R.layout.view_navigation_drawer_list_header_space, mListView,
                         false));
-        mListView.addFooterView(
-                inflater.inflate(R.layout.view_navigation_drawer_list_footer, mListView, false));
+
+        View listViewFooter = inflater
+                .inflate(R.layout.view_navigation_drawer_list_footer, mListView, false);
+        listViewFooter.findViewById(R.id.navigation_drawer_list_footer_settings_button)
+                .setOnClickListener(this);
+        mListView.addFooterView(listViewFooter);
 
         return view;
     }
@@ -69,13 +72,31 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mNavigationItemClickListener.onNavigationItemClick(position);
+        Timber.i("Clicked on item with position: %d", position);
+        if (position < mListView.getHeaderViewsCount()) {
+            return;
+        }
+        int menuItem = position - mListView.getHeaderViewsCount();
+        mNavigationItemClickListener.onNavigationItemClick(menuItem);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Timber.i("Clicked on view: %s", v);
+        switch (v.getId()) {
+            case R.id.navigation_drawer_list_footer_settings_button:
+                mNavigationItemClickListener
+                        .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
+                break;
+        }
     }
 
     public interface NavigationItemClickListener {
 
-        public static final int ITEM_BROWSE = 0;
-        public static final int ITEM_SETTINGS = 1;
+        public static final int ITEM_EVERYTHING = 0;
+        public static final int ITEM_SUBSCRIBED = 1;
+        public static final int ITEM_SAVED = 2;
+        public static final int ITEM_SETTINGS = 3;
 
         void onNavigationItemClick(int item);
     }

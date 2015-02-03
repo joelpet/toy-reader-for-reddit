@@ -94,14 +94,23 @@ public class SubredditActivity extends ActionBarActivity
 
     @Override
     public void onNavigationItemClick(int item) {
+        // TODO: Implement when required fragments and activities have been implemented
         switch (item) {
-            case ITEM_BROWSE:
-                Toast.makeText(this, "Clicked browse!", Toast.LENGTH_SHORT).show();
+            case ITEM_EVERYTHING:
+                Toast.makeText(this, "Everything", Toast.LENGTH_SHORT).show();
+                break;
+            case ITEM_SUBSCRIBED:
+                Toast.makeText(this, "Subscribed", Toast.LENGTH_SHORT).show();
+                break;
+            case ITEM_SAVED:
+                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
                 break;
             case ITEM_SETTINGS:
-                // TODO: Launch Settings activity (which does not have a drawer)
-                Toast.makeText(this, "Clicked settings!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
                 break;
+            default:
+                return;
         }
+        mDrawerLayout.closeDrawers();
     }
 }
