@@ -19,16 +19,20 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
             android:foreground="?android:windowContentOverlay" />
-
     </FrameLayout>
 
-    <fragment
-        android:id="@+id/navigation_drawer_fragment"
-        android:name="se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment"
+    <FrameLayout
+        android:id="@+id/navigation_drawer_fragment_container"
         android:layout_width="240dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start">
 
+        <fragment
+            android:id="@+id/navigation_drawer_fragment"
+            android:name="se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </android.support.v4.widget.DrawerLayout>
 
 

@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -21,12 +22,15 @@ public class SubredditActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationItemClickListener {
 
     @InjectView(R.id.toolbar)
-    Toolbar mToolbar;
+    protected Toolbar mToolbar;
 
     @InjectView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    protected DrawerLayout mDrawerLayout;
 
-    ActionBarDrawerToggle mDrawerToggle;
+    @InjectView(R.id.navigation_drawer_fragment_container)
+    protected ViewGroup mNavigationDrawerFragmentContainer;
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,15 @@ public class SubredditActivity extends ActionBarActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(mNavigationDrawerFragmentContainer)) {
+            mDrawerLayout.closeDrawers();
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
