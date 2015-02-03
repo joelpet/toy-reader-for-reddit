@@ -1,5 +1,8 @@
 package se.joelpet.android.toyredditreader.adapters;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -8,15 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
-
 import java.util.List;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
-import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.domain.Subreddit;
 import timber.log.Timber;
 
@@ -25,11 +25,15 @@ public class SubredditRecyclerViewAdapter
 
     public static final Pattern VALID_URL_PATTERN = Pattern.compile("^https?://.*$");
 
+    private final ImageLoader mImageLoader;
+
     private final List<Subreddit> mSubreddits;
 
     private ClickListener mClickListener;
 
-    public SubredditRecyclerViewAdapter(List<Subreddit> subreddits, ClickListener clickListener) {
+    public SubredditRecyclerViewAdapter(ImageLoader imageLoader, List<Subreddit> subreddits,
+            ClickListener clickListener) {
+        mImageLoader = imageLoader;
         mSubreddits = subreddits;
         mClickListener = clickListener;
     }
@@ -46,8 +50,6 @@ public class SubredditRecyclerViewAdapter
     public void onBindViewHolder(ViewHolder vh, final int i) {
         Context context = vh.root.getContext();
         Subreddit subreddit = mSubreddits.get(i);
-        VolleySingleton volleySingleton = VolleySingleton
-                .getInstance(context.getApplicationContext());
 
         vh.domain.setText(subreddit.getDomain());
         vh.subreddit.setText("/r/" + subreddit.getSubreddit());
@@ -55,7 +57,7 @@ public class SubredditRecyclerViewAdapter
 
         if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
             Timber.d("Settings thumbnail image: %s", subreddit.getThumbnail());
-            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), volleySingleton.getImageLoader());
+            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), mImageLoader);
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
             vh.thumbnail.setVisibility(View.GONE);
@@ -105,6 +107,7 @@ public class SubredditRecyclerViewAdapter
     }
 
     public static interface ClickListener {
+
         void onClickCommentsButton(Subreddit subreddit);
 
         void onClickMainContentArea(Subreddit subreddit);
