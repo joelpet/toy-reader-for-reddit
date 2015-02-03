@@ -78,6 +78,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
         }
         int menuItem = position - mListView.getHeaderViewsCount();
         mNavigationItemClickListener.onNavigationItemClick(menuItem);
+        // TODO: set item checked
     }
 
     @Override

@@ -51,6 +51,8 @@ public class SubredditActivity extends ActionBarActivity
                     .add(R.id.container, new SubredditListingFragment())
                     .commit();
         }
+
+        onNavigationItemClick(ITEM_EVERYTHING);
     }
 
     @Override
@@ -97,13 +99,16 @@ public class SubredditActivity extends ActionBarActivity
         // TODO: Implement when required fragments and activities have been implemented
         switch (item) {
             case ITEM_EVERYTHING:
-                Toast.makeText(this, "Everything", Toast.LENGTH_SHORT).show();
+                mToolbar.setTitle("Everything");
+                mToolbar.setSubtitle("from all subreddits");
                 break;
             case ITEM_SUBSCRIBED:
-                Toast.makeText(this, "Subscribed", Toast.LENGTH_SHORT).show();
+                mToolbar.setTitle("Subscribed");
+                mToolbar.setSubtitle("your frontpage");
                 break;
             case ITEM_SAVED:
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+                mToolbar.setTitle("Saved");
+                mToolbar.setSubtitle(null);
                 break;
             case ITEM_SETTINGS:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
