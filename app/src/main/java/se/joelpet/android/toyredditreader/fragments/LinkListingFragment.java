@@ -22,18 +22,18 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.WebActivity;
-import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
+import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import se.joelpet.android.toyredditreader.net.RedditApi;
 import timber.log.Timber;
 
-public class SubredditListingFragment extends BaseFragment
+public class LinkListingFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener, Response.ErrorListener,
-        SubredditRecyclerViewAdapter.ClickListener, Response.Listener<Listing<Link>> {
+        LinkListingRecyclerViewAdapter.ClickListener, Response.Listener<Listing<Link>> {
 
-    public static final String TAG = SubredditListingFragment.class.getName();
+    public static final String TAG = LinkListingFragment.class.getName();
 
     @InjectView(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
@@ -55,9 +55,9 @@ public class SubredditListingFragment extends BaseFragment
 
     private LinearLayoutManager mLinearLayoutManager;
 
-    private SubredditRecyclerViewAdapter mSubredditRecyclerViewAdapter;
+    private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
 
-    public SubredditListingFragment() {
+    public LinkListingFragment() {
     }
 
     @Override
@@ -114,13 +114,13 @@ public class SubredditListingFragment extends BaseFragment
     public void onResponse(Listing<Link> listing) {
         mAfter = listing.getAfter();
 
-        if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
-            mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mImageLoader,
+        if (mLinkListingRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
+            mLinkListingRecyclerViewAdapter = new LinkListingRecyclerViewAdapter(mImageLoader,
                     listing.getChildren(), this);
-            mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
+            mRecyclerView.setAdapter(mLinkListingRecyclerViewAdapter);
         } else {
-            int position = mSubredditRecyclerViewAdapter.getItemCount();
-            mSubredditRecyclerViewAdapter.addItems(listing.getChildren(), position);
+            int position = mLinkListingRecyclerViewAdapter.getItemCount();
+            mLinkListingRecyclerViewAdapter.addItems(listing.getChildren(), position);
         }
 
         mSwipeRefreshLayout.setRefreshing(false);

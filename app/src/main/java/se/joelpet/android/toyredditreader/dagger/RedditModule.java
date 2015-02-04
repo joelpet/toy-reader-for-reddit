@@ -8,16 +8,16 @@ import dagger.Module;
 import dagger.Provides;
 import se.joelpet.android.toyredditreader.RedditApp;
 import se.joelpet.android.toyredditreader.VolleySingleton;
-import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
-import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
+import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapter;
+import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
 import se.joelpet.android.toyredditreader.net.RealRedditApi;
 import se.joelpet.android.toyredditreader.net.RedditApi;
 
 @Module(
         injects = {
-                SubredditListingFragment.class,
+                LinkListingFragment.class,
                 RealRedditApi.class,
-                SubredditRecyclerViewAdapter.class
+                LinkListingRecyclerViewAdapter.class
         }
 )
 public class RedditModule {

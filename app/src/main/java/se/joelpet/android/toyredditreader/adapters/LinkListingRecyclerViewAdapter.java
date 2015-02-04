@@ -20,8 +20,8 @@ import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.domain.Link;
 import timber.log.Timber;
 
-public class SubredditRecyclerViewAdapter
-        extends RecyclerView.Adapter<SubredditRecyclerViewAdapter.ViewHolder> {
+public class LinkListingRecyclerViewAdapter
+        extends RecyclerView.Adapter<LinkListingRecyclerViewAdapter.ViewHolder> {
 
     public static final Pattern VALID_URL_PATTERN = Pattern.compile("^https?://.*$");
 
@@ -31,7 +31,7 @@ public class SubredditRecyclerViewAdapter
 
     private ClickListener mClickListener;
 
-    public SubredditRecyclerViewAdapter(ImageLoader imageLoader, List<Link> links,
+    public LinkListingRecyclerViewAdapter(ImageLoader imageLoader, List<Link> links,
             ClickListener clickListener) {
         mImageLoader = imageLoader;
         mLinks = links;

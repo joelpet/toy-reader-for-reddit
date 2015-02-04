@@ -14,10 +14,10 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
 import se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment;
-import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
 
-public class SubredditActivity extends BaseActivity
+public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationItemClickListener {
 
     @InjectView(R.id.toolbar)
@@ -47,7 +47,7 @@ public class SubredditActivity extends BaseActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new SubredditListingFragment())
+                    .add(R.id.container, new LinkListingFragment())
                     .commit();
         }
 
