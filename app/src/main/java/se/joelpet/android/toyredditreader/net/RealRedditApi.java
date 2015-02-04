@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import javax.inject.Inject;
 
 import se.joelpet.android.toyredditreader.VolleySingleton;
-import se.joelpet.android.toyredditreader.domain.SubredditListingWrapper;
-import se.joelpet.android.toyredditreader.fragments.SubredditListingFragment;
+import se.joelpet.android.toyredditreader.domain.Listing;
+import se.joelpet.android.toyredditreader.domain.Thing;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import timber.log.Timber;
 
@@ -23,17 +23,15 @@ public class RealRedditApi implements RedditApi {
     }
 
     @Override
-    public ListingRequest<SubredditListingWrapper> getSubredditListing(String after,
-            Listener<SubredditListingWrapper> listener, ErrorListener errorListener) {
+    public <T extends Thing> ListingRequest<T> getListing(String after,
+            Listener<Listing<T>> listener, ErrorListener errorListener) {
         String url = "http://www.reddit.com/hot.json";
 
         if (!TextUtils.isEmpty(after)) {
             url += "?after=" + after;
         }
 
-        ListingRequest<SubredditListingWrapper> request = new ListingRequest<>(url,
-                SubredditListingWrapper.class, null, listener, errorListener);
-        request.setTag(SubredditListingFragment.class.getName());
+        ListingRequest<T> request = new ListingRequest<>(url, null, listener, errorListener);
 
         mVolleySingleton.addToRequestQueue(request);
         Timber.d("Added listing request to queue: ", request);

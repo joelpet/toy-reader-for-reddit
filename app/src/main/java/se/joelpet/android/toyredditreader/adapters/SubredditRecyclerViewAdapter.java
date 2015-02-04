@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
-import se.joelpet.android.toyredditreader.domain.Subreddit;
+import se.joelpet.android.toyredditreader.domain.Link;
 import timber.log.Timber;
 
 public class SubredditRecyclerViewAdapter
@@ -27,14 +27,14 @@ public class SubredditRecyclerViewAdapter
 
     private final ImageLoader mImageLoader;
 
-    private final List<Subreddit> mSubreddits;
+    private final List<Link> mLinks;
 
     private ClickListener mClickListener;
 
-    public SubredditRecyclerViewAdapter(ImageLoader imageLoader, List<Subreddit> subreddits,
+    public SubredditRecyclerViewAdapter(ImageLoader imageLoader, List<Link> links,
             ClickListener clickListener) {
         mImageLoader = imageLoader;
-        mSubreddits = subreddits;
+        mLinks = links;
         mClickListener = clickListener;
     }
 
@@ -49,70 +49,70 @@ public class SubredditRecyclerViewAdapter
     @Override
     public void onBindViewHolder(ViewHolder vh, final int i) {
         Context context = vh.root.getContext();
-        Subreddit subreddit = mSubreddits.get(i);
+        Link link = mLinks.get(i);
 
-        vh.domain.setText(subreddit.getDomain());
-        vh.subreddit.setText("/r/" + subreddit.getSubreddit());
-        vh.title.setText(subreddit.getTitle());
+        vh.domain.setText(link.getDomain());
+        vh.subreddit.setText("/r/" + link.getSubreddit());
+        vh.title.setText(link.getTitle());
 
-        if (VALID_URL_PATTERN.matcher(subreddit.getThumbnail()).matches()) {
-            Timber.d("Settings thumbnail image: %s", subreddit.getThumbnail());
-            vh.thumbnail.setImageUrl(subreddit.getThumbnail(), mImageLoader);
+        if (VALID_URL_PATTERN.matcher(link.getThumbnail()).matches()) {
+            Timber.d("Settings thumbnail image: %s", link.getThumbnail());
+            vh.thumbnail.setImageUrl(link.getThumbnail(), mImageLoader);
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
             vh.thumbnail.setVisibility(View.GONE);
         }
 
         CharSequence relativeDateTimeString = DateUtils.getRelativeDateTimeString(context,
-                subreddit.getCreatedUtc().longValue() * DateUtils.SECOND_IN_MILLIS,
+                link.getCreatedUtc().longValue() * DateUtils.SECOND_IN_MILLIS,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
         String submittedInfoText = context
                 .getString(R.string.submitted_info_text, relativeDateTimeString,
-                        subreddit.getAuthor());
+                        link.getAuthor());
         vh.submittedInfoText.setText(submittedInfoText);
 
         vh.commentsButton
-                .setText(context.getString(R.string.num_comments, subreddit.getNumComments()));
+                .setText(context.getString(R.string.num_comments, link.getNumComments()));
 
         vh.commentsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClickListener.onClickCommentsButton(mSubreddits.get(i));
+                mClickListener.onClickCommentsButton(mLinks.get(i));
             }
         });
 
         vh.mainContentArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClickListener.onClickMainContentArea(mSubreddits.get(i));
+                mClickListener.onClickMainContentArea(mLinks.get(i));
             }
         });
 
         vh.mainContentArea.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                return mClickListener.onLongClickMainContentArea(mSubreddits.get(i));
+                return mClickListener.onLongClickMainContentArea(mLinks.get(i));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mSubreddits.size();
+        return mLinks.size();
     }
 
-    public void addItems(List<Subreddit> subreddits, int position) {
-        mSubreddits.addAll(position, subreddits);
-        notifyItemRangeInserted(position, subreddits.size());
+    public void addItems(List<Link> links, int position) {
+        mLinks.addAll(position, links);
+        notifyItemRangeInserted(position, links.size());
     }
 
     public static interface ClickListener {
 
-        void onClickCommentsButton(Subreddit subreddit);
+        void onClickCommentsButton(Link link);
 
-        void onClickMainContentArea(Subreddit subreddit);
+        void onClickMainContentArea(Link link);
 
-        boolean onLongClickMainContentArea(Subreddit subreddit);
+        boolean onLongClickMainContentArea(Link link);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

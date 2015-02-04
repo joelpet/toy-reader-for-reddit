@@ -16,9 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
@@ -26,17 +23,15 @@ import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.WebActivity;
 import se.joelpet.android.toyredditreader.adapters.SubredditRecyclerViewAdapter;
-import se.joelpet.android.toyredditreader.domain.Subreddit;
-import se.joelpet.android.toyredditreader.domain.SubredditListingWrapper;
-import se.joelpet.android.toyredditreader.domain.SubredditWrapper;
-import se.joelpet.android.toyredditreader.domain.SubredditWrapperListing;
+import se.joelpet.android.toyredditreader.domain.Link;
+import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import se.joelpet.android.toyredditreader.net.RedditApi;
 import timber.log.Timber;
 
 public class SubredditListingFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener, Response.ErrorListener,
-        Response.Listener<SubredditListingWrapper>, SubredditRecyclerViewAdapter.ClickListener {
+        SubredditRecyclerViewAdapter.ClickListener, Response.Listener<Listing<Link>> {
 
     public static final String TAG = SubredditListingFragment.class.getName();
 
@@ -53,7 +48,7 @@ public class SubredditListingFragment extends BaseFragment
     protected ImageLoader mImageLoader;
 
     /** The currently (only) ongoing listing request, if any. */
-    private ListingRequest<SubredditListingWrapper> mListingRequest;
+    private ListingRequest<Link> mListingRequest;
 
     /** The "after" portion received in the response to the last made request. */
     private String mAfter;
@@ -108,36 +103,30 @@ public class SubredditListingFragment extends BaseFragment
     }
 
     private void queueListingRequest() {
-        mListingRequest = mRedditApi.getSubredditListing(mAfter, this, this);
+        mListingRequest = mRedditApi.getListing(mAfter, this, this);
+        mListingRequest.setTag(TAG);
     }
 
     /**
      * Callback for successful Subreddit Listing GET request.
      */
     @Override
-    public void onResponse(SubredditListingWrapper subredditListingWrapper) {
-        SubredditWrapperListing subredditWrapperListing = subredditListingWrapper.getData();
-        List<Subreddit> subreddits = new ArrayList<>(subredditWrapperListing.getChildren().size());
-
-        for (SubredditWrapper subredditWrapper : subredditWrapperListing.getChildren()) {
-            subreddits.add(subredditWrapper.getData());
-        }
-
-        mAfter = subredditWrapperListing.getAfter();
+    public void onResponse(Listing<Link> listing) {
+        mAfter = listing.getAfter();
 
         if (mSubredditRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
             mSubredditRecyclerViewAdapter = new SubredditRecyclerViewAdapter(mImageLoader,
-                    subreddits, this);
+                    listing.getChildren(), this);
             mRecyclerView.setAdapter(mSubredditRecyclerViewAdapter);
         } else {
             int position = mSubredditRecyclerViewAdapter.getItemCount();
-            mSubredditRecyclerViewAdapter.addItems(subreddits, position);
+            mSubredditRecyclerViewAdapter.addItems(listing.getChildren(), position);
         }
 
         mSwipeRefreshLayout.setRefreshing(false);
         mListingRequest = null;
 
-        Timber.d("Fetched %d items with after={%s}.", subreddits.size(), mAfter);
+        Timber.d("Fetched %d items with after={%s}.", listing.getChildren().size(), mAfter);
     }
 
     @Override
@@ -149,21 +138,21 @@ public class SubredditListingFragment extends BaseFragment
     }
 
     @Override
-    public void onClickCommentsButton(Subreddit subreddit) {
-        Uri uri = Uri.parse("http://i.reddit.com" + subreddit.getPermalink());
-        Timber.d("Clicked comments button for %s", subreddit);
+    public void onClickCommentsButton(Link link) {
+        Uri uri = Uri.parse("http://i.reddit.com" + link.getPermalink());
+        Timber.d("Clicked comments button for %s", link);
         WebActivity.startActivity(getActivity(), uri);
     }
 
     @Override
-    public void onClickMainContentArea(Subreddit subreddit) {
-        Timber.d("Clicked main content area for %s", subreddit.getUrl());
-        WebActivity.startActivity(getActivity(), Uri.parse(subreddit.getUrl()));
+    public void onClickMainContentArea(Link link) {
+        Timber.d("Clicked main content area for %s", link.getUrl());
+        WebActivity.startActivity(getActivity(), Uri.parse(link.getUrl()));
     }
 
     @Override
-    public boolean onLongClickMainContentArea(Subreddit subreddit) {
-        Timber.d("Long clicked %s", subreddit.getUrl());
+    public boolean onLongClickMainContentArea(Link link) {
+        Timber.d("Long clicked %s", link.getUrl());
         return true;
     }
 
