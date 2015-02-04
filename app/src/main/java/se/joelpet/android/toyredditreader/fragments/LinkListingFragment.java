@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import javax.inject.Inject;
 
@@ -46,6 +47,13 @@ public class LinkListingFragment extends BaseFragment
     public static final String ARG_SORT_HOT = "hot";
 
     public static final String ARG_SORT_NEW = "new";
+
+    public static final int VIEW_SWITCHER_CHILD_LOAD_INDICATOR = 0;
+
+    public static final int VIEW_SWITCHER_CHILD_RECYCLER_VIEW = 1;
+
+    @InjectView(R.id.root_view_switcher)
+    protected ViewSwitcher mRootViewSwitcher;
 
     @InjectView(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
@@ -149,6 +157,10 @@ public class LinkListingFragment extends BaseFragment
 
         mSwipeRefreshLayout.setRefreshing(false);
         mListingRequest = null;
+
+        if (mRootViewSwitcher.getDisplayedChild() == VIEW_SWITCHER_CHILD_LOAD_INDICATOR) {
+            mRootViewSwitcher.showNext();
+        }
 
         Timber.d("Fetched %d items with after={%s}.", listing.getChildren().size(), mAfter);
     }
