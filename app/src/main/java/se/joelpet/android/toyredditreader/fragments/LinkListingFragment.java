@@ -35,6 +35,18 @@ public class LinkListingFragment extends BaseFragment
 
     public static final String TAG = LinkListingFragment.class.getName();
 
+    public static final String ARGUMENT_LISTING = "argument_listing";
+
+    public static final String ARG_LISTING_EVERYTHING = "r/all/";
+
+    public static final String ARG_LISTING_SUBSCRIBED = "/";
+
+    public static final String ARGUMENT_SORT = "argument_sort";
+
+    public static final String ARG_SORT_HOT = "hot";
+
+    public static final String ARG_SORT_NEW = "new";
+
     @InjectView(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -56,6 +68,15 @@ public class LinkListingFragment extends BaseFragment
     private LinearLayoutManager mLinearLayoutManager;
 
     private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
+
+    public static LinkListingFragment newInstance(String listing, String sort) {
+        LinkListingFragment fragment = new LinkListingFragment();
+        Bundle arguments = new Bundle();
+        fragment.setArguments(arguments);
+        arguments.putString(ARGUMENT_LISTING, listing);
+        arguments.putString(ARGUMENT_SORT, sort);
+        return fragment;
+    }
 
     public LinkListingFragment() {
     }
@@ -103,8 +124,10 @@ public class LinkListingFragment extends BaseFragment
     }
 
     private void queueListingRequest() {
-        mListingRequest = mRedditApi.getListing(mAfter, this, this);
-        mListingRequest.setTag(TAG);
+        String listingArgument = getArguments().getString(ARGUMENT_LISTING);
+        String sortArgument = getArguments().getString(ARGUMENT_SORT);
+        String path = listingArgument + sortArgument;
+        mListingRequest = mRedditApi.getLinkListing(path, mAfter, this, this, TAG);
     }
 
     /**
@@ -112,6 +135,7 @@ public class LinkListingFragment extends BaseFragment
      */
     @Override
     public void onResponse(Listing<Link> listing) {
+        Timber.d("%s###onResponse(%s)", this, listing);
         mAfter = listing.getAfter();
 
         if (mLinkListingRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {

@@ -9,8 +9,8 @@ import static com.android.volley.Response.Listener;
 
 public interface RedditApi {
 
-    <T extends Thing> ListingRequest<T> getListing(String after, Listener<Listing<T>> listener,
-            ErrorListener errorListener);
+    <T extends Thing> ListingRequest<T> getLinkListing(String path, String after,
+            Listener<Listing<T>> listener, ErrorListener errorListener, Object tag);
 
-    void cancelAll(String tag);
+    void cancelAll(Object tag);
 }

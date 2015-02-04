@@ -90,4 +90,14 @@ public class Listing<T extends Thing> extends RedditObject implements Serializab
 
         return listing;
     }
+
+    @Override
+    public String toString() {
+        return "Listing{" +
+                "before='" + before + '\'' +
+                ", after='" + after + '\'' +
+                ", modhash='" + modhash + '\'' +
+                ", children=" + children +
+                '}';
+    }
 }

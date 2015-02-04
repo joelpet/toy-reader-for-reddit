@@ -2,6 +2,7 @@ package se.joelpet.android.toyredditreader.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.fragments.BaseFragment;
 import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
 import se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment;
 
@@ -47,11 +49,10 @@ public class MainActivity extends BaseActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new LinkListingFragment())
-                    .commit();
+                    .add(R.id.container, LinkListingFragment.newInstance(
+                            LinkListingFragment.ARG_LISTING_EVERYTHING,
+                            LinkListingFragment.ARG_SORT_HOT)).commit();
         }
-
-        onNavigationItemClick(ITEM_EVERYTHING);
     }
 
     @Override
@@ -95,26 +96,34 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onNavigationItemClick(int item) {
-        // TODO: Implement when required fragments and activities have been implemented
+        Fragment fragment;
         switch (item) {
             case ITEM_EVERYTHING:
                 mToolbar.setTitle("Everything");
                 mToolbar.setSubtitle("from all subreddits");
+                fragment = LinkListingFragment
+                        .newInstance(LinkListingFragment.ARG_LISTING_EVERYTHING,
+                                LinkListingFragment.ARG_SORT_HOT);
                 break;
             case ITEM_SUBSCRIBED:
                 mToolbar.setTitle("Subscribed");
                 mToolbar.setSubtitle("your frontpage");
+                fragment = LinkListingFragment
+                        .newInstance(LinkListingFragment.ARG_LISTING_SUBSCRIBED,
+                                LinkListingFragment.ARG_SORT_HOT);
                 break;
             case ITEM_SAVED:
                 mToolbar.setTitle("Saved");
                 mToolbar.setSubtitle(null);
+                fragment = new BaseFragment();
                 break;
             case ITEM_SETTINGS:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                break;
+                return;
             default:
                 return;
         }
         mDrawerLayout.closeDrawers();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
     }
 }

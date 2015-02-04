@@ -19,6 +19,7 @@ import java.util.Map;
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.domain.RedditObject;
 import se.joelpet.android.toyredditreader.domain.Thing;
+import timber.log.Timber;
 
 public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
 
@@ -46,6 +47,7 @@ public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
 
     @Override
     protected void deliverResponse(Listing<T> response) {
+        Timber.i("Delivering listing response: %s", response);
         mResponseListener.onResponse(response);
     }
 
