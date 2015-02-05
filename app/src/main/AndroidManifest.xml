@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="se.joelpet.android.toyredditreader.activities.SubredditActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,10 +22,10 @@
         <activity
             android:name="se.joelpet.android.toyredditreader.activities.WebActivity"
             android:label="@string/title_activity_web"
-            android:parentActivityName="se.joelpet.android.toyredditreader.activities.SubredditActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="se.joelpet.android.toyredditreader.activities.SubredditActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
     </application>
 

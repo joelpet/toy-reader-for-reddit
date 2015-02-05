@@ -2,11 +2,11 @@ package se.joelpet.android.toyredditreader;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import se.joelpet.android.toyredditreader.activities.SubredditActivity;
+import se.joelpet.android.toyredditreader.activities.MainActivity;
 
-public class SubredditActivityTest extends ActivityInstrumentationTestCase2<SubredditActivity> {
+public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
-    public SubredditActivityTest(Class<SubredditActivity> activityClass) {
+    public MainActivityTest(Class<MainActivity> activityClass) {
         super(activityClass);
     }
 

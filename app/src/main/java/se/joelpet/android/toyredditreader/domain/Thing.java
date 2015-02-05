@@ -1,8 +1,21 @@
 package se.joelpet.android.toyredditreader.domain;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
+import timber.log.Timber;
+
 public class Thing implements Serializable {
+
+    public static final String NAME_KIND = "kind";
+
+    public static final String NAME_DATA = "data";
+
+    public static final String NAME_ID = "id";
+
+    public static final String NAME_NAME = "name";
 
     /**
      * this item's identifier, e.g. "8xwlg"
@@ -19,12 +32,6 @@ public class Thing implements Serializable {
      * examples: Listing, more, t1, t2
      */
     String kind;
-
-    /**
-     * A custom data structure used to hold valuable information. This object's format will follow
-     * the data structure respective of its kind. See below for specific structures.
-     */
-    Object data;
 
     public String getId() {
         return id;
@@ -50,11 +57,22 @@ public class Thing implements Serializable {
         this.kind = kind;
     }
 
-    public Object getData() {
-        return data;
-    }
+    public static <T extends Thing> T fromJson(JSONObject jsonObject) throws JSONException {
+        T thing;
+        String kind = jsonObject.getString(NAME_KIND);
+        JSONObject data = jsonObject.getJSONObject(NAME_DATA);
 
-    public void setData(Object data) {
-        this.data = data;
+        if ("t3".equals(kind)) {
+            thing = (T) Link.fromJson(data);
+        } else {
+            Timber.w("Unrecognized data kind: %s", kind);
+            return null;
+        }
+
+        thing.setId(data.getString(NAME_ID));
+        thing.setName(data.getString(NAME_NAME));
+        thing.setKind(kind);
+
+        return thing;
     }
 }

@@ -1,8 +1,5 @@
 package se.joelpet.android.toyredditreader.gson;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import com.android.volley.AuthFailureError;
@@ -12,35 +9,35 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-public class ListingRequest<T> extends Request<T> {
+import se.joelpet.android.toyredditreader.domain.Listing;
+import se.joelpet.android.toyredditreader.domain.RedditObject;
+import se.joelpet.android.toyredditreader.domain.Thing;
+import timber.log.Timber;
 
-    private final Gson mGson;
-
-    private final Class<T> mClass;
+public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
 
     private final Map<String, String> mHeaders;
 
-    private final Response.Listener<T> mResponseListener;
+    private final Response.Listener<Listing<T>> mResponseListener;
 
     /**
      * Make a GET request and return a parsed object from JSON.
      *
      * @param url     URL of the request to make
-     * @param clazz   Relevant class object, for Gson's reflection
      * @param headers Map of request headers
      */
-    public ListingRequest(String url, Class<T> clazz, Map<String, String> headers,
-            Response.Listener<T> listener, Response.ErrorListener errorListener) {
+    public ListingRequest(String url, Map<String, String> headers,
+            Response.Listener<Listing<T>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, url, errorListener);
-        mClass = clazz;
         mHeaders = headers;
         mResponseListener = listener;
-        mGson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
     }
 
     @Override
@@ -49,23 +46,26 @@ public class ListingRequest<T> extends Request<T> {
     }
 
     @Override
-    protected void deliverResponse(T response) {
+    protected void deliverResponse(Listing<T> response) {
+        Timber.i("Delivering listing response: %s", response);
         mResponseListener.onResponse(response);
     }
 
     @Override
-    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+    protected Response<Listing<T>> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-
-            T listing = mGson.fromJson(json, mClass);
-
+            JSONObject jsonObject = (JSONObject) new JSONTokener(json).nextValue();
+            Listing<T> listing = RedditObject.listingFromJson(jsonObject);
             return Response.success(listing, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JsonSyntaxException e) {
             return Response.error(new ParseError(e));
+        } catch (JSONException e) {
+            return Response.error(new ParseError(e));
         }
     }
+
 }

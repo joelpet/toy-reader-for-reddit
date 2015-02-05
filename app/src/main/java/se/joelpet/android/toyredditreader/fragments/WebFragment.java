@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +23,7 @@ import butterknife.InjectView;
 import se.joelpet.android.toyredditreader.R;
 import timber.log.Timber;
 
-public class WebFragment extends Fragment {
+public class WebFragment extends BaseFragment {
 
     @InjectView(R.id.web_view)
     protected WebView mWebView;
