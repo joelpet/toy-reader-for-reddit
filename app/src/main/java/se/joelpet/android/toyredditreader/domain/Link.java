@@ -17,6 +17,8 @@ public class Link extends Thing {
 
     public static final String NAME_SCORE = "score";
 
+    public static final String NAME_OVER_18 = "over_18";
+
     public static final String NAME_THUMBNAIL = "thumbnail";
 
     public static final String NAME_SUBREDDIT_ID = "subreddit_id";
@@ -47,7 +49,9 @@ public class Link extends Thing {
 
     String author;
 
-    String score;
+    Integer score;
+
+    Boolean over18;
 
     String thumbnail;
 
@@ -101,12 +105,20 @@ public class Link extends Thing {
         this.author = author;
     }
 
-    public String getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(String score) {
+    public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public Boolean getOver18() {
+        return over18;
+    }
+
+    public void setOver18(Boolean over18) {
+        this.over18 = over18;
     }
 
     public String getThumbnail() {
@@ -189,7 +201,8 @@ public class Link extends Thing {
         link.setSelftext(jsonObject.getString(NAME_SELFTEXT));
         link.setId(jsonObject.getString(NAME_ID));
         link.setAuthor(jsonObject.getString(NAME_AUTHOR));
-        link.setScore(jsonObject.getString(NAME_SCORE));
+        link.setScore(jsonObject.getInt(NAME_SCORE));
+        link.setOver18(jsonObject.getBoolean(NAME_OVER_18));
         link.setThumbnail(jsonObject.getString(NAME_THUMBNAIL));
         link.setSubredditId(jsonObject.getString(NAME_SUBREDDIT_ID));
         link.setName(jsonObject.getString(NAME_NAME));
@@ -206,13 +219,14 @@ public class Link extends Thing {
 
     @Override
     public String toString() {
-        return "Subreddit{" +
+        return "Link{" +
                 "domain='" + domain + '\'' +
                 ", subreddit='" + subreddit + '\'' +
                 ", selftext='" + selftext + '\'' +
                 ", id='" + id + '\'' +
                 ", author='" + author + '\'' +
-                ", score='" + score + '\'' +
+                ", score=" + score +
+                ", over18=" + over18 +
                 ", thumbnail='" + thumbnail + '\'' +
                 ", subredditId='" + subredditId + '\'' +
                 ", name='" + name + '\'' +
