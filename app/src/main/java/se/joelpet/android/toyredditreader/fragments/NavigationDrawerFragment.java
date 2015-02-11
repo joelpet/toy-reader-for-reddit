@@ -1,6 +1,7 @@
 package se.joelpet.android.toyredditreader.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,9 @@ import android.widget.ListView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.activities.LoginActivity;
 import timber.log.Timber;
 
 public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener,
@@ -21,6 +24,10 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @InjectView(R.id.list_view)
     protected ListView mListView;
+
+    @Optional
+    @InjectView(R.id.user_text_view)
+    protected View mUserTextView;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -61,6 +68,8 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
                 .setOnClickListener(this);
         mListView.addFooterView(listViewFooter);
 
+        ButterKnife.inject(this, mListView);
+
         return view;
     }
 
@@ -68,6 +77,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
+        mUserTextView.setOnClickListener(this);
     }
 
     @Override
@@ -88,6 +98,9 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
             case R.id.navigation_drawer_list_footer_settings_button:
                 mNavigationItemClickListener
                         .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
+                break;
+            case R.id.user_text_view:
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
         }
     }
