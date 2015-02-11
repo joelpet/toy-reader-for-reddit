@@ -71,6 +71,8 @@ public class LinkListingRecyclerViewAdapter
                         link.getAuthor());
         vh.submittedInfoText.setText(submittedInfoText);
 
+        vh.over18tag.setVisibility(link.getOver18() ? View.VISIBLE : View.GONE);
+
         vh.commentsButton
                 .setText(context.getString(R.string.num_comments, link.getNumComments()));
 
@@ -137,6 +139,9 @@ public class LinkListingRecyclerViewAdapter
 
         @InjectView(R.id.submitted_info_text)
         TextView submittedInfoText;
+
+        @InjectView(R.id.over_18_tag)
+        TextView over18tag;
 
         @InjectView(R.id.comments_button)
         TextView commentsButton;
