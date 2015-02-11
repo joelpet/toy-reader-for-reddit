@@ -10,14 +10,16 @@ import se.joelpet.android.toyredditreader.RedditApp;
 import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
+import se.joelpet.android.toyredditreader.net.FakeRedditApi;
 import se.joelpet.android.toyredditreader.net.RealRedditApi;
 import se.joelpet.android.toyredditreader.net.RedditApi;
 
 @Module(
         injects = {
+                FakeRedditApi.class,
                 LinkListingFragment.class,
+                LinkListingRecyclerViewAdapter.class,
                 RealRedditApi.class,
-                LinkListingRecyclerViewAdapter.class
         }
 )
 public class RedditModule {
@@ -40,7 +42,6 @@ public class RedditModule {
         return mRedditApp;
     }
     */
-
     @Provides
     @Singleton
     VolleySingleton provideVolleySingleton() {
@@ -55,7 +56,7 @@ public class RedditModule {
 
     @Provides
     RedditApi provideRedditApi(VolleySingleton volleySingleton) {
-        return new RealRedditApi(volleySingleton);
+        return true ? new RealRedditApi(volleySingleton) : new FakeRedditApi();
     }
 
 }

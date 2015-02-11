@@ -93,7 +93,6 @@ public class LinkListingFragment extends BaseFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inject(this);
-        queueListingRequest();
     }
 
     @Override
@@ -101,6 +100,7 @@ public class LinkListingFragment extends BaseFragment
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
         ButterKnife.inject(this, view);
+        queueListingRequest();
         return view;
     }
 
