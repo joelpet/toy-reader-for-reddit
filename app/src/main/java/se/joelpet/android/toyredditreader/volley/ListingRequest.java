@@ -1,4 +1,4 @@
-package se.joelpet.android.toyredditreader.gson;
+package se.joelpet.android.toyredditreader.volley;
 
 import com.google.gson.JsonSyntaxException;
 

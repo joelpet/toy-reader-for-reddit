@@ -29,6 +29,7 @@ import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapte
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.net.RedditApi;
+import se.joelpet.android.toyredditreader.volley.ListingRequest;
 import timber.log.Timber;
 
 public class LinkListingFragment extends BaseFragment implements SwipeRefreshLayout

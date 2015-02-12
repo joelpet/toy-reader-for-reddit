@@ -10,10 +10,10 @@ public class AppConnectWebViewClient extends WebViewClient {
 
     public interface OnAppConnectListener {
 
-        void onAllowConnect(String token, String state);
+        void onAllowConnect(String authCode, String state);
 
         // See https://github.com/reddit/reddit/wiki/oauth2#token-retrieval-code-flow
-        void onError(String error);
+        void onErrorConnect(String error);
 
     }
 
@@ -32,13 +32,13 @@ public class AppConnectWebViewClient extends WebViewClient {
             String error = uri.getQueryParameter("error");
 
             if (error != null) {
-                mOnAppConnectListener.onError(error);
+                mOnAppConnectListener.onErrorConnect(error);
                 return true;
             }
 
             String state = uri.getQueryParameter("state");
             String code = uri.getQueryParameter("code");
-            Timber.d("Acquired auth token: %s", code);
+            Timber.d("Acquired auth code: %s", code);
             mOnAppConnectListener.onAllowConnect(code, state);
             return true;
         }

@@ -9,8 +9,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import timber.log.Timber;
-
 public class VolleySingleton {
 
     private static final int LRU_CACHE_MAX_SIZE = 20;
@@ -58,7 +56,6 @@ public class VolleySingleton {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(mContext);
         }
-        Timber.d("Accessing request queue: %s", mRequestQueue);
         return mRequestQueue;
     }
 
