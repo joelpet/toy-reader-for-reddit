@@ -2,6 +2,7 @@ package se.joelpet.android.toyredditreader.activities;
 
 import com.android.volley.VolleyError;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -91,6 +92,10 @@ public class LoginActivity extends BaseActivity
                         super.onResponse(me);
                         Toast.makeText(getApplicationContext(), "Signed in as " + me.getName(),
                                 Toast.LENGTH_SHORT).show();
+                        Intent data = new Intent();
+                        data.putExtra("me", me);
+                        // TODO: Replace with event emitting
+                        setResult(RESULT_OK, data);
                         finish();
                     }
 

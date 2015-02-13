@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
+import se.joelpet.android.toyredditreader.domain.Me;
 import timber.log.Timber;
 
 public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener,
@@ -27,7 +29,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @Optional
     @InjectView(R.id.user_text_view)
-    protected View mUserTextView;
+    protected TextView mUserTextView;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -100,8 +102,19 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
                         .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
                 break;
             case R.id.user_text_view:
-                startActivity(new Intent(getActivity(), LoginActivity.class));
+                startActivityForResult(new Intent(getActivity(), LoginActivity.class), 1337);
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1337) {
+            if (resultCode == Activity.RESULT_OK) {
+                // TODO: Replace this with events
+                Me me = (Me) data.getSerializableExtra("me");
+                mUserTextView.setText(me.getName());
+            }
         }
     }
 
