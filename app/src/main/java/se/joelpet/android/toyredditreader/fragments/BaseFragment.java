@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import se.joelpet.android.toyredditreader.RedditApp;
 import timber.log.Timber;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

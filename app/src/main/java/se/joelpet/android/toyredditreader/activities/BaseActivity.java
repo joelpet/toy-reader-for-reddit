@@ -1,12 +1,11 @@
 package se.joelpet.android.toyredditreader.activities;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import se.joelpet.android.toyredditreader.RedditApp;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * Injects any dependencies into the given activity.

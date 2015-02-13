@@ -115,10 +115,8 @@ public class MainActivity extends BaseActivity
                                 LinkListingFragment.ARG_SORT_HOT);
                 break;
             case ITEM_SAVED:
-                mToolbar.setTitle("Saved");
-                mToolbar.setSubtitle(null);
-                fragment = new BaseFragment();
-                break;
+                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+                return;
             case ITEM_SETTINGS:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
                 return;
