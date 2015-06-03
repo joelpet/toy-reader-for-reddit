@@ -185,19 +185,19 @@ public class Me implements Serializable {
     public static Me from(JSONObject jsonObject) throws JSONException {
         Me me = new Me();
 
-        me.setName(jsonObject.getString(NAME_NAME));
-        me.setCreated(jsonObject.getDouble(NAME_CREATED));
-        me.setHideFromRobots(jsonObject.getBoolean(NAME_HIDE_FROM_ROBOTS));
-        me.setGoldCreddits(jsonObject.getInt(NAME_GOLD_CREDDITS));
-        me.setCreatedUtc(jsonObject.getDouble(NAME_CREATED_UTC));
-        me.setLinkKarma(jsonObject.getInt(NAME_LINK_KARMA));
-        me.setCommentKarma(jsonObject.getInt(NAME_COMMENT_KARMA));
-        me.setOver18(jsonObject.getBoolean(NAME_OVER_18));
-        me.setIsGold(jsonObject.getBoolean(NAME_IS_GOLD));
-        me.setIsMod(jsonObject.getBoolean(NAME_IS_MOD));
-        me.setGoldExpiration(jsonObject.optLong(NAME_GOLD_EXPIRATION));
-        me.setHasVerifiedEmail(jsonObject.getBoolean(NAME_HAS_VERIFIED_EMAIL));
-        me.setId(jsonObject.getString(NAME_ID));
+        me.name = jsonObject.getString(NAME_NAME);
+        me.created = jsonObject.getDouble(NAME_CREATED);
+        me.hideFromRobots = jsonObject.getBoolean(NAME_HIDE_FROM_ROBOTS);
+        me.goldCreddits = jsonObject.getInt(NAME_GOLD_CREDDITS);
+        me.createdUtc = jsonObject.getDouble(NAME_CREATED_UTC);
+        me.linkKarma = jsonObject.getInt(NAME_LINK_KARMA);
+        me.commentKarma = jsonObject.getInt(NAME_COMMENT_KARMA);
+        me.over18 = jsonObject.getBoolean(NAME_OVER_18);
+        me.isGold = jsonObject.getBoolean(NAME_IS_GOLD);
+        me.isMod = jsonObject.getBoolean(NAME_IS_MOD);
+        me.goldExpiration = jsonObject.optLong(NAME_GOLD_EXPIRATION);
+        me.hasVerifiedEmail = jsonObject.getBoolean(NAME_HAS_VERIFIED_EMAIL);
+        me.id = jsonObject.getString(NAME_ID);
 
         return me;
     }
