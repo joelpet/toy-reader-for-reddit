@@ -3,16 +3,17 @@ package se.joelpet.android.toyredditreader.net;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.android.volley.toolbox.RequestFuture;
+
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
 import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import timber.log.Timber;
-
-import static com.android.volley.Response.ErrorListener;
-import static com.android.volley.Response.Listener;
 
 public class RealRedditApi implements RedditApi {
 
@@ -27,22 +28,22 @@ public class RealRedditApi implements RedditApi {
     }
 
     @Override
-    public ListingRequest<Link> getLinkListing(String path, String after,
-            Listener<Listing<Link>> listener, ErrorListener errorListener, Object tag) {
+    public Observable<Listing<Link>> getLinkListing(String path, String after, Object tag) {
         Uri.Builder uriBuilder = BASE_URI.buildUpon().appendEncodedPath(path + ".json");
 
         if (!TextUtils.isEmpty(after)) {
             uriBuilder.appendQueryParameter("after", after);
         }
 
-        ListingRequest<Link> request = new ListingRequest<>(uriBuilder.toString(), null, listener,
-                errorListener);
+        RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
+        ListingRequest<Link> request = new ListingRequest<>(uriBuilder.toString(), null, future,
+                future);
         request.setTag(tag);
 
         mVolleySingleton.addToRequestQueue(request);
         Timber.d("Added listing request to queue: %s", request);
 
-        return request;
+        return Observable.from(future, Schedulers.io());
     }
 
     @Override
