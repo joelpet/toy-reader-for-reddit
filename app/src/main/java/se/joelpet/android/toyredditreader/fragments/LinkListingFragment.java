@@ -192,7 +192,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
      * Callback for successful Subreddit Listing GET request.
      */
     private void handleReceivedListing(Listing<Link> listing) {
-        Timber.d("%s###handleReceivedListing(%s)", this, listing);
+        Timber.d("%s###handleReceivedListing(%s)", this, listing.getModhash());
         mAfter = listing.getAfter();
 
         if (mLinkListingRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
@@ -245,7 +245,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
             super.onScrollStateChanged(recyclerView, newState);
 
             if (mRequestInProgress) {
-                Timber.i("Avoided queuing duplicate listing request for after={%s}", mAfter);
+                Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
                 return;
             }
 

@@ -11,25 +11,25 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Timber.i("%s###onCreate(%s)", this, savedInstanceState);
+        Timber.v("%s###onCreate(%s)", this, savedInstanceState);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Timber.i("%s###onStart()", this);
+        Timber.v("%s###onStart()", this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Timber.i("%s###onStop()", this);
+        Timber.v("%s###onStop()", this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Timber.i("%s###onDestroy()", this);
+        Timber.v("%s###onDestroy()", this);
     }
 
     /**

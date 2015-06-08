@@ -24,7 +24,7 @@ public class RealRedditApi implements RedditApi {
     @Inject
     public RealRedditApi(VolleySingleton volleySingleton) {
         mVolleySingleton = volleySingleton;
-        Timber.i("Constructing new RealRedditApi with VolleySingleton: %s", mVolleySingleton);
+        Timber.d("Constructing new RealRedditApi with VolleySingleton: %s", mVolleySingleton);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
 
     @Override
     protected void deliverResponse(Listing<T> response) {
-        Timber.i("Delivering listing response: %s", response);
+        Timber.v("Delivering listing response: %s", response);
         mResponseListener.onResponse(response);
     }
 

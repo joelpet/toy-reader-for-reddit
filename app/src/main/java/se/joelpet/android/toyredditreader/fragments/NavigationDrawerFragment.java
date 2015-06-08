@@ -72,7 +72,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Timber.i("Clicked on item with position: %d", position);
+        Timber.d("Clicked on item with position: %d", position);
         if (position < mListView.getHeaderViewsCount()) {
             return;
         }
@@ -83,7 +83,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @Override
     public void onClick(View v) {
-        Timber.i("Clicked on view: %s", v);
+        Timber.d("Clicked on view: %s", v);
         switch (v.getId()) {
             case R.id.navigation_drawer_list_footer_settings_button:
                 mNavigationItemClickListener

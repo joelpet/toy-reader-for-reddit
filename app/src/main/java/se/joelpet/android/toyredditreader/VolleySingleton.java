@@ -58,7 +58,7 @@ public class VolleySingleton {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(mContext);
         }
-        Timber.i("Accessing request queue: %s", mRequestQueue);
+        Timber.d("Accessing request queue: %s", mRequestQueue);
         return mRequestQueue;
     }
 
