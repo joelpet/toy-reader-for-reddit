@@ -22,9 +22,9 @@ public class MeRequest extends Request<Me> {
 
     private final String mAccessToken;
 
-    private final ResponseListener<Me> mListener;
+    private final Response.Listener<Me> mListener;
 
-    public MeRequest(String accessToken, ResponseListener<Me> listener,
+    public MeRequest(String accessToken, Response.Listener<Me> listener,
             Response.ErrorListener errorListener) {
         super(Method.GET, "https://oauth.reddit.com/api/v1/me", errorListener);
         mAccessToken = accessToken;

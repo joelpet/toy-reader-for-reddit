@@ -19,7 +19,6 @@ import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
 import se.joelpet.android.toyredditreader.volley.ListingRequest;
 import se.joelpet.android.toyredditreader.volley.MeRequest;
-import se.joelpet.android.toyredditreader.volley.ResponseListener;
 import timber.log.Timber;
 
 public class RealRedditApi implements RedditApi {
@@ -48,31 +47,33 @@ public class RealRedditApi implements RedditApi {
         RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
         ListingRequest<Link> request = new ListingRequest<>(uriBuilder.toString(), null, future,
                 future);
-        request.setTag(tag);
-
+        addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }
-    
+
     @Override
-    public Request getAccessToken(String code, Object tag, ResponseListener<AccessToken> listener) {
-        AccessTokenRequest request = new AccessTokenRequest(code, listener, listener);
-        return addToRequestQueueWithTag(request, tag);
+    public Observable<AccessToken> getAccessToken(String code, Object tag) {
+        RequestFuture<AccessToken> future = RequestFuture.newFuture();
+        AccessTokenRequest request = new AccessTokenRequest(code, future, future);
+        addToRequestQueueWithTag(request, tag);
+        return Observable.from(future, Schedulers.io());
     }
 
     @Override
-    public Request getMe(Object tag, ResponseListener<Me> listener) {
+    public Observable<Me> getMe(Object tag) {
         String accessToken = mPreferences.getAccessToken();
-        MeRequest request = new MeRequest(accessToken, listener, listener);
-        return addToRequestQueueWithTag(request, tag);
+        RequestFuture<Me> future = RequestFuture.newFuture();
+        MeRequest request = new MeRequest(accessToken, future, future);
+        addToRequestQueueWithTag(request, tag);
+        return Observable.from(future, Schedulers.io());
     }
 
-    private Request<?> addToRequestQueueWithTag(Request<?> request, Object tag) {
+    private void addToRequestQueueWithTag(Request<?> request, Object tag) {
         request.setTag(tag);
         mVolleySingleton.addToRequestQueue(request);
         Timber.d("Added request to queue: %s", request);
-        return request;
     }
-    
+
     @Override
     public void cancelAll(Object tag) {
         mVolleySingleton.getRequestQueue().cancelAll(tag);

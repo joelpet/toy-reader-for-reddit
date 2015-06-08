@@ -1,7 +1,5 @@
 package se.joelpet.android.toyredditreader.activities;
 
-import com.android.volley.VolleyError;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +13,10 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.observables.AndroidObservable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import se.joelpet.android.toyredditreader.AppConnectWebViewClient;
 import se.joelpet.android.toyredditreader.Preferences;
 import se.joelpet.android.toyredditreader.R;
@@ -22,13 +24,14 @@ import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.net.RedditApi;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
-import se.joelpet.android.toyredditreader.volley.ResponseListener;
 import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity
         implements AppConnectWebViewClient.OnAppConnectListener {
 
     public static final String TAG = LoginActivity.class.getName();
+
+    public static final String BASE_URL_AUTH = "https://www.reddit.com/api/v1/authorize.compact";
 
     @InjectView(R.id.toolbar)
     protected Toolbar mToolbar;
@@ -57,9 +60,10 @@ public class LoginActivity extends BaseActivity
 
         mAppConnectWebViewClient.setOnAppConnectListener(this);
         mWebView.setWebViewClient(mAppConnectWebViewClient);
+        mWebView.getSettings().setJavaScriptEnabled(true);
 
         if (savedInstanceState == null) {
-            Uri.Builder uri = Uri.parse("https://ssl.reddit.com/api/v1/authorize").buildUpon();
+            Uri.Builder uri = Uri.parse(BASE_URL_AUTH).buildUpon();
             mUniqueAuthState = UUID.randomUUID().toString();
             uri.appendQueryParameter("client_id", AccessTokenRequest.CLIENT_ID);
             uri.appendQueryParameter("response_type", "code");
@@ -80,32 +84,35 @@ public class LoginActivity extends BaseActivity
         }
 
         mPreferences.putAuthCode(authCode);
-        mRedditApi.getAccessToken(authCode, TAG, new ResponseListener<AccessToken>() {
-            @Override
-            public void onResponse(AccessToken accessToken) {
-                super.onResponse(accessToken);
-                mPreferences.putAccessToken(accessToken.getAccessToken());
-                mPreferences.putRefreshToken(accessToken.getRefreshToken());
-                mRedditApi.getMe(TAG, new ResponseListener<Me>() {
+
+        AndroidObservable
+                .bindActivity(this, mRedditApi.getAccessToken(authCode, TAG))
+                .flatMap(new Func1<AccessToken, Observable<Me>>() {
                     @Override
-                    public void onResponse(Me me) {
-                        super.onResponse(me);
+                    public Observable<Me> call(AccessToken accessToken) {
+                        Timber.d("Acting on access token: %s", accessToken);
+                        mPreferences.putAccessToken(accessToken.getAccessToken());
+                        mPreferences.putRefreshToken(accessToken.getRefreshToken());
+                        return mRedditApi.getMe(TAG);
+                    }
+                })
+                .subscribe(new Action1<Me>() {
+                    @Override
+                    public void call(Me me) {
                         Toast.makeText(getApplicationContext(), "Signed in as " + me.getName(),
                                 Toast.LENGTH_SHORT).show();
                         Intent data = new Intent();
                         data.putExtra("me", me);
-                        // TODO: Replace with event emitting
+                        // TODO: Replace with event emitting (?!)
                         setResult(RESULT_OK, data);
                         finish();
                     }
-
+                }, new Action1<Throwable>() {
                     @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        super.onErrorResponse(volleyError);
+                    public void call(Throwable throwable) {
+                        Timber.e(throwable, "Request failed");
                     }
                 });
-            }
-        });
     }
 
     @Override
