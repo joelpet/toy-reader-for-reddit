@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -39,8 +40,6 @@ public class LoginActivity extends BaseActivity
     @InjectView(R.id.web_view)
     protected WebView mWebView;
 
-    private String mUniqueAuthState;
-
     @Inject
     protected RedditApi mRedditApi;
 
@@ -49,6 +48,10 @@ public class LoginActivity extends BaseActivity
 
     @Inject
     protected Preferences mPreferences;
+
+    private String mUniqueAuthState;
+
+    private Subscription mSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,14 @@ public class LoginActivity extends BaseActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
+    }
+
+    @Override
     public void onAllowConnect(String authCode, String state) {
         if (!mUniqueAuthState.equals(state)) {
             Timber.w("Aborting unrecognized auth request with state: %s", state);
@@ -85,8 +96,8 @@ public class LoginActivity extends BaseActivity
 
         mPreferences.putAuthCode(authCode);
 
-        AndroidObservable
-                .bindActivity(this, mRedditApi.getAccessToken(authCode, TAG))
+        mSubscription = AndroidObservable.bindActivity(this, mRedditApi
+                .getAccessToken(authCode, TAG)
                 .flatMap(new Func1<AccessToken, Observable<Me>>() {
                     @Override
                     public Observable<Me> call(AccessToken accessToken) {
@@ -95,7 +106,7 @@ public class LoginActivity extends BaseActivity
                         mPreferences.putRefreshToken(accessToken.getRefreshToken());
                         return mRedditApi.getMe(TAG);
                     }
-                })
+                }))
                 .subscribe(new Action1<Me>() {
                     @Override
                     public void call(Me me) {
