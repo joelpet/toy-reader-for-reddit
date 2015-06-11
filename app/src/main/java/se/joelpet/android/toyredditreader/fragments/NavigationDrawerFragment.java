@@ -24,6 +24,8 @@ import timber.log.Timber;
 public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener,
         View.OnClickListener {
 
+    public static final int REQUEST_CODE_LOGIN = 1;
+
     @InjectView(R.id.list_view)
     protected ListView mListView;
 
@@ -102,14 +104,15 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
                         .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
                 break;
             case R.id.user_text_view:
-                startActivityForResult(new Intent(getActivity(), LoginActivity.class), 1337);
+                Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+                startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
                 break;
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1337) {
+        if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == Activity.RESULT_OK) {
                 // TODO: Replace this with events
                 Me me = (Me) data.getSerializableExtra("me");
