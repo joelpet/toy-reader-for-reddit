@@ -53,7 +53,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
 
@@ -120,10 +120,10 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
 
     public interface NavigationItemClickListener {
 
-        public static final int ITEM_EVERYTHING = 0;
-        public static final int ITEM_SUBSCRIBED = 1;
-        public static final int ITEM_SAVED = 2;
-        public static final int ITEM_SETTINGS = 3;
+        int ITEM_EVERYTHING = 0;
+        int ITEM_SUBSCRIBED = 1;
+        int ITEM_SAVED = 2;
+        int ITEM_SETTINGS = 3;
 
         void onNavigationItemClick(int item);
     }
