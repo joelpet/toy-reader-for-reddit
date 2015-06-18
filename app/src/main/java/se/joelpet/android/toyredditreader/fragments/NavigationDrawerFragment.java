@@ -8,21 +8,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import butterknife.Optional;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
 import se.joelpet.android.toyredditreader.domain.Me;
 import timber.log.Timber;
 
-public class NavigationDrawerFragment extends Fragment implements AdapterView.OnItemClickListener,
-        View.OnClickListener {
+public class NavigationDrawerFragment extends Fragment {
 
     public static final int REQUEST_CODE_LOGIN = 1;
 
@@ -66,28 +66,32 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
                 inflater.inflate(R.layout.view_navigation_drawer_list_header_space, mListView,
                         false));
 
-        View listViewFooter = inflater
-                .inflate(R.layout.view_navigation_drawer_list_footer, mListView, false);
-        listViewFooter.findViewById(R.id.navigation_drawer_list_footer_settings_button)
-                .setOnClickListener(this);
+        View listViewFooter = inflater.inflate(R.layout.view_navigation_drawer_list_footer,
+                mListView, false);
         mListView.addFooterView(listViewFooter);
+        mListView.setAdapter(mAdapter);
 
         ButterKnife.inject(this, mListView);
 
         return view;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(this);
-        mUserTextView.setOnClickListener(this);
+    @Optional
+    @OnClick(R.id.user_text_view)
+    public void onUserTextViewClick() {
+        Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+        startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Timber.d("Clicked on item with position: %d", position);
+    @OnItemClick(R.id.list_view)
+    public void onListViewItemClick(View v, int position) {
+        Timber.d("Clicked on list view item (position=%d): %s", position, v);
         if (position < mListView.getHeaderViewsCount()) {
+            return;
+        }
+        if (v.getId() == R.id.navigation_drawer_list_footer_settings_button) {
+            mNavigationItemClickListener
+                    .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
             return;
         }
         int menuItem = position - mListView.getHeaderViewsCount();
@@ -96,26 +100,12 @@ public class NavigationDrawerFragment extends Fragment implements AdapterView.On
     }
 
     @Override
-    public void onClick(View v) {
-        Timber.d("Clicked on view: %s", v);
-        switch (v.getId()) {
-            case R.id.navigation_drawer_list_footer_settings_button:
-                mNavigationItemClickListener
-                        .onNavigationItemClick(NavigationItemClickListener.ITEM_SETTINGS);
-                break;
-            case R.id.user_text_view:
-                Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
-                startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
-                break;
-        }
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == Activity.RESULT_OK) {
-                // TODO: Replace this with events
+                // TODO: Replace this with DataLayer (which notifies anyone who is listening)
                 Me me = (Me) data.getSerializableExtra("me");
+                // TODO: This should be updated indirectly through DataLayer listening
                 mUserTextView.setText(me.getName());
             }
         }
