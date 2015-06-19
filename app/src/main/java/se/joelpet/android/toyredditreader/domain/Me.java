@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
+import rx.subjects.BehaviorSubject;
+
 public class Me implements Serializable {
 
     public static final String NAME_NAME = "name";
@@ -200,5 +202,22 @@ public class Me implements Serializable {
         me.id = jsonObject.getString(NAME_ID);
 
         return me;
+    }
+
+    private static BehaviorSubject<Me> subject;
+
+    static {
+        // TODO: Load Me object from persistant storage
+        subject = BehaviorSubject.create();
+    }
+
+    public static void store(Me me) {
+        // TODO: Save e.g. in database
+        // Update
+        subject.onNext(me);
+    }
+
+    public static BehaviorSubject<Me> getSubject() {
+        return subject;
     }
 }

@@ -3,10 +3,17 @@ package se.joelpet.android.toyredditreader.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.subscriptions.CompositeSubscription;
 import se.joelpet.android.toyredditreader.RedditApp;
 import timber.log.Timber;
 
 public abstract class BaseFragment extends Fragment {
+
+    /** Composite subscription to keep track of all subscription registrations in this Fragment. */
+    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,5 +44,17 @@ public abstract class BaseFragment extends Fragment {
      */
     protected static void inject(Fragment fragment) {
         ((RedditApp) fragment.getActivity().getApplication()).inject(fragment);
+    }
+
+    protected <T> Observable<T> bind(Observable<T> source) {
+        return AndroidObservable.bindFragment(this, source);
+    }
+
+    protected void addSubscription(Subscription subscription) {
+        mCompositeSubscription.add(subscription);
+    }
+
+    protected void unsubscribeFromAll() {
+        mCompositeSubscription.unsubscribe();
     }
 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,13 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.Optional;
+import rx.functions.Action1;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
 import se.joelpet.android.toyredditreader.domain.Me;
 import timber.log.Timber;
 
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends BaseFragment {
 
     public static final int REQUEST_CODE_LOGIN = 1;
 
@@ -73,7 +73,21 @@ public class NavigationDrawerFragment extends Fragment {
 
         ButterKnife.inject(this, mListView);
 
+        addSubscription(bind(Me.getSubject()).subscribe(new Action1<Me>() {
+            @Override
+            public void call(Me me) {
+                mUserTextView.setText(me.getName());
+            }
+        }));
+
         return view;
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unsubscribeFromAll();
     }
 
     @Optional
@@ -103,10 +117,8 @@ public class NavigationDrawerFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == Activity.RESULT_OK) {
-                // TODO: Replace this with DataLayer (which notifies anyone who is listening)
                 Me me = (Me) data.getSerializableExtra("me");
-                // TODO: This should be updated indirectly through DataLayer listening
-                mUserTextView.setText(me.getName());
+                Me.store(me);
             }
         }
     }

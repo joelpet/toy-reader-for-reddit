@@ -114,7 +114,6 @@ public class LoginActivity extends BaseActivity
                                 Toast.LENGTH_SHORT).show();
                         Intent data = new Intent();
                         data.putExtra("me", me);
-                        // TODO: Replace with event emitting (?!)
                         setResult(RESULT_OK, data);
                         finish();
                     }
