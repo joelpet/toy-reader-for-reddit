@@ -1,9 +1,7 @@
 package se.joelpet.android.toyredditreader.volley;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 
@@ -12,30 +10,21 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import se.joelpet.android.toyredditreader.domain.Me;
 import timber.log.Timber;
 
-public class MeRequest extends Request<Me> {
+public class MeRequest extends BaseRequest<Me> {
 
-    private final String mAccessToken;
+    public static final String REQUEST_URL = "https://oauth.reddit.com/api/v1/me";
 
     private final Response.Listener<Me> mListener;
 
-    public MeRequest(String accessToken, Response.Listener<Me> listener,
-            Response.ErrorListener errorListener) {
-        super(Method.GET, "https://oauth.reddit.com/api/v1/me", errorListener);
-        mAccessToken = accessToken;
+    public MeRequest(String accessToken, Response.Listener<Me> listener, Response.ErrorListener
+            errorListener) {
+        super(Method.GET, REQUEST_URL, errorListener);
+        setAccessToken(accessToken);
         mListener = listener;
-    }
-
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headers = new HashMap<>(super.getHeaders());
-        headers.put("Authorization", "bearer " + mAccessToken);
-        return headers;
     }
 
     @Override

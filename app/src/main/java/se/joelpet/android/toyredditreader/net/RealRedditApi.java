@@ -23,7 +23,10 @@ import timber.log.Timber;
 
 public class RealRedditApi implements RedditApi {
 
+    /** Base URI for unauthorized requests. */
     private static final Uri BASE_URI = Uri.parse("https://www.reddit.com/");
+    /** Base URI for authorized requests. */
+    private static final Uri BASE_OAUTH_URI = Uri.parse("https://oauth.reddit.com/");
 
     private final VolleySingleton mVolleySingleton;
 
@@ -38,15 +41,22 @@ public class RealRedditApi implements RedditApi {
 
     @Override
     public Observable<Listing<Link>> getLinkListing(String path, String after, Object tag) {
-        Uri.Builder uriBuilder = BASE_URI.buildUpon().appendEncodedPath(path + ".json");
+        // TODO: Replace with getBaseOauthUri()
+        String accessToken = mPreferences.getAccessToken();
+        Uri baseUri = accessToken != null ? BASE_OAUTH_URI : BASE_URI;
+        Uri.Builder uriBuilder = baseUri.buildUpon().appendEncodedPath(path + ".json");
 
         if (!TextUtils.isEmpty(after)) {
             uriBuilder.appendQueryParameter("after", after);
         }
 
         RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
-        ListingRequest<Link> request = new ListingRequest<>(uriBuilder.toString(), null, future,
-                future);
+        ListingRequest<Link> request = new ListingRequest<>(uriBuilder.toString(), future, future);
+
+        if (accessToken != null) {
+            request.setAccessToken(accessToken);
+        }
+
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }

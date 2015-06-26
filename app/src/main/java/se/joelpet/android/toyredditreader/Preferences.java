@@ -3,6 +3,9 @@ package se.joelpet.android.toyredditreader;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import rx.Observable;
+import rx.android.observables.AndroidObservable;
+
 public class Preferences {
 
     private static final String PREFERENCES_NAME = "preferences";
@@ -41,6 +44,10 @@ public class Preferences {
 
     public void putRefreshToken(String refreshToken) {
         getEditor(Context.MODE_PRIVATE).putString(KEY_REFRESH_TOKEN, refreshToken).commit();
+    }
+
+    public Observable<String> getObservable() {
+        return AndroidObservable.fromSharedPreferencesChanges(getSharedPreferences());
     }
 
     private SharedPreferences getSharedPreferences() {
