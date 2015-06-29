@@ -19,11 +19,11 @@ import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyredditreader.AppConnectWebViewClient;
-import se.joelpet.android.toyredditreader.Preferences;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.net.RedditApi;
+import se.joelpet.android.toyredditreader.storage.LocalStorage;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
 import timber.log.Timber;
 
@@ -47,7 +47,7 @@ public class LoginActivity extends BaseActivity
     protected AppConnectWebViewClient mAppConnectWebViewClient;
 
     @Inject
-    protected Preferences mPreferences;
+    protected LocalStorage mLocalStorage;
 
     private String mUniqueAuthState;
 
@@ -94,7 +94,7 @@ public class LoginActivity extends BaseActivity
             return;
         }
 
-        mPreferences.putAuthCode(authCode);
+        mLocalStorage.putAuthCode(authCode);
 
         mSubscription = AndroidObservable.bindActivity(this, mRedditApi
                 .getAccessToken(authCode, TAG)
@@ -102,8 +102,7 @@ public class LoginActivity extends BaseActivity
                     @Override
                     public Observable<Me> call(AccessToken accessToken) {
                         Timber.d("Acting on access token: %s", accessToken);
-                        mPreferences.putAccessToken(accessToken.getAccessToken());
-                        mPreferences.putRefreshToken(accessToken.getRefreshToken());
+                        mLocalStorage.putAccessToken(accessToken);
                         return mRedditApi.getMe(TAG);
                     }
                 }))
@@ -131,7 +130,8 @@ public class LoginActivity extends BaseActivity
         Timber.d("onErrorConnect(%s)", error);
         switch (error) {
             case "access_denied":
-                // Fail gracefully - let the user know you cannot continue, and be respectful of their
+                // Fail gracefully - let the user know you cannot continue, and be respectful of
+                // their
                 // choice to decline to use your app
                 Timber.d("User chose not to grant your app permissions");
                 break;
@@ -144,7 +144,8 @@ public class LoginActivity extends BaseActivity
                 Timber.d("Invalid scope parameter in initial Authorization");
                 break;
             case "invalid_request":
-                // Double check the parameters being sent during the request to /api/v1/authorize above.
+                // Double check the parameters being sent during the request to /api/v1/authorize
+                // above.
                 Timber.d("There was an issue with the request sent to /api/v1/authorize ");
                 break;
         }

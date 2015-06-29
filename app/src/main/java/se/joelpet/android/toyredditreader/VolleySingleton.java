@@ -59,8 +59,8 @@ public class VolleySingleton {
         return mRequestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
+    public <T> Request<T> addToRequestQueue(Request<T> req) {
+        return getRequestQueue().add(req);
     }
 
     public ImageLoader getImageLoader() {

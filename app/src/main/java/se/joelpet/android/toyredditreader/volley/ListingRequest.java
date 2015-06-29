@@ -6,10 +6,14 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import android.net.Uri;
+import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
 
@@ -22,15 +26,18 @@ public class ListingRequest<T extends Thing> extends BaseRequest<Listing<T>> {
 
     private final Response.Listener<Listing<T>> mResponseListener;
 
-    /**
-     * Make a GET request and return a parsed object from JSON.
-     *
-     * @param url URL of the request to make
-     */
-    public ListingRequest(String url, Response.Listener<Listing<T>> listener, Response
-            .ErrorListener errorListener) {
-        super(Method.GET, url, errorListener);
-        mResponseListener = listener;
+    public ListingRequest(String path, String after, String accessToken,
+                          RequestFuture<Listing<T>> future) {
+        super(Method.GET, buildUrl(path, after, accessToken), future, accessToken);
+        mResponseListener = future;
+    }
+
+    private static String buildUrl(String path, String after, String token) {
+        Uri.Builder uriBuilder = uriBuilderFromAccessToken(token).appendEncodedPath(path + ".json");
+        if (!TextUtils.isEmpty(after)) {
+            uriBuilder.appendQueryParameter("after", after);
+        }
+        return uriBuilder.toString();
     }
 
     @Override

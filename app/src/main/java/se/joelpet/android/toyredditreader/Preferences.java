@@ -1,25 +1,28 @@
 package se.joelpet.android.toyredditreader;
 
+import com.google.gson.Gson;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import rx.Observable;
-import rx.android.observables.AndroidObservable;
+import se.joelpet.android.toyredditreader.domain.AccessToken;
+import se.joelpet.android.toyredditreader.domain.Me;
 
 public class Preferences {
 
     private static final String PREFERENCES_NAME = "preferences";
 
     public static final String KEY_AUTH_CODE = "auth_code";
-
     public static final String KEY_ACCESS_TOKEN = "access_token";
-
     public static final String KEY_REFRESH_TOKEN = "refresh_token";
+    public static final String KEY_ME = "KEY_ME";
 
     private Context mContext;
+    private Gson mGson;
 
     public Preferences(Context context) {
         mContext = context;
+        mGson = new Gson();
     }
 
     public String getAuthCode() {
@@ -27,34 +30,33 @@ public class Preferences {
     }
 
     public void putAuthCode(String authCode) {
-        getEditor(Context.MODE_PRIVATE).putString(KEY_AUTH_CODE, authCode).commit();
+        getEditor().putString(KEY_AUTH_CODE, authCode).commit();
     }
 
-    public String getAccessToken() {
-        return getSharedPreferences().getString(KEY_ACCESS_TOKEN, null);
+    public AccessToken getAccessToken() {
+        String tokenString = getSharedPreferences().getString(KEY_ACCESS_TOKEN, null);
+        return tokenString != null ? mGson.fromJson(tokenString, AccessToken.class) : null;
     }
 
-    public void putAccessToken(String accessToken) {
-        getEditor(Context.MODE_PRIVATE).putString(KEY_ACCESS_TOKEN, accessToken).commit();
+    public void putAccessToken(AccessToken accessToken) {
+        getEditor().putString(KEY_ACCESS_TOKEN, mGson.toJson(accessToken, AccessToken.class))
+                .commit();
     }
 
-    public String getRefreshToken() {
-        return getSharedPreferences().getString(KEY_ACCESS_TOKEN, null);
+    public Me getMe() {
+        String meString = getSharedPreferences().getString(KEY_ME, null);
+        return meString != null ? mGson.fromJson(meString, Me.class) : null;
     }
 
-    public void putRefreshToken(String refreshToken) {
-        getEditor(Context.MODE_PRIVATE).putString(KEY_REFRESH_TOKEN, refreshToken).commit();
-    }
-
-    public Observable<String> getObservable() {
-        return AndroidObservable.fromSharedPreferencesChanges(getSharedPreferences());
+    public void putMe(Me me) {
+        getEditor().putString(KEY_ME, mGson.toJson(me)).commit();
     }
 
     private SharedPreferences getSharedPreferences() {
         return mContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
-    private SharedPreferences.Editor getEditor(int mode) {
+    private SharedPreferences.Editor getEditor() {
         return getSharedPreferences().edit();
     }
 }

@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,15 +17,17 @@ import timber.log.Timber;
 
 public class MeRequest extends BaseRequest<Me> {
 
-    public static final String REQUEST_URL = "https://oauth.reddit.com/api/v1/me";
+    private static final String REQUEST_URI_PATH = "api/v1/me";
 
     private final Response.Listener<Me> mListener;
 
-    public MeRequest(String accessToken, Response.Listener<Me> listener, Response.ErrorListener
-            errorListener) {
-        super(Method.GET, REQUEST_URL, errorListener);
-        setAccessToken(accessToken);
-        mListener = listener;
+    public MeRequest(String accessToken, RequestFuture<Me> future) {
+        super(Method.GET, buildUrl(accessToken), future, accessToken);
+        mListener = future;
+    }
+
+    private static String buildUrl(String token) {
+        return uriBuilderFromAccessToken(token).appendPath(REQUEST_URI_PATH).toString();
     }
 
     @Override

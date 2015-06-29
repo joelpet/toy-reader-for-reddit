@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -20,6 +22,7 @@ import rx.functions.Action1;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
 import se.joelpet.android.toyredditreader.domain.Me;
+import se.joelpet.android.toyredditreader.storage.LocalStorage;
 import timber.log.Timber;
 
 public class NavigationDrawerFragment extends BaseFragment {
@@ -32,6 +35,9 @@ public class NavigationDrawerFragment extends BaseFragment {
     @Optional
     @InjectView(R.id.user_text_view)
     protected TextView mUserTextView;
+
+    @Inject
+    protected LocalStorage mLocalStorage;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -48,6 +54,7 @@ public class NavigationDrawerFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        inject(this);
         mAdapter = new ArrayAdapter<>(getActivity(), R.layout.view_navigation_drawer_list_item,
                 R.id.text_view,
                 getResources().getStringArray(R.array.navigation_drawer_list_items));
@@ -73,7 +80,7 @@ public class NavigationDrawerFragment extends BaseFragment {
 
         ButterKnife.inject(this, mListView);
 
-        addSubscription(bind(Me.getSubject()).subscribe(new Action1<Me>() {
+        addSubscription(bind(mLocalStorage.observeMe()).subscribe(new Action1<Me>() {
             @Override
             public void call(Me me) {
                 mUserTextView.setText(me.getName());
@@ -118,7 +125,7 @@ public class NavigationDrawerFragment extends BaseFragment {
         if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == Activity.RESULT_OK) {
                 Me me = (Me) data.getSerializableExtra("me");
-                Me.store(me);
+                mLocalStorage.putMe(me);
             }
         }
     }
