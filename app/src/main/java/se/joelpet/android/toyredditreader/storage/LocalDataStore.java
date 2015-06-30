@@ -4,7 +4,7 @@ import rx.Observable;
 import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 
-public interface LocalStorage {
+public interface LocalDataStore {
 
     /** Returns a hot observable source of Me values. */
     Observable<Me> observeMe();

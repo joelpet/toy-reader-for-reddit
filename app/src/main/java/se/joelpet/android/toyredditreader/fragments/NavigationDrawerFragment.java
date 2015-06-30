@@ -22,7 +22,7 @@ import rx.functions.Action1;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
 import se.joelpet.android.toyredditreader.domain.Me;
-import se.joelpet.android.toyredditreader.storage.LocalStorage;
+import se.joelpet.android.toyredditreader.storage.LocalDataStore;
 import timber.log.Timber;
 
 public class NavigationDrawerFragment extends BaseFragment {
@@ -37,7 +37,7 @@ public class NavigationDrawerFragment extends BaseFragment {
     protected TextView mUserTextView;
 
     @Inject
-    protected LocalStorage mLocalStorage;
+    protected LocalDataStore mLocalDataStore;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -80,7 +80,7 @@ public class NavigationDrawerFragment extends BaseFragment {
 
         ButterKnife.inject(this, mListView);
 
-        addSubscription(bind(mLocalStorage.observeMe()).subscribe(new Action1<Me>() {
+        addSubscription(bind(mLocalDataStore.observeMe()).subscribe(new Action1<Me>() {
             @Override
             public void call(Me me) {
                 mUserTextView.setText(me.getName());
@@ -125,7 +125,7 @@ public class NavigationDrawerFragment extends BaseFragment {
         if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == Activity.RESULT_OK) {
                 Me me = (Me) data.getSerializableExtra("me");
-                mLocalStorage.putMe(me);
+                mLocalDataStore.putMe(me);
             }
         }
     }

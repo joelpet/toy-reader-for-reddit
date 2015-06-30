@@ -49,9 +49,7 @@ public class ListingRequest<T extends Thing> extends BaseRequest<Listing<T>> {
     @Override
     protected Response<Listing<T>> parseNetworkResponse(NetworkResponse response) {
         try {
-            String json = new String(response.data,
-                    HttpHeaderParser.parseCharset(response.headers));
-            JSONObject jsonObject = (JSONObject) new JSONTokener(json).nextValue();
+            JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
             Listing<T> listing = RedditObject.listingFromJson(jsonObject);
             return Response.success(listing, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

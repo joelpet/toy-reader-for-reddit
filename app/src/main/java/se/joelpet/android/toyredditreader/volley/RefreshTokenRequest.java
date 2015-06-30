@@ -9,9 +9,6 @@ import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -39,13 +36,8 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        // TODO: Undup this (see AccessTokenRequest), possibly into util class
         Map<String, String> headers = new HashMap<>(super.getHeaders());
-        String credentials = String.format("%s:%s", AccessTokenRequest.CLIENT_ID,
-                AccessTokenRequest.CLIENT_PASSWORD);
-        String credentialsBase64 = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-        String authorizationHeaderValue = "Basic " + credentialsBase64;
-        headers.put("Authorization", authorizationHeaderValue);
+        headers.put("Authorization", AUTHORIZATION_VALUE);
         return headers;
     }
 
@@ -63,11 +55,8 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
 
     @Override
     protected Response<AccessToken> parseNetworkResponse(NetworkResponse response) {
-        // TODO: Undup this (see AccessTokenRequest)
         try {
-            String json = new String(response.data,
-                    HttpHeaderParser.parseCharset(response.headers));
-            JSONObject jsonObject = (JSONObject) new JSONTokener(json).nextValue();
+            JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
             AccessToken accessToken = AccessToken.from(jsonObject);
             // "refresh_token" is absent in response from server, so add it back here
             accessToken.setRefreshToken(mAccessToken.getRefreshToken());

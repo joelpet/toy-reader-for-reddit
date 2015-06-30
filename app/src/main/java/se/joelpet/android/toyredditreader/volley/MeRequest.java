@@ -8,7 +8,6 @@ import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.UnsupportedEncodingException;
 
@@ -34,9 +33,7 @@ public class MeRequest extends BaseRequest<Me> {
     protected Response<Me> parseNetworkResponse(NetworkResponse response) {
         Timber.d("parseNetworkResponse(%s)", response);
         try {
-            String json = new String(response.data,
-                    HttpHeaderParser.parseCharset(response.headers));
-            JSONObject jsonObject = (JSONObject) new JSONTokener(json).nextValue();
+            JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
             Me me = Me.from(jsonObject);
             return Response.success(me, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

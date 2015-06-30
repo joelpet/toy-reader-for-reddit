@@ -15,7 +15,7 @@ import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.domain.Me;
-import se.joelpet.android.toyredditreader.storage.LocalStorage;
+import se.joelpet.android.toyredditreader.storage.LocalDataStore;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
 import se.joelpet.android.toyredditreader.volley.ListingRequest;
 import se.joelpet.android.toyredditreader.volley.MeRequest;
@@ -27,19 +27,19 @@ public class RealRedditApi implements RedditApi {
 
     private final VolleySingleton mVolleySingleton;
 
-    private final LocalStorage mLocalStorage;
+    private final LocalDataStore mLocalDataStore;
 
     @Inject
-    public RealRedditApi(VolleySingleton volleySingleton, LocalStorage localStorage) {
+    public RealRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore) {
         mVolleySingleton = volleySingleton;
-        mLocalStorage = localStorage;
+        mLocalDataStore = localDataStore;
         Timber.d("Constructing new RealRedditApi with VolleySingleton: %s", mVolleySingleton);
     }
 
     @Override
     public Observable<Listing<Link>> getLinkListing(final String path, final String after, final Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
-        mLocalStorage.getAccessToken().singleOrDefault(null)
+        mLocalDataStore.getAccessToken().singleOrDefault(null)
                 .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
                     @Override
                     public Observable<AccessToken> call(AccessToken accessToken) {
@@ -92,10 +92,13 @@ public class RealRedditApi implements RedditApi {
         return Observable.from(future, Schedulers.io());
     }
 
+    // TODO: getMe() should probably take accessToken as parameter
+    // And so should every API method so that this API class does not have to know where to get an
+    // access token from. That would also loosen the coupling between this API and LocalDataStore.
     @Override
     public Observable<Me> getMe(final Object tag) {
         final RequestFuture<Me> future = RequestFuture.newFuture();
-        mLocalStorage.getAccessToken().singleOrDefault(null)
+        mLocalDataStore.getAccessToken().singleOrDefault(null)
                 .map(new Func1<AccessToken, String>() {
                     @Override
                     public String call(AccessToken accessToken) {

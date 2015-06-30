@@ -19,12 +19,12 @@ import se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment;
 import se.joelpet.android.toyredditreader.net.FakeRedditApi;
 import se.joelpet.android.toyredditreader.net.RealRedditApi;
 import se.joelpet.android.toyredditreader.net.RedditApi;
-import se.joelpet.android.toyredditreader.storage.DefaultLocalStorage;
-import se.joelpet.android.toyredditreader.storage.LocalStorage;
+import se.joelpet.android.toyredditreader.storage.DefaultLocalDataStore;
+import se.joelpet.android.toyredditreader.storage.LocalDataStore;
 
 @Module(
         injects = {
-                DefaultLocalStorage.class,
+                DefaultLocalDataStore.class,
                 FakeRedditApi.class,
                 LinkListingFragment.class,
                 LinkListingRecyclerViewAdapter.class,
@@ -66,15 +66,15 @@ public class RedditModule {
 
     @Provides
     @Singleton
-    RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalStorage localStorage) {
+    RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore) {
         // TODO: Check BuildConfig for test build.
-        return true ? new RealRedditApi(volleySingleton, localStorage) : new FakeRedditApi();
+        return true ? new RealRedditApi(volleySingleton, localDataStore) : new FakeRedditApi();
     }
 
     @Provides
     @Singleton
-    LocalStorage provideLocalStorage(Preferences preferences) {
-        return new DefaultLocalStorage(preferences);
+    LocalDataStore provideLocalStorage(Preferences preferences) {
+        return new DefaultLocalDataStore(preferences);
     }
 
     @Provides

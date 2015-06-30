@@ -23,8 +23,9 @@ import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.net.RedditApi;
-import se.joelpet.android.toyredditreader.storage.LocalStorage;
+import se.joelpet.android.toyredditreader.storage.LocalDataStore;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
+import se.joelpet.android.toyredditreader.volley.BaseRequest;
 import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity
@@ -47,7 +48,7 @@ public class LoginActivity extends BaseActivity
     protected AppConnectWebViewClient mAppConnectWebViewClient;
 
     @Inject
-    protected LocalStorage mLocalStorage;
+    protected LocalDataStore mLocalDataStore;
 
     private String mUniqueAuthState;
 
@@ -68,7 +69,7 @@ public class LoginActivity extends BaseActivity
         if (savedInstanceState == null) {
             Uri.Builder uri = Uri.parse(BASE_URL_AUTH).buildUpon();
             mUniqueAuthState = UUID.randomUUID().toString();
-            uri.appendQueryParameter("client_id", AccessTokenRequest.CLIENT_ID);
+            uri.appendQueryParameter("client_id", BaseRequest.CLIENT_ID);
             uri.appendQueryParameter("response_type", "code");
             uri.appendQueryParameter("state", mUniqueAuthState);
             uri.appendQueryParameter("redirect_uri", AccessTokenRequest.AUTH_REDIRECT_URI);
@@ -94,7 +95,7 @@ public class LoginActivity extends BaseActivity
             return;
         }
 
-        mLocalStorage.putAuthCode(authCode);
+        mLocalDataStore.putAuthCode(authCode);
 
         mSubscription = AndroidObservable.bindActivity(this, mRedditApi
                 .getAccessToken(authCode, TAG)
@@ -102,7 +103,7 @@ public class LoginActivity extends BaseActivity
                     @Override
                     public Observable<Me> call(AccessToken accessToken) {
                         Timber.d("Acting on access token: %s", accessToken);
-                        mLocalStorage.putAccessToken(accessToken);
+                        mLocalDataStore.putAccessToken(accessToken);
                         return mRedditApi.getMe(TAG);
                     }
                 }))

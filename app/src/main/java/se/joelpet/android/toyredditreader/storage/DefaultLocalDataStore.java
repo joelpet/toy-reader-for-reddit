@@ -13,7 +13,9 @@ import se.joelpet.android.toyredditreader.Preferences;
 import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 
-public class DefaultLocalStorage implements LocalStorage {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class DefaultLocalDataStore implements LocalDataStore {
 
     private final Preferences mPreferences;
 
@@ -23,7 +25,7 @@ public class DefaultLocalStorage implements LocalStorage {
     private BehaviorSubject<String> mAuthCodeSubject;
 
     @Inject
-    public DefaultLocalStorage(Preferences preferences) {
+    public DefaultLocalDataStore(Preferences preferences) {
         mPreferences = preferences;
     }
 
@@ -47,12 +49,11 @@ public class DefaultLocalStorage implements LocalStorage {
 
     @Override
     public void putAuthCode(String authCode) {
-        // TODO: Preconditions.nonNull(authCode)
+        checkNotNull(authCode);
         mPreferences.putAuthCode(authCode);
         if (mAuthCodeSubject != null) {
             mAuthCodeSubject.onNext(authCode);
         }
-        // return Observable.empty() to signal completion
     }
 
     @Override
