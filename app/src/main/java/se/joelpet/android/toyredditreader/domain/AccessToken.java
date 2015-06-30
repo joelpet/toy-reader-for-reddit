@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class AccessToken implements Serializable {
 
@@ -16,6 +17,9 @@ public class AccessToken implements Serializable {
     public static final String NAME_SCOPE = "scope";
 
     public static final String NAME_REFRESH_TOKEN = "refresh_token";
+
+    /** Timestamp indicating when this token was created */
+    Date created;
 
     /** Your access token */
     String accessToken;
@@ -31,6 +35,19 @@ public class AccessToken implements Serializable {
 
     /** Your refresh token */
     String refreshToken;
+
+    public boolean isExpired() {
+        if (created == null) return true;
+        return created.getTime() + (1000 * expiresIn) < new Date().getTime();
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
     public String getAccessToken() {
         return accessToken;
@@ -75,7 +92,8 @@ public class AccessToken implements Serializable {
     @Override
     public String toString() {
         return "AccessToken{" +
-                "accessToken='" + accessToken + '\'' +
+                "created=" + created +
+                ", accessToken='" + accessToken + '\'' +
                 ", tokenType='" + tokenType + '\'' +
                 ", expiresIn=" + expiresIn +
                 ", scope='" + scope + '\'' +
@@ -86,11 +104,13 @@ public class AccessToken implements Serializable {
     public static AccessToken from(JSONObject jsonObject) throws JSONException {
         AccessToken accessToken = new AccessToken();
 
+        accessToken.setCreated(new Date());
         accessToken.setAccessToken(jsonObject.getString(NAME_ACCESS_TOKEN));
         accessToken.setTokenType(jsonObject.getString(NAME_TOKEN_TYPE));
         accessToken.setExpiresIn(jsonObject.getLong(NAME_EXPIRES_IN));
         accessToken.setScope(jsonObject.getString(NAME_SCOPE));
-        accessToken.setRefreshToken(jsonObject.getString(NAME_REFRESH_TOKEN));
+        // "refresh_token" is absent (optional) in responses to token-refresh-requests
+        accessToken.setRefreshToken(jsonObject.optString(NAME_REFRESH_TOKEN));
 
         return accessToken;
     }

@@ -19,6 +19,7 @@ import se.joelpet.android.toyredditreader.storage.LocalStorage;
 import se.joelpet.android.toyredditreader.volley.AccessTokenRequest;
 import se.joelpet.android.toyredditreader.volley.ListingRequest;
 import se.joelpet.android.toyredditreader.volley.MeRequest;
+import se.joelpet.android.toyredditreader.volley.RefreshTokenRequest;
 import timber.log.Timber;
 
 public class RealRedditApi implements RedditApi {
@@ -39,10 +40,24 @@ public class RealRedditApi implements RedditApi {
     public Observable<Listing<Link>> getLinkListing(final String path, final String after, final Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
         mLocalStorage.getAccessToken().singleOrDefault(null)
+                .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
+                    @Override
+                    public Observable<AccessToken> call(AccessToken accessToken) {
+                        if (accessToken == null) {
+                            // We are not going to attempt an authenticated request -- carry on
+                            return null;
+                        } else if (accessToken.isExpired()) {
+                            // TODO: Store this new token somehow
+                            return refreshAccessToken(accessToken, tag);
+                        } else {
+                            return Observable.just(accessToken);
+                        }
+                    }
+                })
                 .map(new Func1<AccessToken, String>() {
                     @Override
                     public String call(AccessToken accessToken) {
-                        // TODO: Validate token expiration date.
+                        // We now either have null or a valid access token
                         return accessToken != null ? accessToken.getAccessToken() : null;
                     }
                 })
@@ -66,6 +81,13 @@ public class RealRedditApi implements RedditApi {
     public Observable<AccessToken> getAccessToken(String code, Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
         AccessTokenRequest request = new AccessTokenRequest(code, future, future);
+        addToRequestQueueWithTag(request, tag);
+        return Observable.from(future, Schedulers.io());
+    }
+
+    public Observable<AccessToken> refreshAccessToken(AccessToken accessToken, Object tag) {
+        RequestFuture<AccessToken> future = RequestFuture.newFuture();
+        RefreshTokenRequest request = new RefreshTokenRequest(accessToken, future);
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }

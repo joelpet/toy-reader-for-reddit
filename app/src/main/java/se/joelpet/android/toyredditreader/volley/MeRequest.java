@@ -27,7 +27,7 @@ public class MeRequest extends BaseRequest<Me> {
     }
 
     private static String buildUrl(String token) {
-        return uriBuilderFromAccessToken(token).appendPath(REQUEST_URI_PATH).toString();
+        return uriBuilderFromAccessToken(token).appendEncodedPath(REQUEST_URI_PATH).toString();
     }
 
     @Override
