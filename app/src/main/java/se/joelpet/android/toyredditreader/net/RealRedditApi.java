@@ -47,7 +47,6 @@ public class RealRedditApi implements RedditApi {
                             // We are not going to attempt an authenticated request -- carry on
                             return null;
                         } else if (accessToken.isExpired()) {
-                            // TODO: Store this new token somehow
                             return refreshAccessToken(accessToken, tag);
                         } else {
                             return Observable.just(accessToken);
@@ -89,7 +88,14 @@ public class RealRedditApi implements RedditApi {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
         RefreshTokenRequest request = new RefreshTokenRequest(accessToken, future);
         addToRequestQueueWithTag(request, tag);
-        return Observable.from(future, Schedulers.io());
+        return Observable.from(future, Schedulers.io())
+                // Store the refreshed access token when received before emitting to subscribers
+                .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
+                    @Override
+                    public Observable<AccessToken> call(AccessToken accessToken) {
+                        return mLocalDataStore.putAccessToken(accessToken);
+                    }
+                });
     }
 
     // TODO: getMe() should probably take accessToken as parameter

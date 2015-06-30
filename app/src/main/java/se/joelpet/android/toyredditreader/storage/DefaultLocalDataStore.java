@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import se.joelpet.android.toyredditreader.Preferences;
@@ -14,6 +13,7 @@ import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class DefaultLocalDataStore implements LocalDataStore {
 
@@ -67,11 +67,23 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 }
                 subscriber.onCompleted();
             }
-        }).observeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread());
+        }).observeOn(Schedulers.io()).subscribeOn(mainThread());
     }
 
     @Override
-    public void putAccessToken(AccessToken accessToken) {
-        mPreferences.putAccessToken(accessToken);
+    public Observable<AccessToken> putAccessToken(final AccessToken accessToken) {
+        checkNotNull(accessToken);
+        Observable<AccessToken> cache = Observable.create(new Observable.OnSubscribe<AccessToken>
+                () {
+            @Override
+            public void call(Subscriber<? super AccessToken> subscriber) {
+                mPreferences.putAccessToken(accessToken);
+                subscriber.onNext(accessToken);
+                subscriber.onCompleted();
+            }
+        }).observeOn(Schedulers.io()).subscribeOn(mainThread()).cache(1);
+        // Subscribe so that access token gets stored even if returned observable is ignored
+        cache.subscribe();
+        return cache;
     }
 }

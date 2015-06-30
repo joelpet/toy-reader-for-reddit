@@ -19,5 +19,5 @@ public interface LocalDataStore {
     Observable<AccessToken> getAccessToken();
 
     /** Stores the given access token. */
-    void putAccessToken(AccessToken accessToken);
+    Observable<AccessToken> putAccessToken(AccessToken accessToken);
 }
