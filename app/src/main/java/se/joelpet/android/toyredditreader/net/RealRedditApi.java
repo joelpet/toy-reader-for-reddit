@@ -37,7 +37,8 @@ public class RealRedditApi implements RedditApi {
     }
 
     @Override
-    public Observable<Listing<Link>> getLinkListing(final String path, final String after, final Object tag) {
+    public Observable<Listing<Link>> getLinkListing(final String path, final String after, final
+    Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
         mLocalDataStore.getAccessToken().singleOrDefault(null)
                 .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
@@ -45,7 +46,7 @@ public class RealRedditApi implements RedditApi {
                     public Observable<AccessToken> call(AccessToken accessToken) {
                         if (accessToken == null) {
                             // We are not going to attempt an authenticated request -- carry on
-                            return null;
+                            return Observable.just(null);
                         } else if (accessToken.isExpired()) {
                             return refreshAccessToken(accessToken, tag);
                         } else {

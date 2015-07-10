@@ -25,7 +25,7 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
     private final RequestFuture<AccessToken> mResponseListener;
 
     public RefreshTokenRequest(AccessToken accessToken, RequestFuture<AccessToken> future) {
-        super(Method.POST, buildUrl(), future);
+        super(Method.POST, buildUrl(), future, null);
         mAccessToken = accessToken;
         mResponseListener = future;
     }

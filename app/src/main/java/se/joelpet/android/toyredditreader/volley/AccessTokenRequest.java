@@ -26,7 +26,7 @@ public class AccessTokenRequest extends BaseRequest<AccessToken> {
 
     public AccessTokenRequest(String code, Response.Listener<AccessToken> listener,
                               Response.ErrorListener errorListener) {
-        super(Method.POST, "https://www.reddit.com/api/v1/access_token", errorListener);
+        super(Method.POST, "https://www.reddit.com/api/v1/access_token", errorListener, null);
         mCode = code;
         mListener = listener;
     }

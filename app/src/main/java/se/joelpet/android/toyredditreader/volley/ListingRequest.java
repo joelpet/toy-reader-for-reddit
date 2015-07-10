@@ -10,9 +10,9 @@ import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -26,7 +26,7 @@ public class ListingRequest<T extends Thing> extends BaseRequest<Listing<T>> {
 
     private final Response.Listener<Listing<T>> mResponseListener;
 
-    public ListingRequest(String path, String after, String accessToken,
+    public ListingRequest(String path, String after, @Nullable String accessToken,
                           RequestFuture<Listing<T>> future) {
         super(Method.GET, buildUrl(path, after, accessToken), future, accessToken);
         mResponseListener = future;

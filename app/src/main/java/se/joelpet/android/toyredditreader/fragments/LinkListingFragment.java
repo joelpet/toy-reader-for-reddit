@@ -125,7 +125,6 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
         ButterKnife.inject(this, view);
-        queueListingRequest();
         return view;
     }
 
@@ -139,9 +138,16 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        queueListingRequest();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         mRedditApi.cancelAll(TAG);
+        mRequestInProgress = false;
     }
 
     @Override
@@ -162,6 +168,9 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
+        if (mRequestInProgress) {
+            return;
+        }
         mAfter = null;
         queueListingRequest();
     }

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -19,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import timber.log.Timber;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class BaseRequest<T> extends Request<T> {
 
@@ -36,6 +35,7 @@ public abstract class BaseRequest<T> extends Request<T> {
     /** The Authorization HTTP header value that identifies this client. */
     public static final String AUTHORIZATION_VALUE = getAuthorizationValue();
 
+    @Nullable
     private String mAccessToken;
 
     private static String getAuthorizationValue() {
@@ -44,14 +44,10 @@ public abstract class BaseRequest<T> extends Request<T> {
         return "Basic " + credentialsBase64;
     }
 
-    public BaseRequest(int method, String url, Response.ErrorListener listener) {
+    public BaseRequest(int method, String url, Response.ErrorListener listener,
+                       @Nullable String accessToken) {
         super(method, url, listener);
-    }
-
-    public BaseRequest(int method, String url, Response.ErrorListener listener, String
-            accessToken) {
-        this(method, url, listener);
-        mAccessToken = checkNotNull(accessToken);
+        mAccessToken = accessToken;
     }
 
     protected static Uri.Builder uriBuilderFromAccessToken(String token) {
