@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_everything"
+            android:checked="true"
+            android:title="@string/navigation_everything" />
+        <item
+            android:id="@+id/navigation_subscribed"
+            android:title="@string/navigation_subscribed" />
+        <item
+            android:id="@+id/navigation_saved"
+            android:title="@string/navigation_saved" />
+
+        <item
+            android:id="@+id/navigation_settings"
+            android:icon="@drawable/ic_action_settings"
+            android:title="Settings" />
+    </group>
+
+</menu>

@@ -13,9 +13,9 @@ import se.joelpet.android.toyredditreader.Preferences;
 import se.joelpet.android.toyredditreader.RedditApp;
 import se.joelpet.android.toyredditreader.VolleySingleton;
 import se.joelpet.android.toyredditreader.activities.LoginActivity;
+import se.joelpet.android.toyredditreader.activities.MainActivity;
 import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
-import se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment;
 import se.joelpet.android.toyredditreader.net.FakeRedditApi;
 import se.joelpet.android.toyredditreader.net.RealRedditApi;
 import se.joelpet.android.toyredditreader.net.RedditApi;
@@ -29,7 +29,7 @@ import se.joelpet.android.toyredditreader.storage.LocalDataStore;
                 LinkListingFragment.class,
                 LinkListingRecyclerViewAdapter.class,
                 LoginActivity.class,
-                NavigationDrawerFragment.class,
+                MainActivity.class,
                 RealRedditApi.class,
         }
 )
