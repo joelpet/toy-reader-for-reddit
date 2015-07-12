@@ -46,7 +46,7 @@ public abstract class BaseFragment extends Fragment {
         ((RedditApp) fragment.getActivity().getApplication()).inject(fragment);
     }
 
-    protected <T> Observable<T> bind(Observable<T> source) {
+    protected <T> Observable<T> bindToFragment(Observable<T> source) {
         return AndroidObservable.bindFragment(this, source);
     }
 

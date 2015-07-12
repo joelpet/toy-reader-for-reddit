@@ -24,11 +24,12 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import rx.functions.Action1;
+import se.joelpet.android.toyredditreader.AbstractObserver;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
 import se.joelpet.android.toyredditreader.storage.LocalDataStore;
+import timber.log.Timber;
 
 public class MainActivity extends BaseActivity implements NavigationView
         .OnNavigationItemSelectedListener {
@@ -81,27 +82,7 @@ public class MainActivity extends BaseActivity implements NavigationView
                             LinkListingFragment.ARG_SORT_HOT)).commit();
         }
 
-        addSubscription(bind(mLocalDataStore.observeMe()).subscribe(new Action1<Me>() {
-            @Override
-            public void call(Me me) {
-                mUserNameView.setText(me.getName());
-
-                Period redditorPeriod = new Period(me.getCreationDateTime(),
-                        DateTime.now(DateTimeZone.UTC)).normalizedStandard();
-
-                int redditorPeriodYears = redditorPeriod.getYears();
-                int redditorPeriodMonths = redditorPeriod.getMonths();
-
-                String years = getResources().getQuantityString(R.plurals.years,
-                        redditorPeriodYears, redditorPeriodYears);
-                String months = getResources().getQuantityString(R.plurals.months,
-                        redditorPeriodMonths, redditorPeriodMonths);
-
-                CharSequence memberSinceText = getResources().getString(R.string
-                        .redditor_for_years_months, years, months);
-                mUserEmailView.setText(memberSinceText);
-            }
-        }));
+        addSubscription(bindToActivity(mLocalDataStore.observeMe()).subscribe(new MeObserver()));
     }
 
     @Override
@@ -178,5 +159,32 @@ public class MainActivity extends BaseActivity implements NavigationView
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         menuItem.setChecked(true);
         return true;
+    }
+
+    private CharSequence getFormattedAccountAge(Me me) {
+        Period accountPeriod = new Period(me.getCreationDateTime(),
+                DateTime.now(DateTimeZone.UTC)).normalizedStandard();
+        int accountPeriodYears = accountPeriod.getYears();
+        int accountPeriodMonths = accountPeriod.getMonths();
+
+        String years = getResources().getQuantityString(R.plurals.years,
+                accountPeriodYears, accountPeriodYears);
+        String months = getResources().getQuantityString(R.plurals.months,
+                accountPeriodMonths, accountPeriodMonths);
+
+        return getResources().getString(R.string.redditor_for_years_months, years, months);
+    }
+
+    /**
+     * MeObserver handles updates to the locally stored Me object.
+     */
+    private class MeObserver extends AbstractObserver<Me> {
+
+        @Override
+        public void onNext(Me me) {
+            Timber.d("Refreshing view with new Me object: %s", me);
+            mUserNameView.setText(me.getName());
+            mUserEmailView.setText(getFormattedAccountAge(me));
+        }
     }
 }

@@ -21,7 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ((RedditApp) activity.getApplication()).inject(activity);
     }
 
-    protected <T> Observable<T> bind(Observable<T> source) {
+    protected <T> Observable<T> bindToActivity(Observable<T> source) {
         return AndroidObservable.bindActivity(this, source);
     }
 
