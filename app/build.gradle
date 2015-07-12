@@ -50,6 +50,7 @@ dependencies {
     compile 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
     compile 'io.reactivex:rxandroid:0.23.0'
+    compile 'net.danlew:android.joda:2.8.1'
 
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
