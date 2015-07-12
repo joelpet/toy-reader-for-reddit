@@ -37,10 +37,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/icon_image_user_name_space"
         android:background="?attr/selectableItemBackground"
+        android:includeFontPadding="false"
         android:text="@string/navigation_header_user_name_unauthenticated"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/light_blue_50"
-        app:typeface="roboto_slab_regular" />
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="#FFFFFF"
+        app:typeface="roboto_medium" />
 
     <Space
         android:id="@+id/user_name_user_email_space"
@@ -54,10 +55,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/user_name_user_email_space"
         android:background="?attr/selectableItemBackground"
+        android:includeFontPadding="false"
         android:text="@string/navigation_header_user_email_unauthenticated"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/light_blue_50"
-        app:typeface="roboto_slab_regular" />
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="#FFFFFF"
+        app:typeface="roboto_regular" />
 
     <!-- TODO: Figure out the correct margin correction below -->
     <ViewSwitcher
