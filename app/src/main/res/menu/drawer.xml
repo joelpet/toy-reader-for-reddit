@@ -9,14 +9,6 @@
         <item
             android:id="@+id/navigation_subscribed"
             android:title="@string/navigation_subscribed" />
-        <item
-            android:id="@+id/navigation_saved"
-            android:title="@string/navigation_saved" />
-
-        <item
-            android:id="@+id/navigation_settings"
-            android:icon="@drawable/ic_action_settings"
-            android:title="Settings" />
     </group>
 
 </menu>

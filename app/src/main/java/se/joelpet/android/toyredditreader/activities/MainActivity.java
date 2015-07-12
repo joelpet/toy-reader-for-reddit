@@ -150,12 +150,6 @@ public class MainActivity extends BaseActivity implements NavigationView
                         .newInstance(LinkListingFragment.ARG_LISTING_SUBSCRIBED,
                                 LinkListingFragment.ARG_SORT_HOT);
                 break;
-            case R.id.navigation_saved:
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                return false;
-            case R.id.navigation_settings:
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                return false;
             default:
                 return false;
         }
