@@ -1,5 +1,9 @@
 package se.joelpet.android.toyredditreader.activities;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -44,6 +47,9 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     @InjectView(R.id.user_name)
     protected TextView mUserNameView;
+
+    @InjectView(R.id.user_email)
+    protected TextView mUserEmailView;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -79,6 +85,21 @@ public class MainActivity extends BaseActivity implements NavigationView
             @Override
             public void call(Me me) {
                 mUserNameView.setText(me.getName());
+
+                Period redditorPeriod = new Period(me.getCreationDateTime(),
+                        DateTime.now(DateTimeZone.UTC)).normalizedStandard();
+
+                int redditorPeriodYears = redditorPeriod.getYears();
+                int redditorPeriodMonths = redditorPeriod.getMonths();
+
+                String years = getResources().getQuantityString(R.plurals.years,
+                        redditorPeriodYears, redditorPeriodYears);
+                String months = getResources().getQuantityString(R.plurals.months,
+                        redditorPeriodMonths, redditorPeriodMonths);
+
+                CharSequence memberSinceText = getResources().getString(R.string
+                        .redditor_for_years_months, years, months);
+                mUserEmailView.setText(memberSinceText);
             }
         }));
     }

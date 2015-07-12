@@ -1,11 +1,15 @@
 package se.joelpet.android.toyredditreader.domain;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
 public class Me implements Serializable {
+
+    public static final int SECOND_IN_MILLIS = 1000;
 
     public static final String NAME_NAME = "name";
 
@@ -161,6 +165,10 @@ public class Me implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public DateTime getCreationDateTime() {
+        return new DateTime((long) (createdUtc * SECOND_IN_MILLIS), DateTimeZone.UTC);
     }
 
     @Override

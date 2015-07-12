@@ -7,12 +7,24 @@
     <string name="submitted_info_text">"%1$s\nby <b>%2$s</b>"</string>
     <string name="num_comments">%d comments</string>
     <string name="title_activity_web">WebActivity</string>
+
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
     <string name="navigation_header_user_name_unauthenticated">Anonymous</string>
     <string name="navigation_header_user_email_unauthenticated">Sign in</string>
-
     <string name="navigation_everything">Everything</string>
     <string name="navigation_subscribed">Subscribed</string>
+
+    <string name="redditor_for_years_months">redditor for %1$s %2$s</string>
+
+    <plurals name="years">
+        <item quantity="one">1 year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
+
+    <plurals name="months">
+        <item quantity="one">1 month</item>
+        <item quantity="other">%1$d months</item>
+    </plurals>
 
 </resources>
