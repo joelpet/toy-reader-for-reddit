@@ -42,8 +42,8 @@ public class MainActivity extends BaseActivity implements NavigationView
     @InjectView(R.id.navigation_view)
     protected NavigationView mNavigationView;
 
-    @InjectView(R.id.user_text_view)
-    protected TextView mUserTextView;
+    @InjectView(R.id.user_name)
+    protected TextView mUserNameView;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements NavigationView
         addSubscription(bind(mLocalDataStore.observeMe()).subscribe(new Action1<Me>() {
             @Override
             public void call(Me me) {
-                mUserTextView.setText(me.getName());
+                mUserNameView.setText(me.getName());
             }
         }));
     }
@@ -116,8 +116,8 @@ public class MainActivity extends BaseActivity implements NavigationView
         super.onBackPressed();
     }
 
-    @OnClick(R.id.user_text_view)
-    protected void onUserTextViewClick(View view) {
+    @OnClick(R.id.user_name)
+    protected void onUserNameViewClick(View view) {
         Intent loginIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
     }
