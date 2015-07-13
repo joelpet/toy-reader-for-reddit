@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import javax.inject.Inject;
 
@@ -51,6 +52,9 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     @InjectView(R.id.user_email)
     protected TextView mUserEmailView;
+
+    @InjectView(R.id.account_toggle_arrow)
+    protected ViewSwitcher mAccountToggleArrowSwitcher;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -118,10 +122,18 @@ public class MainActivity extends BaseActivity implements NavigationView
         super.onBackPressed();
     }
 
-    @OnClick(R.id.user_name)
-    protected void onUserNameViewClick(View view) {
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
+    @OnClick(R.id.account_drop_down_arrow)
+    protected void onAccountDropDownArrowClick(View view) {
+        mNavigationView.getMenu().setGroupVisible(R.id.main_group, false);
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, true);
+        mAccountToggleArrowSwitcher.showNext();
+    }
+
+    @OnClick(R.id.account_drop_up_arrow)
+    protected void onAccountDropUpArrowClick(View view) {
+        mNavigationView.getMenu().setGroupVisible(R.id.main_group, true);
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
+        mAccountToggleArrowSwitcher.showNext();
     }
 
     @Override
@@ -152,6 +164,9 @@ public class MainActivity extends BaseActivity implements NavigationView
                         .newInstance(LinkListingFragment.ARG_LISTING_SUBSCRIBED,
                                 LinkListingFragment.ARG_SORT_HOT);
                 break;
+            case R.id.navigation_log_in:
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
             default:
                 return false;
         }

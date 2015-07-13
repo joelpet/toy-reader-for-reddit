@@ -14,6 +14,8 @@
     <string name="navigation_header_user_email_unauthenticated">Sign in</string>
     <string name="navigation_everything">Everything</string>
     <string name="navigation_subscribed">Subscribed</string>
+    <string name="navigation_log_in">Log in</string>
+    <string name="navigation_log_out">Log out</string>
 
     <string name="redditor_for_years_months">redditor for %1$s %2$s</string>
 

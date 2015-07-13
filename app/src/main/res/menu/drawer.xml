@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/main_group"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_everything"
             android:checked="true"
@@ -9,6 +11,17 @@
         <item
             android:id="@+id/navigation_subscribed"
             android:title="@string/navigation_subscribed" />
+    </group>
+
+    <group
+        android:id="@+id/account_group"
+        android:visible="false">
+        <item
+            android:id="@+id/navigation_log_in"
+            android:title="@string/navigation_log_in" />
+        <item
+            android:id="@+id/navigation_log_out"
+            android:title="@string/navigation_log_out" />
     </group>
 
 </menu>
