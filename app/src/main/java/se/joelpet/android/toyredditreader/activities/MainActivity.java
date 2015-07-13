@@ -25,8 +25,11 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import se.joelpet.android.toyredditreader.AbstractObserver;
 import se.joelpet.android.toyredditreader.R;
+import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Me;
 import se.joelpet.android.toyredditreader.fragments.LinkListingFragment;
 import se.joelpet.android.toyredditreader.storage.LocalDataStore;
@@ -125,8 +128,29 @@ public class MainActivity extends BaseActivity implements NavigationView
     @OnClick(R.id.account_drop_down_arrow)
     protected void onAccountDropDownArrowClick(View view) {
         mNavigationView.getMenu().setGroupVisible(R.id.main_group, false);
-        mNavigationView.getMenu().setGroupVisible(R.id.account_group, true);
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
         mAccountToggleArrowSwitcher.showNext();
+
+        addSubscription(bindToActivity(mLocalDataStore.getAccessToken()).first().map(new Func1<AccessToken, Boolean>() {
+            @Override
+            public Boolean call(AccessToken accessToken) {
+                return true;
+            }
+        }).onErrorReturn(new Func1<Throwable, Boolean>() {
+            @Override
+            public Boolean call(Throwable throwable) {
+                return false;
+            }
+        }).subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean loggedIn) {
+                mNavigationView.getMenu().setGroupVisible(R.id.account_group, true);
+                mNavigationView.getMenu().findItem(R.id.navigation_log_in).setVisible
+                        (!loggedIn);
+                mNavigationView.getMenu().findItem(R.id.navigation_log_out).setVisible
+                        (loggedIn);
+            }
+        }));
     }
 
     @OnClick(R.id.account_drop_up_arrow)
