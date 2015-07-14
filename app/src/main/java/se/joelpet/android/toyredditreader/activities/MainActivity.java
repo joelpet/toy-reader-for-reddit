@@ -105,6 +105,7 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // FIXME: This is not used, or at least should not be used.
         getMenuInflater().inflate(R.menu.subreddit, menu);
         return false;
     }
@@ -132,7 +133,7 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     @OnClick(R.id.account_drop_down_arrow)
     protected void onAccountDropDownArrowClick(View view) {
-        showDrawerMenuAccountGroup(null);
+        switchToAccountMenuModeInDrawerWithOptionsHidden();
         addSubscription(bindToActivity(mLocalDataStore.getAccessToken()).first().map(new Func1<AccessToken, Boolean>() {
             @Override
             public Boolean call(AccessToken accessToken) {
@@ -146,14 +147,14 @@ public class MainActivity extends BaseActivity implements NavigationView
         }).subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean signedIn) {
-                showDrawerMenuAccountGroup(signedIn);
+                switchToAccountMenuModeInDrawerAs(signedIn);
             }
         }));
     }
 
     @OnClick(R.id.account_drop_up_arrow)
     protected void onAccountDropUpArrowClick(View view) {
-        showDrawerMenuMainGroup();
+        switchToDefaultMenuModeInDrawer();
     }
 
     @Override
@@ -162,7 +163,7 @@ public class MainActivity extends BaseActivity implements NavigationView
             if (resultCode == Activity.RESULT_OK) {
                 Me me = (Me) data.getSerializableExtra("me");
                 mLocalDataStore.putMe(me);
-                showDrawerMenuMainGroup();
+                switchToDefaultMenuModeInDrawer();
             }
         }
     }
@@ -190,7 +191,7 @@ public class MainActivity extends BaseActivity implements NavigationView
                 startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
                 return false;
             case R.id.navigation_sign_out:
-                showDrawerMenuMainGroup();
+                switchToDefaultMenuModeInDrawer();
                 addSubscription(bindToActivity(Observable.merge(mLocalDataStore.deleteAccessToken(),
                         mLocalDataStore.deleteMe())).doOnCompleted(new Action0() {
                     @Override
@@ -209,24 +210,44 @@ public class MainActivity extends BaseActivity implements NavigationView
         return true;
     }
 
-    private void showDrawerMenuMainGroup() {
-        mNavigationView.getMenu().setGroupVisible(R.id.main_group, true);
-        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
+    private void switchToDefaultMenuModeInDrawer() {
+        setDefaultGroupInDrawerMenuVisible(true);
+        setAccountGroupInDrawerMenuVisible(false);
+        displayAccountToggleDropDownArrow();
+    }
+
+    private void switchToAccountMenuModeInDrawerWithOptionsHidden() {
+        setDefaultGroupInDrawerMenuVisible(false);
+        setAccountGroupInDrawerMenuVisible(false);
+        displayAccountToggleDropUpArrow();
+    }
+
+    private void switchToAccountMenuModeInDrawerAs(boolean signedIn) {
+        setDefaultGroupInDrawerMenuVisible(false);
+        setAccountGroupInDrawerMenuVisible(true);
+        displayAccountToggleDropUpArrow();
+        toggleAccountMenuOptionsVisibilityAs(signedIn);
+    }
+
+    private void displayAccountToggleDropDownArrow() {
         mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
     }
 
-    private void showDrawerMenuAccountGroup(Boolean signedIn) {
-        boolean signedInStateKnown = signedIn != null;
-
-        mNavigationView.getMenu().setGroupVisible(R.id.main_group, false);
-        mNavigationView.getMenu().setGroupVisible(R.id.account_group, signedInStateKnown);
-
-        if (signedInStateKnown) {
-            mNavigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
-            mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
-        }
-
+    private void displayAccountToggleDropUpArrow() {
         mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
+    }
+
+    private void setAccountGroupInDrawerMenuVisible(boolean visible) {
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, visible);
+    }
+
+    private void setDefaultGroupInDrawerMenuVisible(boolean visible) {
+        mNavigationView.getMenu().setGroupVisible(R.id.default_group, visible);
+    }
+
+    private void toggleAccountMenuOptionsVisibilityAs(boolean signedIn) {
+        mNavigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
+        mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
     }
 
     private CharSequence getFormattedAccountAge(Me me) {
