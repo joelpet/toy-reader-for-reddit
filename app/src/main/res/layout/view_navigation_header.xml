@@ -39,25 +39,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/icon_image_user_name_space"
         android:background="?attr/selectableItemBackground"
-        android:includeFontPadding="false"
         android:text="@string/navigation_header_user_name_unauthenticated"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
         app:typeface="roboto_medium" />
 
-    <Space
-        android:id="@+id/user_name_user_email_space"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/content_spacing"
-        android:layout_below="@id/user_name" />
-
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/user_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/user_name_user_email_space"
+        android:layout_below="@id/user_name"
         android:background="?attr/selectableItemBackground"
-        android:includeFontPadding="false"
         android:text="@string/navigation_header_user_email_unauthenticated"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
