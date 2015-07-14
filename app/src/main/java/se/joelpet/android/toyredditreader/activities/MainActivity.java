@@ -131,6 +131,18 @@ public class MainActivity extends BaseActivity implements NavigationView
         super.onBackPressed();
     }
 
+    @OnClick(R.id.navigation_header_root)
+    protected void onNavigationHeaderRootClick(View view) {
+        View currentToggleArrowSwitcherView = mAccountToggleArrowSwitcher.getCurrentView();
+        boolean accountDropDownArrowDisplayed = currentToggleArrowSwitcherView.getId() == R.id
+                .account_drop_down_arrow;
+        if (accountDropDownArrowDisplayed) {
+            onAccountDropDownArrowClick(currentToggleArrowSwitcherView);
+        } else {
+            onAccountDropUpArrowClick(currentToggleArrowSwitcherView);
+        }
+    }
+
     @OnClick(R.id.account_drop_down_arrow)
     protected void onAccountDropDownArrowClick(View view) {
         switchToAccountMenuModeInDrawerWithOptionsHidden();
