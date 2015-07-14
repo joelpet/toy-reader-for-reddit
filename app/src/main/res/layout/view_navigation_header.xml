@@ -82,9 +82,4 @@
             android:src="@drawable/ic_arrow_drop_up_white" />
     </ViewSwitcher>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/content_spacing"
-        android:layout_below="@id/account_toggle_arrow" />
-
 </RelativeLayout>
