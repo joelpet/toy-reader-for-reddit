@@ -17,11 +17,11 @@
         android:id="@+id/account_group"
         android:visible="false">
         <item
-            android:id="@+id/navigation_log_in"
-            android:title="@string/navigation_log_in" />
+            android:id="@+id/navigation_sign_in"
+            android:title="@string/navigation_sign_in" />
         <item
-            android:id="@+id/navigation_log_out"
-            android:title="@string/navigation_log_out" />
+            android:id="@+id/navigation_sign_out"
+            android:title="@string/navigation_sign_out" />
     </group>
 
 </menu>

@@ -48,6 +48,22 @@ public class DefaultLocalDataStore implements LocalDataStore {
     }
 
     @Override
+    public Observable<Void> deleteMe() {
+        Observable<Void> cachedObservable = Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                mPreferences.deleteMe();
+                subscriber.onCompleted();
+                if (mMeSubject != null) {
+                    mMeSubject.onNext(null);
+                }
+            }
+        });
+        cachedObservable.subscribe();
+        return cachedObservable;
+    }
+
+    @Override
     public void putAuthCode(String authCode) {
         checkNotNull(authCode);
         mPreferences.putAuthCode(authCode);
@@ -73,8 +89,8 @@ public class DefaultLocalDataStore implements LocalDataStore {
     @Override
     public Observable<AccessToken> putAccessToken(final AccessToken accessToken) {
         checkNotNull(accessToken);
-        Observable<AccessToken> cache = Observable.create(new Observable.OnSubscribe<AccessToken>
-                () {
+        Observable<AccessToken> cachedObservable = Observable.create(new Observable
+                .OnSubscribe<AccessToken>() {
             @Override
             public void call(Subscriber<? super AccessToken> subscriber) {
                 mPreferences.putAccessToken(accessToken);
@@ -83,7 +99,20 @@ public class DefaultLocalDataStore implements LocalDataStore {
             }
         }).observeOn(Schedulers.io()).subscribeOn(mainThread()).cache(1);
         // Subscribe so that access token gets stored even if returned observable is ignored
-        cache.subscribe();
-        return cache;
+        cachedObservable.subscribe();
+        return cachedObservable;
+    }
+
+    @Override
+    public Observable<Void> deleteAccessToken() {
+        Observable<Void> cachedObservable = Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                mPreferences.deleteAccessToken();
+                subscriber.onCompleted();
+            }
+        }).observeOn(Schedulers.io()).subscribeOn(mainThread()).cache(1);
+        cachedObservable.subscribe();
+        return cachedObservable;
     }
 }

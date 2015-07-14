@@ -12,6 +12,9 @@ public interface LocalDataStore {
     /** Stores the given Me object. */
     void putMe(Me me);
 
+    /** Deletes the current Me object, if exists, before completion. */
+    Observable<Void> deleteMe();
+
     /** Stores the given auth code. */
     void putAuthCode(String authCode);
 
@@ -20,4 +23,7 @@ public interface LocalDataStore {
 
     /** Stores the given access token. */
     Observable<AccessToken> putAccessToken(AccessToken accessToken);
+
+    /** Deletes the current access token, if exists, before completion. */
+    Observable<Void> deleteAccessToken();
 }

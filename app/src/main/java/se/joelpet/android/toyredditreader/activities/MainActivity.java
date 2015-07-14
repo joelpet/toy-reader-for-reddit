@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import javax.inject.Inject;
@@ -25,6 +26,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyredditreader.AbstractObserver;
@@ -40,6 +43,8 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     public static final int DRAWER_GRAVITY = GravityCompat.START;
     public static final int REQUEST_CODE_LOGIN = 1;
+    public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN = 0;
+    public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP = 1;
 
     @InjectView(R.id.toolbar)
     protected Toolbar mToolbar;
@@ -127,14 +132,11 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     @OnClick(R.id.account_drop_down_arrow)
     protected void onAccountDropDownArrowClick(View view) {
-        mNavigationView.getMenu().setGroupVisible(R.id.main_group, false);
-        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
-        mAccountToggleArrowSwitcher.showNext();
-
+        showDrawerMenuAccountGroup(null);
         addSubscription(bindToActivity(mLocalDataStore.getAccessToken()).first().map(new Func1<AccessToken, Boolean>() {
             @Override
             public Boolean call(AccessToken accessToken) {
-                return true;
+                return accessToken != null && !accessToken.isExpired();
             }
         }).onErrorReturn(new Func1<Throwable, Boolean>() {
             @Override
@@ -143,21 +145,15 @@ public class MainActivity extends BaseActivity implements NavigationView
             }
         }).subscribe(new Action1<Boolean>() {
             @Override
-            public void call(Boolean loggedIn) {
-                mNavigationView.getMenu().setGroupVisible(R.id.account_group, true);
-                mNavigationView.getMenu().findItem(R.id.navigation_log_in).setVisible
-                        (!loggedIn);
-                mNavigationView.getMenu().findItem(R.id.navigation_log_out).setVisible
-                        (loggedIn);
+            public void call(Boolean signedIn) {
+                showDrawerMenuAccountGroup(signedIn);
             }
         }));
     }
 
     @OnClick(R.id.account_drop_up_arrow)
     protected void onAccountDropUpArrowClick(View view) {
-        mNavigationView.getMenu().setGroupVisible(R.id.main_group, true);
-        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
-        mAccountToggleArrowSwitcher.showNext();
+        showDrawerMenuMainGroup();
     }
 
     @Override
@@ -166,6 +162,7 @@ public class MainActivity extends BaseActivity implements NavigationView
             if (resultCode == Activity.RESULT_OK) {
                 Me me = (Me) data.getSerializableExtra("me");
                 mLocalDataStore.putMe(me);
+                showDrawerMenuMainGroup();
             }
         }
     }
@@ -188,9 +185,21 @@ public class MainActivity extends BaseActivity implements NavigationView
                         .newInstance(LinkListingFragment.ARG_LISTING_SUBSCRIBED,
                                 LinkListingFragment.ARG_SORT_HOT);
                 break;
-            case R.id.navigation_log_in:
+            case R.id.navigation_sign_in:
                 Intent loginIntent = new Intent(this, LoginActivity.class);
                 startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
+                return false;
+            case R.id.navigation_sign_out:
+                showDrawerMenuMainGroup();
+                addSubscription(bindToActivity(Observable.merge(mLocalDataStore.deleteAccessToken(),
+                        mLocalDataStore.deleteMe())).doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast
+                                .LENGTH_SHORT).show();
+                    }
+                }).subscribe());
+                return false;
             default:
                 return false;
         }
@@ -198,6 +207,26 @@ public class MainActivity extends BaseActivity implements NavigationView
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         menuItem.setChecked(true);
         return true;
+    }
+
+    private void showDrawerMenuMainGroup() {
+        mNavigationView.getMenu().setGroupVisible(R.id.main_group, true);
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, false);
+        mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
+    }
+
+    private void showDrawerMenuAccountGroup(Boolean signedIn) {
+        boolean signedInStateKnown = signedIn != null;
+
+        mNavigationView.getMenu().setGroupVisible(R.id.main_group, false);
+        mNavigationView.getMenu().setGroupVisible(R.id.account_group, signedInStateKnown);
+
+        if (signedInStateKnown) {
+            mNavigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
+            mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
+        }
+
+        mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
     }
 
     private CharSequence getFormattedAccountAge(Me me) {
@@ -222,8 +251,14 @@ public class MainActivity extends BaseActivity implements NavigationView
         @Override
         public void onNext(Me me) {
             Timber.d("Refreshing view with new Me object: %s", me);
-            mUserNameView.setText(me.getName());
-            mUserEmailView.setText(getFormattedAccountAge(me));
+
+            String userName = me != null ? me.getName() : getString(R.string
+                    .navigation_header_user_name_unauthenticated);
+            CharSequence userEmail = me != null ? getFormattedAccountAge(me) : getString(R.string
+                    .navigation_header_user_email_unauthenticated);
+
+            mUserNameView.setText(userName);
+            mUserEmailView.setText(userEmail);
         }
     }
 }

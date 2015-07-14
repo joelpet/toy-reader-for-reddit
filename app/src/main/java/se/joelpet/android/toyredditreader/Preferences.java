@@ -43,6 +43,10 @@ public class Preferences {
                 .commit();
     }
 
+    public void deleteAccessToken() {
+        getEditor().remove(KEY_ACCESS_TOKEN).commit();
+    }
+
     public Me getMe() {
         String meString = getSharedPreferences().getString(KEY_ME, null);
         return meString != null ? mGson.fromJson(meString, Me.class) : null;
@@ -50,6 +54,10 @@ public class Preferences {
 
     public void putMe(Me me) {
         getEditor().putString(KEY_ME, mGson.toJson(me)).commit();
+    }
+
+    public void deleteMe() {
+        getEditor().remove(KEY_ME).commit();
     }
 
     private SharedPreferences getSharedPreferences() {
