@@ -3,8 +3,10 @@ package se.joelpet.android.toyredditreader.net;
 import java.util.ArrayList;
 
 import rx.Observable;
+import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
+import se.joelpet.android.toyredditreader.domain.Me;
 
 public class FakeRedditApi implements RedditApi {
 
@@ -32,6 +34,16 @@ public class FakeRedditApi implements RedditApi {
         }
 
         return Observable.just(linkListing);
+    }
+
+    @Override
+    public Observable<AccessToken> getAccessToken(String code, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
+    public Observable<Me> getMe(Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
     }
 
     @Override

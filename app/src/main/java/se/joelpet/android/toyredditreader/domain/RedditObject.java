@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class RedditObject implements Serializable {
+public abstract class RedditObject implements Serializable {
 
     public static final String NAME_KIND = "kind";
 

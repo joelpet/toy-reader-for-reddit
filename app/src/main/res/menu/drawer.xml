@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/default_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_everything"
+            android:checked="true"
+            android:title="@string/navigation_everything" />
+        <item
+            android:id="@+id/navigation_subscribed"
+            android:title="@string/navigation_subscribed" />
+    </group>
+
+    <group
+        android:id="@+id/account_group"
+        android:visible="false">
+        <item
+            android:id="@+id/navigation_sign_in"
+            android:title="@string/navigation_sign_in" />
+        <item
+            android:id="@+id/navigation_sign_out"
+            android:title="@string/navigation_sign_out" />
+    </group>
+
+</menu>

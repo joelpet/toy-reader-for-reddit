@@ -1,48 +1,43 @@
-package se.joelpet.android.toyredditreader.gson;
+package se.joelpet.android.toyredditreader.volley;
 
 import com.google.gson.JsonSyntaxException;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
+
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import se.joelpet.android.toyredditreader.domain.Listing;
 import se.joelpet.android.toyredditreader.domain.RedditObject;
 import se.joelpet.android.toyredditreader.domain.Thing;
 import timber.log.Timber;
 
-public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
-
-    private final Map<String, String> mHeaders;
+public class ListingRequest<T extends Thing> extends BaseRequest<Listing<T>> {
 
     private final Response.Listener<Listing<T>> mResponseListener;
 
-    /**
-     * Make a GET request and return a parsed object from JSON.
-     *
-     * @param url     URL of the request to make
-     * @param headers Map of request headers
-     */
-    public ListingRequest(String url, Map<String, String> headers,
-            Response.Listener<Listing<T>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, url, errorListener);
-        mHeaders = headers;
-        mResponseListener = listener;
+    public ListingRequest(String path, String after, @Nullable String accessToken,
+                          RequestFuture<Listing<T>> future) {
+        super(Method.GET, buildUrl(path, after, accessToken), future, accessToken);
+        mResponseListener = future;
     }
 
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        return mHeaders != null ? mHeaders : super.getHeaders();
+    private static String buildUrl(String path, String after, String token) {
+        Uri.Builder uriBuilder = uriBuilderFromAccessToken(token).appendEncodedPath(path + ".json");
+        if (!TextUtils.isEmpty(after)) {
+            uriBuilder.appendQueryParameter("after", after);
+        }
+        return uriBuilder.toString();
     }
 
     @Override
@@ -54,9 +49,7 @@ public class ListingRequest<T extends Thing> extends Request<Listing<T>> {
     @Override
     protected Response<Listing<T>> parseNetworkResponse(NetworkResponse response) {
         try {
-            String json = new String(response.data,
-                    HttpHeaderParser.parseCharset(response.headers));
-            JSONObject jsonObject = (JSONObject) new JSONTokener(json).nextValue();
+            JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
             Listing<T> listing = RedditObject.listingFromJson(jsonObject);
             return Response.success(listing, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

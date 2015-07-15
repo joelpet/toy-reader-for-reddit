@@ -1,5 +1,7 @@
 package se.joelpet.android.toyredditreader;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import android.app.Application;
 
 import dagger.ObjectGraph;
@@ -19,6 +21,8 @@ public class RedditApp extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        JodaTimeAndroid.init(this);
     }
 
     public <T> void inject(T object) {

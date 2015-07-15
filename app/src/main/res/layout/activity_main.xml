@@ -1,10 +1,12 @@
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SubredditActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
 
     <!-- TODO: Use RelativeLayout to lay out things correctly, instead of hackishly -->
     <FrameLayout
@@ -21,18 +23,15 @@
             android:foreground="?android:windowContentOverlay" />
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/navigation_drawer_fragment_container"
-        android:layout_width="260dp"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        app:headerLayout="@layout/view_navigation_header"
+        app:itemTextColor="@color/navigation_drawer_menu_item_text"
+        app:menu="@menu/drawer" />
 
-        <fragment
-            android:id="@+id/navigation_drawer_fragment"
-            android:name="se.joelpet.android.toyredditreader.fragments.NavigationDrawerFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
 </android.support.v4.widget.DrawerLayout>
 
 
