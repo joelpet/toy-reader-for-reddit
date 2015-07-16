@@ -1,20 +1,17 @@
 package se.joelpet.android.toyredditreader.net;
 
-import com.android.volley.Response;
-
 import java.util.ArrayList;
 
+import rx.Observable;
+import se.joelpet.android.toyredditreader.domain.AccessToken;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
-import se.joelpet.android.toyredditreader.gson.ListingRequest;
+import se.joelpet.android.toyredditreader.domain.Me;
 
 public class FakeRedditApi implements RedditApi {
 
     @Override
-    public ListingRequest<Link> getLinkListing(String path, String after,
-            Response.Listener<Listing<Link>> listener, Response.ErrorListener errorListener,
-            Object tag) {
-
+    public Observable<Listing<Link>> getLinkListing(String path, String after, Object tag) {
         Listing<Link> linkListing = new Listing<>();
         linkListing.setChildren(new ArrayList<Link>());
         linkListing.setAfter("t3_2vfezo");
@@ -36,9 +33,17 @@ public class FakeRedditApi implements RedditApi {
             linkListing.getChildren().add(link);
         }
 
-        listener.onResponse(linkListing);
+        return Observable.just(linkListing);
+    }
 
-        return new ListingRequest<>(null, null, null, null);
+    @Override
+    public Observable<AccessToken> getAccessToken(String code, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
+    public Observable<Me> getMe(Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
     }
 
     @Override

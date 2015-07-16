@@ -3,33 +3,40 @@ package se.joelpet.android.toyredditreader.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.subscriptions.CompositeSubscription;
 import se.joelpet.android.toyredditreader.RedditApp;
 import timber.log.Timber;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
+
+    /** Composite subscription to keep track of all subscription registrations in this Fragment. */
+    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Timber.i("%s###onCreate(%s)", this, savedInstanceState);
+        Timber.v("%s###onCreate(%s)", this, savedInstanceState);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Timber.i("%s###onStart()", this);
+        Timber.v("%s###onStart()", this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Timber.i("%s###onStop()", this);
+        Timber.v("%s###onStop()", this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Timber.i("%s###onDestroy()", this);
+        Timber.v("%s###onDestroy()", this);
     }
 
     /**
@@ -37,5 +44,17 @@ public class BaseFragment extends Fragment {
      */
     protected static void inject(Fragment fragment) {
         ((RedditApp) fragment.getActivity().getApplication()).inject(fragment);
+    }
+
+    protected <T> Observable<T> bindToFragment(Observable<T> source) {
+        return AndroidObservable.bindFragment(this, source);
+    }
+
+    protected void addSubscription(Subscription subscription) {
+        mCompositeSubscription.add(subscription);
+    }
+
+    protected void unsubscribeFromAll() {
+        mCompositeSubscription.unsubscribe();
     }
 }

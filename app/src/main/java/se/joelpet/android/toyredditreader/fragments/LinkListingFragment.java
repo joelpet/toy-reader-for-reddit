@@ -1,7 +1,5 @@
 package se.joelpet.android.toyredditreader.fragments;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
 import android.net.Uri;
@@ -21,36 +19,36 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import se.joelpet.android.toyredditreader.R;
 import se.joelpet.android.toyredditreader.activities.WebActivity;
 import se.joelpet.android.toyredditreader.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyredditreader.domain.Link;
 import se.joelpet.android.toyredditreader.domain.Listing;
-import se.joelpet.android.toyredditreader.gson.ListingRequest;
 import se.joelpet.android.toyredditreader.net.RedditApi;
+import se.joelpet.android.toyredditreader.volley.ListingRequest;
 import timber.log.Timber;
 
-public class LinkListingFragment extends BaseFragment
-        implements SwipeRefreshLayout.OnRefreshListener, Response.ErrorListener,
-        LinkListingRecyclerViewAdapter.ClickListener, Response.Listener<Listing<Link>> {
+public class LinkListingFragment extends BaseFragment implements SwipeRefreshLayout
+        .OnRefreshListener, LinkListingRecyclerViewAdapter.ClickListener {
 
     public static final String TAG = LinkListingFragment.class.getName();
 
     public static final String ARGUMENT_LISTING = "argument_listing";
-
     public static final String ARG_LISTING_EVERYTHING = "r/all/";
-
     public static final String ARG_LISTING_SUBSCRIBED = "/";
 
     public static final String ARGUMENT_SORT = "argument_sort";
-
     public static final String ARG_SORT_HOT = "hot";
-
     public static final String ARG_SORT_NEW = "new";
 
     public static final int VIEW_SWITCHER_CHILD_LOAD_INDICATOR = 0;
-
     public static final int VIEW_SWITCHER_CHILD_RECYCLER_VIEW = 1;
+
+    public static final String STATE_STRING_AFTER = "mAfter";
 
     @InjectView(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
@@ -67,14 +65,19 @@ public class LinkListingFragment extends BaseFragment
     @Inject
     protected ImageLoader mImageLoader;
 
-    /** The currently (only) ongoing listing request, if any. */
-    private ListingRequest<Link> mListingRequest;
+    /** The path part of the URI pointing to the link listing of this fragment. */
+    private String mListingPath;
 
     /** The "after" portion received in the response to the last made request. */
     private String mAfter;
 
-    private LinearLayoutManager mLinearLayoutManager;
+    /** Flag indicating that a Listing request is in progress. */
+    private boolean mRequestInProgress;
 
+    /** Subscription to the current Listing request. */
+    private Subscription mSubscription;
+
+    private LinearLayoutManager mLinearLayoutManager;
     private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
 
     public static LinkListingFragment newInstance(String listing, String sort) {
@@ -89,18 +92,39 @@ public class LinkListingFragment extends BaseFragment
     public LinkListingFragment() {
     }
 
+    //region Fragment lifecycle
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_STRING_AFTER, mAfter);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inject(this);
+
+        if (getArguments() != null) {
+            String listing = getArguments().getString(ARGUMENT_LISTING);
+            String sort = getArguments().getString(ARGUMENT_SORT);
+            mListingPath = listing + sort;
+        }
+
+        if (savedInstanceState != null) {
+            if (mLinkListingRecyclerViewAdapter != null) {
+                // Only restore the 'after' fragment if link listing data is still present
+                mAfter = savedInstanceState.getString("mAfter");
+                Timber.d("Restored mAfter state to '%s'", mAfter);
+            }
+        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
         ButterKnife.inject(this, view);
-        queueListingRequest();
         return view;
     }
 
@@ -114,36 +138,71 @@ public class LinkListingFragment extends BaseFragment
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.reset(this);
+    public void onStart() {
+        super.onStart();
+        queueListingRequest();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mRedditApi.cancelAll(TAG);
+        mRequestInProgress = false;
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
+    }
+
+    //endregion
+
+    @Override
     public void onRefresh() {
+        if (mRequestInProgress) {
+            return;
+        }
         mAfter = null;
         queueListingRequest();
     }
 
     private void queueListingRequest() {
-        String listingArgument = getArguments().getString(ARGUMENT_LISTING);
-        String sortArgument = getArguments().getString(ARGUMENT_SORT);
-        String path = listingArgument + sortArgument;
-        mListingRequest = mRedditApi.getLinkListing(path, mAfter, this, this, TAG);
+        mRequestInProgress = true;
+        mSubscription = AndroidObservable
+                .bindFragment(this, mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
+                .subscribe(new Action1<Listing<Link>>() {
+                    @Override
+                    public void call(Listing<Link> linkListing) {
+                        handleReceivedListing(linkListing);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mRequestInProgress = false;
+                        handleListingRequestError(throwable);
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        mRequestInProgress = false;
+                    }
+                });
     }
 
     /**
      * Callback for successful Subreddit Listing GET request.
      */
-    @Override
-    public void onResponse(Listing<Link> listing) {
-        Timber.d("%s###onResponse(%s)", this, listing);
+    private void handleReceivedListing(Listing<Link> listing) {
+        Timber.d("%s###handleReceivedListing(%s)", this, listing.getModhash());
         mAfter = listing.getAfter();
 
         if (mLinkListingRecyclerViewAdapter == null || TextUtils.isEmpty(mAfter)) {
@@ -156,7 +215,6 @@ public class LinkListingFragment extends BaseFragment
         }
 
         mSwipeRefreshLayout.setRefreshing(false);
-        mListingRequest = null;
 
         if (mRootViewSwitcher.getDisplayedChild() == VIEW_SWITCHER_CHILD_LOAD_INDICATOR) {
             mRootViewSwitcher.showNext();
@@ -165,12 +223,10 @@ public class LinkListingFragment extends BaseFragment
         Timber.d("Fetched %d items with after={%s}.", listing.getChildren().size(), mAfter);
     }
 
-    @Override
-    public void onErrorResponse(VolleyError volleyError) {
-        Timber.e(volleyError, "Listing request failed");
+    private void handleListingRequestError(Throwable throwable) {
+        Timber.e(throwable, "Listing request failed");
         Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
-        mListingRequest = null;
     }
 
     @Override
@@ -198,8 +254,8 @@ public class LinkListingFragment extends BaseFragment
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
 
-            if (mListingRequest != null) {
-                Timber.i("Avoided queuing duplicate listing request for after={%s}", mAfter);
+            if (mRequestInProgress) {
+                Timber.d("Avoided queuing duplicate listing request for after={%s}", mAfter);
                 return;
             }
 

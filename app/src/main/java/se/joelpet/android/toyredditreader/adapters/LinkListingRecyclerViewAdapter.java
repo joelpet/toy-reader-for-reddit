@@ -5,6 +5,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +54,7 @@ public class LinkListingRecyclerViewAdapter
 
         vh.domain.setText(link.getDomain());
         vh.subreddit.setText("/r/" + link.getSubreddit());
-        vh.title.setText(link.getTitle());
+        vh.title.setText(Html.fromHtml(link.getTitle()));
 
         if (VALID_URL_PATTERN.matcher(link.getThumbnail()).matches()) {
             Timber.d("Settings thumbnail image: %s", link.getThumbnail());

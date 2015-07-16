@@ -76,10 +76,11 @@
                 <com.android.volley.toolbox.NetworkImageView
                     android:id="@+id/thumbnail"
                     android:layout_width="96dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="96dp"
                     android:layout_gravity="top"
                     android:adjustViewBounds="true"
-                    android:padding="4dp" />
+                    android:padding="4dp"
+                    android:scaleType="fitStart" />
 
                 <com.devspark.robototextview.widget.RobotoTextView
                     android:id="@+id/submitted_info_text"
