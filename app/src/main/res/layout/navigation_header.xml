@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimaryDark"
-    android:paddingBottom="?contentPaddingBottom"
+    android:paddingBottom="@dimen/content_spacing"
     android:paddingEnd="@dimen/navigation_horizontal_margin"
     android:paddingLeft="@dimen/navigation_horizontal_margin"
     android:paddingRight="@dimen/navigation_horizontal_margin"
     android:paddingStart="@dimen/navigation_horizontal_margin"
-    android:paddingTop="?contentPaddingTop">
+    android:paddingTop="@dimen/content_spacing">
 
     <Space
         android:id="@+id/top_space"
