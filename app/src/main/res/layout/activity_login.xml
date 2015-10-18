@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/layout_toolbar"
-        layout="@layout/layout_toolbar" />
+        layout="@layout/toolbar" />
 
     <WebView
         android:id="@+id/web_view"

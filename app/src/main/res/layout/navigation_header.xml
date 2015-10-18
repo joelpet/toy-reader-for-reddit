@@ -17,28 +17,11 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/navigation_vertical_margin" />
 
-    <ImageView
-        android:id="@+id/icon_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/top_space"
-        android:maxHeight="65dp"
-        android:maxWidth="65dp"
-        android:minHeight="65dp"
-        android:minWidth="65dp"
-        android:src="@drawable/navigation_drawer_alien_head" />
-
-    <Space
-        android:id="@+id/icon_image_user_name_space"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/navigation_vertical_margin"
-        android:layout_below="@id/icon_image" />
-
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/icon_image_user_name_space"
+        android:layout_below="@id/top_space"
         android:text="@string/navigation_header_user_name_unauthenticated"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
@@ -60,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/icon_image_user_name_space">
+        android:layout_below="@id/top_space">
 
         <ImageView
             android:id="@+id/account_drop_down_arrow"
