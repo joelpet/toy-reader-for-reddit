@@ -1,5 +1,8 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
+import android.content.res.Resources;
+import android.support.v4.content.res.ResourcesCompat;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -13,12 +16,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import timber.log.Timber;
 
 public class AccessTokenRequest extends BaseRequest<AccessToken> {
 
-    public static final String AUTH_REDIRECT_URI = "toyredditreader://redirect";
+    public static final String AUTH_REDIRECT_URI = "toyreaderforreddit://redirect";
 
     private final String mCode;
 

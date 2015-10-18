@@ -4,7 +4,7 @@ android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
     defaultConfig {
-        applicationId "se.joelpet.android.toyredditreader"
+        applicationId "se.joelpet.android.toyreaderforreddit"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 4
