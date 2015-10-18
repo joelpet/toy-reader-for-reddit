@@ -1,5 +1,10 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Base64;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -10,15 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Base64;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.joelpet.android.toyreaderforreddit.BuildConfig;
 import timber.log.Timber;
 
 public abstract class BaseRequest<T> extends Request<T> {
@@ -34,6 +35,9 @@ public abstract class BaseRequest<T> extends Request<T> {
     public static final String CLIENT_PASSWORD = "";
     /** The Authorization HTTP header value that identifies this client. */
     public static final String AUTHORIZATION_VALUE = getAuthorizationValue();
+
+    private static final String USER_AGENT = "android:" + BuildConfig.APPLICATION_ID + ":" +
+            BuildConfig.VERSION_NAME + " (by /u/iMoM)";
 
     @Nullable
     private String mAccessToken;
@@ -68,7 +72,8 @@ public abstract class BaseRequest<T> extends Request<T> {
         }
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "bearer " + mAccessToken);
-        Timber.d("Set Authorization header using access token: %s", mAccessToken);
+        headers.put("User-Agent", USER_AGENT);
+        Timber.d("Base request headers: " + headers);
         return headers;
     }
 }
