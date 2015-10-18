@@ -42,7 +42,7 @@ public class LinkListingRecyclerViewAdapter
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int i) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_card, parent, false);
+                .inflate(R.layout.card, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemView);
         return viewHolder;
     }
