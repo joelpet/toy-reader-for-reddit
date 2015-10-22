@@ -7,7 +7,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.subscriptions.CompositeSubscription;
-import se.joelpet.android.toyreaderforreddit.RedditApp;
+import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
 import timber.log.Timber;
 
 public abstract class BaseFragment extends Fragment {
@@ -19,6 +19,13 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.v("%s###onCreate(%s)", this, savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((BaseActivity) this.getActivity()).inject(this);
     }
 
     @Override
@@ -37,13 +44,6 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Timber.v("%s###onDestroy()", this);
-    }
-
-    /**
-     * Injects any dependencies into the given fragment.
-     */
-    protected static void inject(Fragment fragment) {
-        ((RedditApp) fragment.getActivity().getApplication()).inject(fragment);
     }
 
     protected <T> Observable<T> bindToFragment(Observable<T> source) {

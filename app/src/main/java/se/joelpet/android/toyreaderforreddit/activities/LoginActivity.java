@@ -1,11 +1,12 @@
 package se.joelpet.android.toyreaderforreddit.activities;
 
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import java.util.UUID;
 
@@ -18,6 +19,9 @@ import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.observables.ConnectableObservable;
+import se.joelpet.android.toyreaderforreddit.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
@@ -28,7 +32,7 @@ import se.joelpet.android.toyreaderforreddit.volley.AccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.BaseRequest;
 import timber.log.Timber;
 
-public class LoginActivity extends BaseActivity
+public class LoginActivity extends AppCompatAccountAuthenticatorActivity
         implements AppConnectWebViewClient.OnAppConnectListener {
 
     public static final String TAG = LoginActivity.class.getName();
@@ -40,6 +44,9 @@ public class LoginActivity extends BaseActivity
 
     @InjectView(R.id.web_view)
     protected WebView mWebView;
+
+    @Inject
+    protected AccountManager mAccountManager;
 
     @Inject
     protected RedditApi mRedditApi;
@@ -54,11 +61,15 @@ public class LoginActivity extends BaseActivity
 
     private Subscription mSubscription;
 
+    public static Intent createIntent(Context context) {
+        return new Intent(context, LoginActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
-        inject(this);
         ButterKnife.inject(this);
         setSupportActionBar(mToolbar);
 
@@ -81,11 +92,11 @@ public class LoginActivity extends BaseActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onDestroy() {
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
         }
+        super.onDestroy();
     }
 
     @Override
@@ -97,24 +108,41 @@ public class LoginActivity extends BaseActivity
 
         mLocalDataStore.putAuthCode(authCode);
 
-        mSubscription = AndroidObservable.bindActivity(this, mRedditApi
-                .getAccessToken(authCode, TAG)
-                .flatMap(new Func1<AccessToken, Observable<Me>>() {
+        ConnectableObservable<AccessToken> accessTokenObservable = mRedditApi
+                .getAccessToken(authCode, TAG).publish();
+
+        mSubscription = AndroidObservable.bindActivity(this, Observable.zip(accessTokenObservable,
+                accessTokenObservable.flatMap(new Func1<AccessToken, Observable<Me>>() {
                     @Override
                     public Observable<Me> call(AccessToken accessToken) {
                         Timber.d("Acting on access token: %s", accessToken);
                         mLocalDataStore.putAccessToken(accessToken);
                         return mRedditApi.getMe(TAG);
                     }
-                }))
-                .subscribe(new Action1<Me>() {
+                }), new Func2<AccessToken, Me, Intent>() {
                     @Override
-                    public void call(Me me) {
-                        Toast.makeText(getApplicationContext(), "Signed in as " + me.getName(),
-                                Toast.LENGTH_SHORT).show();
-                        Intent data = new Intent();
-                        data.putExtra("me", me);
-                        setResult(RESULT_OK, data);
+                    public Intent call(AccessToken accessToken, Me me) {
+                        Intent result = new Intent();
+
+                        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, me.getName());
+                        result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator
+                                .getAccountType(LoginActivity.this));
+                        result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
+
+                        Bundle userData = new Bundle();
+                        userData.putSerializable("access_token", accessToken);
+                        userData.putSerializable("me", me);
+
+                        result.putExtra(AccountManager.KEY_USERDATA, userData);
+
+                        return result;
+                    }
+                }))
+                .subscribe(new Action1<Intent>() {
+                    @Override
+                    public void call(Intent intent) {
+                        setAccountAuthenticatorResult(intent.getExtras());
+                        setResult(RESULT_OK, intent);
                         finish();
                     }
                 }, new Action1<Throwable>() {
@@ -123,6 +151,8 @@ public class LoginActivity extends BaseActivity
                         Timber.e(throwable, "Request failed");
                     }
                 });
+
+        accessTokenObservable.connect();
     }
 
     @Override
@@ -151,5 +181,4 @@ public class LoginActivity extends BaseActivity
                 break;
         }
     }
-
 }

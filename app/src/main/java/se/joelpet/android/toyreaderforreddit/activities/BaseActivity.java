@@ -1,24 +1,51 @@
 package se.joelpet.android.toyreaderforreddit.activities;
 
-import android.app.Activity;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.Arrays;
+import java.util.List;
+
+import dagger.ObjectGraph;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.subscriptions.CompositeSubscription;
-import se.joelpet.android.toyreaderforreddit.RedditApp;
+import se.joelpet.android.toyreaderforreddit.RedditApplication;
+import se.joelpet.android.toyreaderforreddit.dagger.ActivityModule;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    /** Composite subscription to keep track of all subscription registrations in this Activity. */
-    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private CompositeSubscription mCompositeSubscription;
 
-    /**
-     * Injects any dependencies into the given activity.
-     */
-    protected static void inject(Activity activity) {
-        ((RedditApp) activity.getApplication()).inject(activity);
+    private ObjectGraph mActivityGraph;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mActivityGraph = ((RedditApplication) getApplication()).getApplicationGraph()
+                .plus(getModules().toArray());
+        mActivityGraph.inject(this);
+
+        mCompositeSubscription = new CompositeSubscription();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mCompositeSubscription.unsubscribe();
+        mCompositeSubscription = null;
+        mActivityGraph = null;
+
+        super.onDestroy();
+    }
+
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(new ActivityModule(this));
+    }
+
+    public <T> void inject(T object) {
+        mActivityGraph.inject(object);
     }
 
     protected <T> Observable<T> bindToActivity(Observable<T> source) {
@@ -27,9 +54,5 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void addSubscription(Subscription subscription) {
         mCompositeSubscription.add(subscription);
-    }
-
-    protected void unsubscribeFromAll() {
-        mCompositeSubscription.unsubscribe();
     }
 }

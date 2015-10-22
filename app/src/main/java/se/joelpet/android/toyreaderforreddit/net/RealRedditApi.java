@@ -24,9 +24,7 @@ import timber.log.Timber;
 
 public class RealRedditApi implements RedditApi {
 
-
     private final VolleySingleton mVolleySingleton;
-
     private final LocalDataStore mLocalDataStore;
 
     @Inject
@@ -40,6 +38,7 @@ public class RealRedditApi implements RedditApi {
     public Observable<Listing<Link>> getLinkListing(final String path, final String after, final
     Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
+        // TODO: Retrieve access token from AccountManager instead
         mLocalDataStore.getAccessToken().singleOrDefault(null)
                 .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
                     @Override

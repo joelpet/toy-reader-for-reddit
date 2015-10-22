@@ -4,8 +4,12 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -21,16 +25,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.Subscriber;
+import rx.android.observables.AndroidObservable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
+import se.joelpet.android.toyreaderforreddit.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
@@ -42,7 +51,6 @@ public class MainActivity extends BaseActivity implements NavigationView
         .OnNavigationItemSelectedListener {
 
     public static final int DRAWER_GRAVITY = GravityCompat.START;
-    public static final int REQUEST_CODE_LOGIN = 1;
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN = 0;
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP = 1;
 
@@ -69,11 +77,13 @@ public class MainActivity extends BaseActivity implements NavigationView
     @Inject
     protected LocalDataStore mLocalDataStore;
 
+    @Inject
+    protected AccountManager mAccountManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        inject(this);
         ButterKnife.inject(this);
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
@@ -95,12 +105,6 @@ public class MainActivity extends BaseActivity implements NavigationView
         }
 
         addSubscription(bindToActivity(mLocalDataStore.observeMe()).subscribe(new MeObserver()));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unsubscribeFromAll();
     }
 
     @Override
@@ -170,17 +174,6 @@ public class MainActivity extends BaseActivity implements NavigationView
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_LOGIN) {
-            if (resultCode == Activity.RESULT_OK) {
-                Me me = (Me) data.getSerializableExtra("me");
-                mLocalDataStore.putMe(me);
-                switchToDefaultMenuModeInDrawer();
-            }
-        }
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         Fragment fragment;
         switch (menuItem.getItemId()) {
@@ -199,9 +192,8 @@ public class MainActivity extends BaseActivity implements NavigationView
                                 LinkListingFragment.ARG_SORT_HOT);
                 break;
             case R.id.navigation_sign_in:
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivityForResult(loginIntent, REQUEST_CODE_LOGIN);
-                return false;
+                addAccountUsingAccountManager();
+                return true;
             case R.id.navigation_sign_out:
                 switchToDefaultMenuModeInDrawer();
                 addSubscription(bindToActivity(Observable.merge(mLocalDataStore.deleteAccessToken(),
@@ -260,6 +252,43 @@ public class MainActivity extends BaseActivity implements NavigationView
     private void toggleAccountMenuOptionsVisibilityAs(boolean signedIn) {
         mNavigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
         mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
+    }
+
+    // TODO: Create an AccountManagerHelper that simplifies this and provides a reactive API
+    private void addAccountUsingAccountManager() {
+        addSubscription(AndroidObservable.bindActivity(this, Observable.create(new Observable
+                .OnSubscribe<Bundle>() {
+            @Override
+            public void call(final Subscriber<? super Bundle> subscriber) {
+                Activity activity = MainActivity.this;
+                String accountType = AccountAuthenticator.getAccountType(activity);
+                String authTokenType = AccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT;
+
+                mAccountManager.addAccount(accountType, authTokenType, null, null, activity, new
+                        AccountManagerCallback<Bundle>() {
+                            @Override
+                            public void run(AccountManagerFuture<Bundle> future) {
+                                try {
+                                    Bundle result = future.getResult();
+                                    subscriber.onNext(result);
+                                } catch (OperationCanceledException | IOException |
+                                        AuthenticatorException e) {
+                                    subscriber.onError(e);
+                                }
+                            }
+                        }, null);
+            }
+        })).subscribe(new Action1<Bundle>() {
+            @Override
+            public void call(Bundle result) {
+                Timber.d("Result: %s", result);
+
+                Bundle userData = result.getBundle(AccountManager.KEY_USERDATA);
+                Me me = (Me) userData.getSerializable("me");
+                mLocalDataStore.putMe(me);
+                switchToDefaultMenuModeInDrawer();
+            }
+        }));
     }
 
     private CharSequence getFormattedAccountAge(Me me) {

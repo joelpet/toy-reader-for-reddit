@@ -73,7 +73,7 @@ public abstract class BaseRequest<T> extends Request<T> {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "bearer " + mAccessToken);
         headers.put("User-Agent", USER_AGENT);
-        Timber.d("Base request headers: " + headers);
+        Timber.d("Headers: " + headers);
         return headers;
     }
 }

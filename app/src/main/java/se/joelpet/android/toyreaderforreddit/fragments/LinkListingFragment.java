@@ -102,7 +102,6 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inject(this);
 
         if (getArguments() != null) {
             String listing = getArguments().getString(ARGUMENT_LISTING);

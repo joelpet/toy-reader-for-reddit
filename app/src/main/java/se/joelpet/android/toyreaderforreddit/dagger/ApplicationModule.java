@@ -2,20 +2,16 @@ package se.joelpet.android.toyreaderforreddit.dagger;
 
 import com.android.volley.toolbox.ImageLoader;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.Preferences;
-import se.joelpet.android.toyreaderforreddit.RedditApp;
+import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
-import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
-import se.joelpet.android.toyreaderforreddit.activities.MainActivity;
-import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
-import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
 import se.joelpet.android.toyreaderforreddit.net.FakeRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RealRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
@@ -26,19 +22,16 @@ import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
         injects = {
                 DefaultLocalDataStore.class,
                 FakeRedditApi.class,
-                LinkListingFragment.class,
-                LinkListingRecyclerViewAdapter.class,
-                LoginActivity.class,
-                MainActivity.class,
                 RealRedditApi.class,
-        }
+        },
+        library = true
 )
-public class RedditModule {
+public class ApplicationModule {
 
-    private final RedditApp mRedditApp;
+    private final RedditApplication mRedditApplication;
 
-    public RedditModule(RedditApp redditApp) {
-        mRedditApp = redditApp;
+    public ApplicationModule(RedditApplication redditApplication) {
+        mRedditApplication = redditApplication;
     }
 
     /**
@@ -49,13 +42,13 @@ public class RedditModule {
     @Singleton
     @ForApplication
     Context provideApplicationContext() {
-        return mRedditApp;
+        return mRedditApplication;
     }
 
     @Provides
     @Singleton
     VolleySingleton provideVolleySingleton() {
-        return VolleySingleton.getInstance(mRedditApp);
+        return VolleySingleton.getInstance(mRedditApplication);
     }
 
     @Provides
@@ -66,9 +59,17 @@ public class RedditModule {
 
     @Provides
     @Singleton
-    RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore) {
+    AccountManager provideAccountManager(@ForApplication Context context) {
+        return AccountManager.get(context);
+    }
+
+    @Provides
+    @Singleton
+    RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore,
+                               AccountManager accountManager) {
         // TODO: Check BuildConfig for test build.
-        return true ? new RealRedditApi(volleySingleton, localDataStore) : new FakeRedditApi();
+        return true ? new RealRedditApi(volleySingleton, localDataStore) :
+                new FakeRedditApi();
     }
 
     @Provides
@@ -78,14 +79,8 @@ public class RedditModule {
     }
 
     @Provides
-    AppConnectWebViewClient provideAppConnectWebViewClient() {
-        return new AppConnectWebViewClient();
-    }
-
-    @Provides
     @Singleton
     Preferences providePreferences(@ForApplication Context context) {
         return new Preferences(context);
     }
-
 }
