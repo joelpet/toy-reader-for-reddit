@@ -5,11 +5,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -25,22 +20,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.Subscriber;
+import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
-import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.R;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
@@ -78,7 +71,7 @@ public class MainActivity extends BaseActivity implements NavigationView
     protected LocalDataStore mLocalDataStore;
 
     @Inject
-    protected AccountManager mAccountManager;
+    protected AccountManagerHelper mAccountManagerHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,31 +247,9 @@ public class MainActivity extends BaseActivity implements NavigationView
         mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
     }
 
-    // TODO: Create an AccountManagerHelper that simplifies this and provides a reactive API
     private void addAccountUsingAccountManager() {
-        addSubscription(AndroidObservable.bindActivity(this, Observable.create(new Observable
-                .OnSubscribe<Bundle>() {
-            @Override
-            public void call(final Subscriber<? super Bundle> subscriber) {
-                Activity activity = MainActivity.this;
-                String accountType = AccountAuthenticator.getAccountType(activity);
-                String authTokenType = AccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT;
-
-                mAccountManager.addAccount(accountType, authTokenType, null, null, activity, new
-                        AccountManagerCallback<Bundle>() {
-                            @Override
-                            public void run(AccountManagerFuture<Bundle> future) {
-                                try {
-                                    Bundle result = future.getResult();
-                                    subscriber.onNext(result);
-                                } catch (OperationCanceledException | IOException |
-                                        AuthenticatorException e) {
-                                    subscriber.onError(e);
-                                }
-                            }
-                        }, null);
-            }
-        })).subscribe(new Action1<Bundle>() {
+        Subscription addAccountSubscription = AndroidObservable.bindActivity(this,
+                mAccountManagerHelper.addAccount(this)).subscribe(new Action1<Bundle>() {
             @Override
             public void call(Bundle result) {
                 Timber.d("Result: %s", result);
@@ -288,7 +259,8 @@ public class MainActivity extends BaseActivity implements NavigationView
                 mLocalDataStore.putMe(me);
                 switchToDefaultMenuModeInDrawer();
             }
-        }));
+        });
+        addSubscription(addAccountSubscription);
     }
 
     private CharSequence getFormattedAccountAge(Me me) {

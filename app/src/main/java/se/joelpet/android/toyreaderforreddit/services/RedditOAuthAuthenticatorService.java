@@ -5,16 +5,20 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import javax.inject.Inject;
+
+import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 
 public class RedditOAuthAuthenticatorService extends Service {
 
-    private AccountAuthenticator mAccountAuthenticator;
+    @Inject
+    protected AccountAuthenticator mAccountAuthenticator;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mAccountAuthenticator = new AccountAuthenticator(getApplicationContext());
+        ((RedditApplication) getApplication()).getApplicationGraph().inject(this);
     }
 
     @Override

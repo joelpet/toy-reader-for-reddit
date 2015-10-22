@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import javax.inject.Inject;
+
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
 
@@ -17,15 +19,20 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     public static final String AUTH_TOKEN_TYPE_DEFAULT = "default";
 
-    private Context mContext;
+    @Inject
+    protected Context mContext;
+
+    @Inject
+    protected AccountManagerHelper mAccountManagerHelper;
 
     public static String getAccountType(Context context) {
         return context.getString(R.string.authenticator_account_type);
     }
 
-    public AccountAuthenticator(Context context) {
+    public AccountAuthenticator(Context context, AccountManagerHelper accountManagerHelper) {
         super(context);
         mContext = context;
+        mAccountManagerHelper = accountManagerHelper;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String
             authTokenType, Bundle options) throws NetworkErrorException {
-        String authToken = AccountManager.get(mContext).peekAuthToken(account, authTokenType);
+        String authToken = mAccountManagerHelper.peekAuthToken(account, authTokenType);
 
         if (!TextUtils.isEmpty(authToken)) {
             Bundle result = new Bundle();

@@ -12,9 +12,12 @@ import dagger.Provides;
 import se.joelpet.android.toyreaderforreddit.Preferences;
 import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.net.FakeRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RealRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.services.RedditOAuthAuthenticatorService;
 import se.joelpet.android.toyreaderforreddit.storage.DefaultLocalDataStore;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 
@@ -23,6 +26,7 @@ import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
                 DefaultLocalDataStore.class,
                 FakeRedditApi.class,
                 RealRedditApi.class,
+                RedditOAuthAuthenticatorService.class,
         },
         library = true
 )
@@ -61,6 +65,18 @@ public class ApplicationModule {
     @Singleton
     AccountManager provideAccountManager(@ForApplication Context context) {
         return AccountManager.get(context);
+    }
+
+    @Provides
+    @Singleton
+    AccountManagerHelper provideAccountManagerHelper(AccountManager accountManager) {
+        return new AccountManagerHelper(accountManager);
+    }
+
+    @Provides
+    AccountAuthenticator provideAccountAuthenticator(@ForApplication Context context,
+                                                     AccountManagerHelper accountManagerHelper) {
+        return new AccountAuthenticator(context, accountManagerHelper);
     }
 
     @Provides

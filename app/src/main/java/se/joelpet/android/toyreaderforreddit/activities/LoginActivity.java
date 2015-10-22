@@ -21,9 +21,9 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
-import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
@@ -44,9 +44,6 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
 
     @InjectView(R.id.web_view)
     protected WebView mWebView;
-
-    @Inject
-    protected AccountManager mAccountManager;
 
     @Inject
     protected RedditApi mRedditApi;
