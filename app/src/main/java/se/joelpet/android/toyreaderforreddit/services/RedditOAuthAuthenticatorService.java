@@ -5,7 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import se.joelpet.android.toyreaderforreddit.AccountAuthenticator;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 
 public class RedditOAuthAuthenticatorService extends Service {
 

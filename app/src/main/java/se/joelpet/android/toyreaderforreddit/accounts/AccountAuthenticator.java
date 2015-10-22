@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit;
+package se.joelpet.android.toyreaderforreddit.accounts;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {

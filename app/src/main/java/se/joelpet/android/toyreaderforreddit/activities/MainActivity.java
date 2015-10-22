@@ -39,7 +39,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
-import se.joelpet.android.toyreaderforreddit.AccountAuthenticator;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
