@@ -15,11 +15,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.observables.ConnectableObservable;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
@@ -99,31 +97,62 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
     }
 
     @Override
-    public void onAllowConnect(String authCode, String state) {
+    public void onAllowConnect(final String authCode, String state) {
         if (!mUniqueAuthState.equals(state)) {
             Timber.w("Aborting unrecognized auth request with state: %s", state);
             return;
         }
 
-        mLocalDataStore.putAuthCode(authCode);
-
-        ConnectableObservable<AccessToken> accessTokenObservable = mRedditApi
-                .getAccessToken(authCode, TAG).publish();
-
-        mSubscription = AndroidObservable.bindActivity(this, Observable.zip(accessTokenObservable,
-                accessTokenObservable.flatMap(new Func1<AccessToken, Observable<Me>>() {
+        // store auth code
+        mLocalDataStore.putAuthCode(authCode)
+                // request Me object from Reddit API
+                .flatMap(new Func1<String, Observable<AccessToken>>() {
                     @Override
-                    public Observable<Me> call(AccessToken accessToken) {
-                        Timber.d("Acting on access token: %s", accessToken);
-                        mLocalDataStore.putAccessToken(accessToken);
-                        return mRedditApi.getMe(TAG);
+                    public Observable<AccessToken> call(String authCode) {
+                        return mRedditApi.getAccessToken(authCode, TAG);
                     }
-                }), new Func2<AccessToken, Me, Intent>() {
+                }) // cache token to avoid multiple API requests
+                .compose(new Observable.Transformer<AccessToken, AccessToken>() {
                     @Override
-                    public Intent call(AccessToken accessToken, Me me) {
-                        return mAccountManagerHelper.createAddAccountResultIntent(accessToken, me);
+                    public Observable<AccessToken> call(Observable<AccessToken> observable) {
+                        return observable.cache(1);
                     }
-                }))
+                }) // store access token
+                .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
+                    @Override
+                    public Observable<AccessToken> call(AccessToken accessToken) {
+                        Timber.d("Storing access token: %s", accessToken);
+                        return mLocalDataStore.putAccessToken(accessToken);
+                    }
+                })
+                .compose(new Observable.Transformer<AccessToken, Intent>() {
+                    @Override
+                    public Observable<Intent> call(Observable<AccessToken> tokenObservable) {
+                        return Observable.zip(
+                                tokenObservable,
+                                // get Me object from Reddit API and store it
+                                tokenObservable.flatMap(new Func1<AccessToken, Observable<Me>>() {
+                                    @Override
+                                    public Observable<Me> call(AccessToken accessToken) {
+                                        return mRedditApi.getMe(TAG);
+                                    }
+                                }).flatMap(new Func1<Me, Observable<Me>>() {
+                                    @Override
+                                    public Observable<Me> call(Me me) {
+                                        return mLocalDataStore.putMe(me);
+                                    }
+                                }),
+                                // create result intent
+                                new Func2<AccessToken, Me, Intent>() {
+                                    @Override
+                                    public Intent call(AccessToken accessToken, Me me) {
+                                        return mAccountManagerHelper
+                                                .createAddAccountResultIntent
+                                                        (accessToken, me.getName());
+                                    }
+                                });
+                    }
+                }) // finish with result intent
                 .subscribe(new Action1<Intent>() {
                     @Override
                     public void call(Intent intent) {
@@ -138,8 +167,6 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                         finish();
                     }
                 });
-
-        accessTokenObservable.connect();
     }
 
     @Override

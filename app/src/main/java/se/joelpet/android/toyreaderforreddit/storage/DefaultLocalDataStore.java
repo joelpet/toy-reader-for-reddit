@@ -40,16 +40,25 @@ public class DefaultLocalDataStore implements LocalDataStore {
     }
 
     @Override
-    public void putMe(Me me) {
-        mPreferences.putMe(me);
-        if (mMeSubject != null) {
-            mMeSubject.onNext(me);
-        }
+    public Observable<Me> putMe(final Me me) {
+        return Observable.create(new Observable.OnSubscribe<Me>() {
+            @Override
+            public void call(Subscriber<? super Me> subscriber) {
+                mPreferences.putMe(me);
+                subscriber.onNext(me);
+
+                if (mMeSubject != null) {
+                    mMeSubject.onNext(me);
+                }
+            }
+        })
+                .compose(this.<Me>runInBackgroundAndNotifyOnMainThread())
+                .compose(this.<Me>cacheAndSubscribe());
     }
 
     @Override
     public Observable<Void> deleteMe() {
-        Observable<Void> cachedObservable = Observable.create(new Observable.OnSubscribe<Void>() {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 mPreferences.deleteMe();
@@ -58,18 +67,24 @@ public class DefaultLocalDataStore implements LocalDataStore {
                     mMeSubject.onNext(null);
                 }
             }
-        });
-        cachedObservable.subscribe();
-        return cachedObservable;
+        })
+                .compose(this.<Void>runInBackgroundAndNotifyOnMainThread())
+                .compose(this.<Void>cacheAndSubscribe());
     }
 
     @Override
-    public void putAuthCode(String authCode) {
+    public Observable<String> putAuthCode(final String authCode) {
         checkNotNull(authCode);
-        mPreferences.putAuthCode(authCode);
-        if (mAuthCodeSubject != null) {
-            mAuthCodeSubject.onNext(authCode);
-        }
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                mPreferences.putAuthCode(authCode);
+                subscriber.onNext(authCode);
+                subscriber.onCompleted();
+            }
+        })
+                .compose(this.<String>runInBackgroundAndNotifyOnMainThread())
+                .compose(this.<String>cacheAndSubscribe());
     }
 
     @Override
@@ -83,36 +98,55 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 }
                 subscriber.onCompleted();
             }
-        }).observeOn(Schedulers.io()).subscribeOn(mainThread());
+        })
+                .compose(this.<AccessToken>runInBackgroundAndNotifyOnMainThread());
     }
 
     @Override
     public Observable<AccessToken> putAccessToken(final AccessToken accessToken) {
         checkNotNull(accessToken);
-        Observable<AccessToken> cachedObservable = Observable.create(new Observable
-                .OnSubscribe<AccessToken>() {
+        return Observable.create(new Observable.OnSubscribe<AccessToken>() {
             @Override
             public void call(Subscriber<? super AccessToken> subscriber) {
                 mPreferences.putAccessToken(accessToken);
                 subscriber.onNext(accessToken);
                 subscriber.onCompleted();
             }
-        }).observeOn(Schedulers.io()).subscribeOn(mainThread()).cache(1);
-        // Subscribe so that access token gets stored even if returned observable is ignored
-        cachedObservable.subscribe();
-        return cachedObservable;
+        })
+                .compose(this.<AccessToken>runInBackgroundAndNotifyOnMainThread())
+                .compose(this.<AccessToken>cacheAndSubscribe());
     }
 
     @Override
     public Observable<Void> deleteAccessToken() {
-        Observable<Void> cachedObservable = Observable.create(new Observable.OnSubscribe<Void>() {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 mPreferences.deleteAccessToken();
                 subscriber.onCompleted();
             }
-        }).observeOn(Schedulers.io()).subscribeOn(mainThread()).cache(1);
-        cachedObservable.subscribe();
-        return cachedObservable;
+        })
+                .compose(this.<Void>runInBackgroundAndNotifyOnMainThread())
+                .compose(this.<Void>cacheAndSubscribe());
+    }
+
+    private <T> Observable.Transformer<T, T> runInBackgroundAndNotifyOnMainThread() {
+        return new Observable.Transformer<T, T>() {
+            @Override
+            public Observable<T> call(Observable<T> observable) {
+                return observable.observeOn(Schedulers.io()).subscribeOn(mainThread());
+            }
+        };
+    }
+
+    private <T> Observable.Transformer<T, T> cacheAndSubscribe() {
+        return new Observable.Transformer<T, T>() {
+            @Override
+            public Observable<T> call(Observable<T> observable) {
+                Observable<T> cached = observable.cache(1);
+                cached.subscribe();
+                return cached;
+            }
+        };
     }
 }

@@ -10,13 +10,13 @@ public interface LocalDataStore {
     Observable<Me> observeMe();
 
     /** Stores the given Me object. */
-    void putMe(Me me);
+    Observable<Me> putMe(Me me);
 
     /** Deletes the current Me object, if exists, before completion. */
     Observable<Void> deleteMe();
 
     /** Stores the given auth code. */
-    void putAuthCode(String authCode);
+    Observable<String> putAuthCode(String authCode);
 
     /** Returns data stream emitting current access token once, if exists, before completion. */
     Observable<AccessToken> getAccessToken();

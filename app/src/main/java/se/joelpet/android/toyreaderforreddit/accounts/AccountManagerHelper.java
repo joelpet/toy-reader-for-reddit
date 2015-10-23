@@ -20,7 +20,6 @@ import rx.Observable;
 import rx.Subscriber;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
 
 public class AccountManagerHelper {
 
@@ -66,16 +65,15 @@ public class AccountManagerHelper {
         return mAccountManager.peekAuthToken(account, authTokenType);
     }
 
-    public Intent createAddAccountResultIntent(AccessToken accessToken, Me me) {
+    public Intent createAddAccountResultIntent(AccessToken accessToken, String accountName) {
         Intent result = new Intent();
 
-        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, me.getName());
+        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName);
         result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
         result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
 
         Bundle userData = new Bundle();
         userData.putSerializable("access_token", accessToken);
-        userData.putSerializable("me", me);
 
         result.putExtra(AccountManager.KEY_USERDATA, userData);
 
@@ -89,9 +87,9 @@ public class AccountManagerHelper {
             this.result = result;
         }
 
-        public Me getMe() {
+        public AccessToken getAccessToken() {
             Bundle userdata = result.getBundle(AccountManager.KEY_USERDATA);
-            return (Me) userdata.getSerializable("me");
+            return (AccessToken) userdata.getSerializable("access_token");
         }
     }
 

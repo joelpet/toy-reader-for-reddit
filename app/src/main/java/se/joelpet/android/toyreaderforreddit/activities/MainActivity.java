@@ -25,7 +25,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -247,17 +246,15 @@ public class MainActivity extends BaseActivity implements NavigationView
     }
 
     private void addAccountUsingAccountManager() {
-        Subscription addAccountSubscription = AndroidObservable.bindActivity(this,
+        addSubscription(AndroidObservable.bindActivity(this,
                 mAccountManagerHelper.addAccount(this))
                 .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
                     @Override
                     public void call(AccountManagerHelper.AddAccountResult result) {
                         Timber.d("Result: %s", result);
-                        mLocalDataStore.putMe(result.getMe());
                         switchToDefaultMenuModeInDrawer();
                     }
-                });
-        addSubscription(addAccountSubscription);
+                }));
     }
 
     private CharSequence getFormattedAccountAge(Me me) {
