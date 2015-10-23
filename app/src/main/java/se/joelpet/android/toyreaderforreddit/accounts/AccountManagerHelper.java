@@ -7,7 +7,10 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 
@@ -15,30 +18,40 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
+import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import se.joelpet.android.toyreaderforreddit.domain.Me;
 
 public class AccountManagerHelper {
 
     @Inject
+    @ForApplication
+    protected Context mContext;
+
+    @Inject
     protected AccountManager mAccountManager;
 
-    public AccountManagerHelper(AccountManager accountManager) {
+    private final String mAccountType;
+    private final String mAuthTokenType;
+
+    public AccountManagerHelper(Context context, AccountManager accountManager) {
+        mContext = context;
         mAccountManager = accountManager;
+        mAccountType = AccountAuthenticator.getAccountType(context);
+        mAuthTokenType = AccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT;
     }
 
-    public Observable<Bundle> addAccount(final Activity activity) {
-        return Observable.create(new Observable.OnSubscribe<Bundle>() {
+    public Observable<AddAccountResult> addAccount(final Activity activity) {
+        return Observable.create(new Observable.OnSubscribe<AddAccountResult>() {
             @Override
-            public void call(final Subscriber<? super Bundle> subscriber) {
-                String accountType = AccountAuthenticator.getAccountType(activity);
-                String authTokenType = AccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT;
-
-                mAccountManager.addAccount(accountType, authTokenType, null, null, activity, new
+            public void call(final Subscriber<? super AddAccountResult> subscriber) {
+                mAccountManager.addAccount(mAccountType, mAuthTokenType, null, null, activity, new
                         AccountManagerCallback<Bundle>() {
                             @Override
                             public void run(AccountManagerFuture<Bundle> future) {
                                 try {
                                     Bundle result = future.getResult();
-                                    subscriber.onNext(result);
+                                    subscriber.onNext(new AddAccountResult(result));
                                 } catch (OperationCanceledException | IOException |
                                         AuthenticatorException e) {
                                     subscriber.onError(e);
@@ -52,4 +65,34 @@ public class AccountManagerHelper {
     public String peekAuthToken(Account account, String authTokenType) {
         return mAccountManager.peekAuthToken(account, authTokenType);
     }
+
+    public Intent createAddAccountResultIntent(AccessToken accessToken, Me me) {
+        Intent result = new Intent();
+
+        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, me.getName());
+        result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+        result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
+
+        Bundle userData = new Bundle();
+        userData.putSerializable("access_token", accessToken);
+        userData.putSerializable("me", me);
+
+        result.putExtra(AccountManager.KEY_USERDATA, userData);
+
+        return result;
+    }
+
+    public static class AddAccountResult {
+        private final Bundle result;
+
+        public AddAccountResult(@NonNull Bundle result) {
+            this.result = result;
+        }
+
+        public Me getMe() {
+            Bundle userdata = result.getBundle(AccountManager.KEY_USERDATA);
+            return (Me) userdata.getSerializable("me");
+        }
+    }
+
 }

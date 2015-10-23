@@ -1,6 +1,5 @@
 package se.joelpet.android.toyreaderforreddit.activities;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,7 +22,7 @@ import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
@@ -44,6 +43,9 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
 
     @InjectView(R.id.web_view)
     protected WebView mWebView;
+
+    @Inject
+    AccountManagerHelper mAccountManagerHelper;
 
     @Inject
     protected RedditApi mRedditApi;
@@ -119,20 +121,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                 }), new Func2<AccessToken, Me, Intent>() {
                     @Override
                     public Intent call(AccessToken accessToken, Me me) {
-                        Intent result = new Intent();
-
-                        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, me.getName());
-                        result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator
-                                .getAccountType(LoginActivity.this));
-                        result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
-
-                        Bundle userData = new Bundle();
-                        userData.putSerializable("access_token", accessToken);
-                        userData.putSerializable("me", me);
-
-                        result.putExtra(AccountManager.KEY_USERDATA, userData);
-
-                        return result;
+                        return mAccountManagerHelper.createAddAccountResultIntent(accessToken, me);
                     }
                 }))
                 .subscribe(new Action1<Intent>() {
@@ -146,6 +135,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                     @Override
                     public void call(Throwable throwable) {
                         Timber.e(throwable, "Request failed");
+                        finish();
                     }
                 });
 
@@ -159,8 +149,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
         switch (error) {
             case "access_denied":
                 // Fail gracefully - let the user know you cannot continue, and be respectful of
-                // their
-                // choice to decline to use your app
+                // their choice to decline to use your app
                 Timber.d("User chose not to grant your app permissions");
                 break;
             case "unsupported_response_type":
@@ -177,5 +166,6 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                 Timber.d("There was an issue with the request sent to /api/v1/authorize ");
                 break;
         }
+        finish();
     }
 }

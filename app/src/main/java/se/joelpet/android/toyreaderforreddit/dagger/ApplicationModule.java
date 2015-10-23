@@ -69,8 +69,9 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    AccountManagerHelper provideAccountManagerHelper(AccountManager accountManager) {
-        return new AccountManagerHelper(accountManager);
+    AccountManagerHelper provideAccountManagerHelper(@ForApplication Context context, AccountManager
+            accountManager) {
+        return new AccountManagerHelper(context, accountManager);
     }
 
     @Provides

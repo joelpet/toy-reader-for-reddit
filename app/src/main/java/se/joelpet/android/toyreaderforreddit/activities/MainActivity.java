@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 
-import android.accounts.AccountManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -249,17 +248,15 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     private void addAccountUsingAccountManager() {
         Subscription addAccountSubscription = AndroidObservable.bindActivity(this,
-                mAccountManagerHelper.addAccount(this)).subscribe(new Action1<Bundle>() {
-            @Override
-            public void call(Bundle result) {
-                Timber.d("Result: %s", result);
-
-                Bundle userData = result.getBundle(AccountManager.KEY_USERDATA);
-                Me me = (Me) userData.getSerializable("me");
-                mLocalDataStore.putMe(me);
-                switchToDefaultMenuModeInDrawer();
-            }
-        });
+                mAccountManagerHelper.addAccount(this))
+                .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
+                    @Override
+                    public void call(AccountManagerHelper.AddAccountResult result) {
+                        Timber.d("Result: %s", result);
+                        mLocalDataStore.putMe(result.getMe());
+                        switchToDefaultMenuModeInDrawer();
+                    }
+                });
         addSubscription(addAccountSubscription);
     }
 
