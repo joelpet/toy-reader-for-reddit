@@ -225,6 +225,10 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         Timber.e(throwable, "Listing request failed");
         Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
+
+        if (mRootViewSwitcher.getDisplayedChild() == VIEW_SWITCHER_CHILD_LOAD_INDICATOR) {
+            mRootViewSwitcher.showNext();
+        }
     }
 
     @Override
