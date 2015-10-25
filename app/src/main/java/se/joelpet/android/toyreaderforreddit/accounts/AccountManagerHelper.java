@@ -20,13 +20,12 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
-import timber.log.Timber;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 
 public class AccountManagerHelper {
 
@@ -92,19 +91,23 @@ public class AccountManagerHelper {
     }
 
     public Observable<String> getAuthToken() {
+        return getAccount().flatMap(new Func1<Account, Observable<String>>() {
+            @Override
+            public Observable<String> call(Account account) {
+                return getAuthTokenForAccount(account);
+            }
+        });
+    }
+
+    private Observable<String> getAuthTokenForAccount(final Account account) {
         return Observable.create(new Observable.OnSubscribe<Bundle>() {
             @Override
             public void call(final Subscriber<? super Bundle> subscriber) {
-                // TODO: Reuse getAccount() method
-                Account[] accountsByType = mAccountManager.getAccountsByType(mAccountType);
-                mAccountManager.getAuthToken(accountsByType[0], mAuthTokenType, null, true, new
+                mAccountManager.getAuthToken(account, mAuthTokenType, null, true, new
                         AccountManagerCallback<Bundle>() {
                             @Override
                             public void run(AccountManagerFuture<Bundle> future) {
                                 try {
-                                    // FIXME: Too much wrapping going on here (or perhaps
-                                    // when adding, which might be the reason I have to add
-                                    // explicitly)
                                     Bundle result = future.getResult();
                                     subscriber.onNext(result);
                                 } catch (OperationCanceledException | IOException |
@@ -114,22 +117,12 @@ public class AccountManagerHelper {
                             }
                         }, null);
             }
-        }).doOnNext(new Action1<Bundle>() {
-            @Override
-            public void call(Bundle bundle) {
-                Timber.d("Got bundle from AccountManager: %s", bundle);
-            }
         }).map(new Func1<Bundle, String>() {
             @Override
             public String call(Bundle bundle) {
                 return bundle.getString(AccountManager.KEY_AUTHTOKEN);
             }
-        }).doOnNext(new Action1<String>() {
-            @Override
-            public void call(String authToken) {
-                Timber.d("Extracted auth token: %s", authToken);
-            }
-        });
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<String>getInstance());
     }
 
     public boolean addAccountExplicitly(Account account, String password, Bundle userdata) {
