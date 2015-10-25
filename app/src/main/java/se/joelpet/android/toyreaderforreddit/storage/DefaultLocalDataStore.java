@@ -6,14 +6,14 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import se.joelpet.android.toyreaderforreddit.Preferences;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class DefaultLocalDataStore implements LocalDataStore {
 
@@ -51,9 +51,8 @@ public class DefaultLocalDataStore implements LocalDataStore {
                     mMeSubject.onNext(me);
                 }
             }
-        })
-                .compose(this.<Me>runInBackgroundAndNotifyOnMainThread())
-                .compose(this.<Me>cacheAndSubscribe());
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<Me>getInstance()
+        ).compose(CacheAndSubscribeTransformer.<Me>getInstance());
     }
 
     @Override
@@ -67,9 +66,8 @@ public class DefaultLocalDataStore implements LocalDataStore {
                     mMeSubject.onNext(null);
                 }
             }
-        })
-                .compose(this.<Void>runInBackgroundAndNotifyOnMainThread())
-                .compose(this.<Void>cacheAndSubscribe());
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<Void>getInstance()
+        ).compose(CacheAndSubscribeTransformer.<Void>getInstance());
     }
 
     @Override
@@ -82,9 +80,8 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 subscriber.onNext(authCode);
                 subscriber.onCompleted();
             }
-        })
-                .compose(this.<String>runInBackgroundAndNotifyOnMainThread())
-                .compose(this.<String>cacheAndSubscribe());
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<String>getInstance()
+        ).compose(CacheAndSubscribeTransformer.<String>getInstance());
     }
 
     @Override
@@ -98,8 +95,7 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 }
                 subscriber.onCompleted();
             }
-        })
-                .compose(this.<AccessToken>runInBackgroundAndNotifyOnMainThread());
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<AccessToken>getInstance());
     }
 
     @Override
@@ -112,9 +108,8 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 subscriber.onNext(accessToken);
                 subscriber.onCompleted();
             }
-        })
-                .compose(this.<AccessToken>runInBackgroundAndNotifyOnMainThread())
-                .compose(this.<AccessToken>cacheAndSubscribe());
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<AccessToken>getInstance()
+        ).compose(CacheAndSubscribeTransformer.<AccessToken>getInstance());
     }
 
     @Override
@@ -125,28 +120,7 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 mPreferences.deleteAccessToken();
                 subscriber.onCompleted();
             }
-        })
-                .compose(this.<Void>runInBackgroundAndNotifyOnMainThread())
-                .compose(this.<Void>cacheAndSubscribe());
-    }
-
-    private <T> Observable.Transformer<T, T> runInBackgroundAndNotifyOnMainThread() {
-        return new Observable.Transformer<T, T>() {
-            @Override
-            public Observable<T> call(Observable<T> observable) {
-                return observable.observeOn(Schedulers.io()).subscribeOn(mainThread());
-            }
-        };
-    }
-
-    private <T> Observable.Transformer<T, T> cacheAndSubscribe() {
-        return new Observable.Transformer<T, T>() {
-            @Override
-            public Observable<T> call(Observable<T> observable) {
-                Observable<T> cached = observable.cache(1);
-                cached.subscribe();
-                return cached;
-            }
-        };
+        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<Void>getInstance()
+        ).compose(CacheAndSubscribeTransformer.<Void>getInstance());
     }
 }
