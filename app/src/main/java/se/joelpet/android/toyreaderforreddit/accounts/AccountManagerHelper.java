@@ -9,6 +9,7 @@ import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -85,10 +86,15 @@ public class AccountManagerHelper {
         return result;
     }
 
+    public Observable<Account> getAccount() {
+        return Observable.from(mAccountManager.getAccountsByType(mAccountType)).single();
+    }
+
     public Observable<String> getAuthToken() {
         return Observable.create(new Observable.OnSubscribe<Bundle>() {
             @Override
             public void call(final Subscriber<? super Bundle> subscriber) {
+                // TODO: Reuse getAccount() method
                 Account[] accountsByType = mAccountManager.getAccountsByType(mAccountType);
                 mAccountManager.getAuthToken(accountsByType[0], mAuthTokenType, null, true, new
                         AccountManagerCallback<Bundle>() {
@@ -131,6 +137,24 @@ public class AccountManagerHelper {
 
     public void setAuthToken(Account account, String authToken) {
         mAccountManager.setAuthToken(account, mAuthTokenType, authToken);
+    }
+
+    public Observable<Account> removeAccount() {
+        return getAccount().doOnNext(new Action1<Account>() {
+            @Override
+            public void call(Account account) {
+                removeAccount(account);
+            }
+        });
+    }
+
+    public void removeAccount(Account account) {
+        // TODO: Add callback and create Observable result
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            mAccountManager.removeAccount(account, null, null, null);
+        } else {
+            mAccountManager.removeAccount(account, null, null);
+        }
     }
 
     public static class AddAccountResult {
