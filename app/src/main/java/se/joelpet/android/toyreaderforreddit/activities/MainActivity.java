@@ -183,11 +183,9 @@ public class MainActivity extends BaseActivity implements NavigationView
                 break;
             case R.id.navigation_sign_in:
                 addAccountUsingAccountManager();
-                switchToDefaultMenuModeInDrawer();
                 return true;
             case R.id.navigation_sign_out:
                 removeAccountUsingAccountManager();
-                switchToDefaultMenuModeInDrawer();
                 return false;
             default:
                 return false;
@@ -250,6 +248,7 @@ public class MainActivity extends BaseActivity implements NavigationView
                     @Override
                     public void call(AccountManagerHelper.AddAccountResult result) {
                         Timber.d("Result: %s", result);
+                        switchToDefaultMenuModeInDrawer();
                     }
                 }));
     }
@@ -261,6 +260,7 @@ public class MainActivity extends BaseActivity implements NavigationView
             public void call() {
                 Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast.LENGTH_SHORT)
                         .show();
+                switchToDefaultMenuModeInDrawer();
             }
         }).subscribe());
     }
