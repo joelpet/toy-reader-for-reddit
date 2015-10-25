@@ -25,6 +25,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import timber.log.Timber;
 
 public class AccountManagerHelper {
@@ -140,21 +141,38 @@ public class AccountManagerHelper {
     }
 
     public Observable<Account> removeAccount() {
-        return getAccount().doOnNext(new Action1<Account>() {
+        return getAccount().flatMap(new Func1<Account, Observable<Account>>() {
             @Override
-            public void call(Account account) {
-                removeAccount(account);
+            public Observable<Account> call(Account account) {
+                return removeAccount(account);
             }
         });
     }
 
-    public void removeAccount(Account account) {
-        // TODO: Add callback and create Observable result
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            mAccountManager.removeAccount(account, null, null, null);
-        } else {
-            mAccountManager.removeAccount(account, null, null);
-        }
+    public Observable<Account> removeAccount(final Account account) {
+        return Observable.create(new Observable.OnSubscribe<Account>() {
+            @Override
+            public void call(final Subscriber<? super Account> subscriber) {
+                AccountManagerCallback callback = new AccountManagerCallback() {
+                    @Override
+                    public void run(AccountManagerFuture future) {
+                        try {
+                            future.getResult();
+                            subscriber.onNext(account);
+                        } catch (OperationCanceledException | IOException |
+                                AuthenticatorException e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                };
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mAccountManager.removeAccount(account, null, callback, null);
+                } else {
+                    mAccountManager.removeAccount(account, callback, null);
+                }
+            }
+        }).compose(CacheAndSubscribeTransformer.<Account>getInstance());
     }
 
     public static class AddAccountResult {
