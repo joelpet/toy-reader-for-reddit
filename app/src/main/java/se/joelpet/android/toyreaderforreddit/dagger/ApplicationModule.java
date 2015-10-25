@@ -17,6 +17,7 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.net.FakeRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RealRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.services.LoginAccountsUpdatedIntentService;
 import se.joelpet.android.toyreaderforreddit.services.RedditOAuthAuthenticatorService;
 import se.joelpet.android.toyreaderforreddit.storage.DefaultLocalDataStore;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
@@ -26,6 +27,7 @@ import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
                 DefaultLocalDataStore.class,
                 FakeRedditApi.class,
                 RealRedditApi.class,
+                LoginAccountsUpdatedIntentService.class,
                 RedditOAuthAuthenticatorService.class,
         },
         library = true

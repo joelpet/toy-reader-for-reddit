@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import rx.Observable;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -184,20 +183,11 @@ public class MainActivity extends BaseActivity implements NavigationView
                 break;
             case R.id.navigation_sign_in:
                 addAccountUsingAccountManager();
+                switchToDefaultMenuModeInDrawer();
                 return true;
             case R.id.navigation_sign_out:
+                removeAccountUsingAccountManager();
                 switchToDefaultMenuModeInDrawer();
-                addSubscription(bindToActivity(Observable.merge(
-                                mLocalDataStore.deleteAccessToken(),
-                                mLocalDataStore.deleteMe(),
-                                mAccountManagerHelper.removeAccount())
-                ).doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast
-                                .LENGTH_SHORT).show();
-                    }
-                }).subscribe());
                 return false;
             default:
                 return false;
@@ -224,7 +214,7 @@ public class MainActivity extends BaseActivity implements NavigationView
         setDefaultGroupInDrawerMenuVisible(false);
         setAccountGroupInDrawerMenuVisible(true);
         displayAccountToggleDropUpArrow();
-        toggleAccountMenuOptionsVisibilityAs(signedIn);
+        displayAccountMenuOptionsAs(signedIn);
     }
 
     private void displayAccountToggleDropDownArrow() {
@@ -243,9 +233,14 @@ public class MainActivity extends BaseActivity implements NavigationView
         mNavigationView.getMenu().setGroupVisible(R.id.default_group, visible);
     }
 
-    private void toggleAccountMenuOptionsVisibilityAs(boolean signedIn) {
+    private void displayAccountMenuOptionsAs(boolean signedIn) {
         mNavigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
         mNavigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
+    }
+
+    private boolean isAccountMenuOptionsDisplayed() {
+        return mNavigationView.getMenu().findItem(R.id.navigation_sign_in).isVisible() ||
+                mNavigationView.getMenu().findItem(R.id.navigation_sign_out).isVisible();
     }
 
     private void addAccountUsingAccountManager() {
@@ -255,11 +250,22 @@ public class MainActivity extends BaseActivity implements NavigationView
                     @Override
                     public void call(AccountManagerHelper.AddAccountResult result) {
                         Timber.d("Result: %s", result);
-                        switchToDefaultMenuModeInDrawer();
                     }
                 }));
     }
 
+    private void removeAccountUsingAccountManager() {
+        addSubscription(AndroidObservable.bindActivity(this, mAccountManagerHelper.removeAccount()
+        ).doOnCompleted(new Action0() {
+            @Override
+            public void call() {
+                Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }).subscribe());
+    }
+
+    // TODO: Move to text.format.MeFormat
     private CharSequence getFormattedAccountAge(Me me) {
         Period accountPeriod = new Period(me.getCreationDateTime(),
                 DateTime.now(DateTimeZone.UTC)).normalizedStandard();
@@ -274,22 +280,25 @@ public class MainActivity extends BaseActivity implements NavigationView
         return getResources().getString(R.string.redditor_for_years_months, years, months);
     }
 
-    /**
-     * MeObserver handles updates to the locally stored Me object.
-     */
+
     private class MeObserver extends AbstractObserver<Me> {
 
         @Override
         public void onNext(Me me) {
             Timber.d("Refreshing view with new Me object: %s", me);
+            boolean signedIn = me != null;
 
-            String userName = me != null ? me.getName() : getString(R.string
+            String userName = signedIn ? me.getName() : getString(R.string
                     .navigation_header_user_name_unauthenticated);
-            CharSequence userEmail = me != null ? getFormattedAccountAge(me) : getString(R.string
+            CharSequence userEmail = signedIn ? getFormattedAccountAge(me) : getString(R.string
                     .navigation_header_user_email_unauthenticated);
 
             mUserNameView.setText(userName);
             mUserEmailView.setText(userEmail);
+
+            if (isAccountMenuOptionsDisplayed()) {
+                displayAccountMenuOptionsAs(signedIn);
+            }
         }
     }
 }

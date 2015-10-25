@@ -48,6 +48,13 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <service android:name=".services.LoginAccountsUpdatedIntentService" />
+
+        <receiver android:name=".receivers.LoginAccountsChangedReceiver">
+            <intent-filter>
+                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
