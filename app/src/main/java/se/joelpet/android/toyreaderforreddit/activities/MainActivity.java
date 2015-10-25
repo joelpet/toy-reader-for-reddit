@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 
+import android.accounts.OperationCanceledException;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -243,14 +244,23 @@ public class MainActivity extends BaseActivity implements NavigationView
 
     private void addAccountUsingAccountManager() {
         addSubscription(AndroidObservable.bindActivity(this,
-                mAccountManagerHelper.addAccount(this))
-                .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
+                mAccountManagerHelper.addAccount(this)).subscribe(
+                new Action1<AccountManagerHelper.AddAccountResult>() {
                     @Override
                     public void call(AccountManagerHelper.AddAccountResult result) {
                         Timber.d("Result: %s", result);
                         switchToDefaultMenuModeInDrawer();
                     }
-                }));
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (throwable instanceof OperationCanceledException) {
+                            Toast.makeText(MainActivity.this, R.string.toast_sign_in_canceled,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        ));
     }
 
     private void removeAccountUsingAccountManager() {
