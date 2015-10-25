@@ -87,7 +87,7 @@ public class AccountManagerHelper {
     }
 
     public Observable<Account> getAccount() {
-        return Observable.from(mAccountManager.getAccountsByType(mAccountType)).single();
+        return Observable.from(mAccountManager.getAccountsByType(mAccountType)).take(1);
     }
 
     public Observable<String> getAuthToken() {
