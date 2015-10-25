@@ -187,8 +187,9 @@ public class MainActivity extends BaseActivity implements NavigationView
                 return true;
             case R.id.navigation_sign_out:
                 switchToDefaultMenuModeInDrawer();
-                addSubscription(bindToActivity(Observable.merge(mLocalDataStore.deleteAccessToken(),
-                        mLocalDataStore.deleteMe())).doOnCompleted(new Action0() {
+                addSubscription(bindToActivity(
+                        Observable.merge(mLocalDataStore.deleteAccessToken(),
+                                mLocalDataStore.deleteMe())).doOnCompleted(new Action0() {
                     @Override
                     public void call() {
                         Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast

@@ -83,9 +83,9 @@ public class ApplicationModule {
     @Provides
     @Singleton
     RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore,
-                               AccountManager accountManager) {
+                               AccountManagerHelper accountManagerHelper) {
         // TODO: Check BuildConfig for test build.
-        return true ? new RealRedditApi(volleySingleton, localDataStore) :
+        return true ? new RealRedditApi(volleySingleton, localDataStore, accountManagerHelper) :
                 new FakeRedditApi();
     }
 

@@ -11,6 +11,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
@@ -26,11 +27,14 @@ public class RealRedditApi implements RedditApi {
 
     private final VolleySingleton mVolleySingleton;
     private final LocalDataStore mLocalDataStore;
+    private final AccountManagerHelper mAccountManagerHelper;
 
     @Inject
-    public RealRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore) {
+    public RealRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore,
+                         AccountManagerHelper accountManagerHelper) {
         mVolleySingleton = volleySingleton;
         mLocalDataStore = localDataStore;
+        mAccountManagerHelper = accountManagerHelper;
         Timber.d("Constructing new RealRedditApi with VolleySingleton: %s", mVolleySingleton);
     }
 
@@ -38,26 +42,12 @@ public class RealRedditApi implements RedditApi {
     public Observable<Listing<Link>> getLinkListing(final String path, final String after, final
     Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
-        // TODO: Retrieve access token from AccountManager instead
-        mLocalDataStore.getAccessToken().singleOrDefault(null)
-                .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
+        mAccountManagerHelper
+                .getAuthToken()
+                .onErrorReturn(new Func1<Throwable, String>() {
                     @Override
-                    public Observable<AccessToken> call(AccessToken accessToken) {
-                        if (accessToken == null) {
-                            // We are not going to attempt an authenticated request -- carry on
-                            return Observable.just(null);
-                        } else if (accessToken.isExpired()) {
-                            return refreshAccessToken(accessToken, tag);
-                        } else {
-                            return Observable.just(accessToken);
-                        }
-                    }
-                })
-                .map(new Func1<AccessToken, String>() {
-                    @Override
-                    public String call(AccessToken accessToken) {
-                        // We now either have null or a valid access token
-                        return accessToken != null ? accessToken.getAccessToken() : null;
+                    public String call(Throwable throwable) {
+                        return null;
                     }
                 })
                 .map(new Func1<String, ListingRequest<Link>>() {
@@ -73,6 +63,7 @@ public class RealRedditApi implements RedditApi {
                         addToRequestQueueWithTag(request, tag);
                     }
                 });
+        // TOOD: Take care of 40x responses -- invalidate token
         return Observable.from(future, Schedulers.io());
     }
 
@@ -101,6 +92,7 @@ public class RealRedditApi implements RedditApi {
     // TODO: getMe() should probably take accessToken as parameter
     // And so should every API method so that this API class does not have to know where to get an
     // access token from. That would also loosen the coupling between this API and LocalDataStore.
+    // Or with AccountManager it makes sense to have that as a helper for getting auth tokens.
     @Override
     public Observable<Me> getMe(final Object tag) {
         final RequestFuture<Me> future = RequestFuture.newFuture();

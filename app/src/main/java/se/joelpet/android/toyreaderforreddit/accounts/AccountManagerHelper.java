@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -18,8 +19,12 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import timber.log.Timber;
 
 public class AccountManagerHelper {
 
@@ -58,7 +63,7 @@ public class AccountManagerHelper {
                             }
                         }, null);
             }
-        });
+        }).observeOn(Schedulers.io()); // TODO: Really?
     }
 
     public String peekAuthToken(Account account, String authTokenType) {
@@ -80,6 +85,54 @@ public class AccountManagerHelper {
         return result;
     }
 
+    public Observable<String> getAuthToken() {
+        return Observable.create(new Observable.OnSubscribe<Bundle>() {
+            @Override
+            public void call(final Subscriber<? super Bundle> subscriber) {
+                Account[] accountsByType = mAccountManager.getAccountsByType(mAccountType);
+                mAccountManager.getAuthToken(accountsByType[0], mAuthTokenType, null, true, new
+                        AccountManagerCallback<Bundle>() {
+                            @Override
+                            public void run(AccountManagerFuture<Bundle> future) {
+                                try {
+                                    // FIXME: Too much wrapping going on here (or perhaps
+                                    // when adding, which might be the reason I have to add
+                                    // explicitly)
+                                    Bundle result = future.getResult();
+                                    subscriber.onNext(result);
+                                } catch (OperationCanceledException | IOException |
+                                        AuthenticatorException e) {
+                                    subscriber.onError(e);
+                                }
+                            }
+                        }, null);
+            }
+        }).doOnNext(new Action1<Bundle>() {
+            @Override
+            public void call(Bundle bundle) {
+                Timber.d("Got bundle from AccountManager: %s", bundle);
+            }
+        }).map(new Func1<Bundle, String>() {
+            @Override
+            public String call(Bundle bundle) {
+                return bundle.getString(AccountManager.KEY_AUTHTOKEN);
+            }
+        }).doOnNext(new Action1<String>() {
+            @Override
+            public void call(String authToken) {
+                Timber.d("Extracted auth token: %s", authToken);
+            }
+        });
+    }
+
+    public boolean addAccountExplicitly(Account account, String password, Bundle userdata) {
+        return mAccountManager.addAccountExplicitly(account, password, userdata);
+    }
+
+    public void setAuthToken(Account account, String authToken) {
+        mAccountManager.setAuthToken(account, mAuthTokenType, authToken);
+    }
+
     public static class AddAccountResult {
         private final Bundle result;
 
@@ -87,9 +140,32 @@ public class AccountManagerHelper {
             this.result = result;
         }
 
+        @Nullable
+        public String getName() {
+            return result.getString(AccountManager.KEY_ACCOUNT_NAME);
+        }
+
+        @Nullable
+        public String getAccountType() {
+            return result.getString(AccountManager.KEY_ACCOUNT_TYPE);
+        }
+
+        @Nullable
+        public String getAuthToken() {
+            return result.getString(AccountManager.KEY_AUTHTOKEN);
+        }
+
+        @Nullable
         public AccessToken getAccessToken() {
             Bundle userdata = result.getBundle(AccountManager.KEY_USERDATA);
             return (AccessToken) userdata.getSerializable("access_token");
+        }
+
+        @Override
+        public String toString() {
+            return "AddAccountResult{" +
+                    "result=" + result +
+                    '}';
         }
     }
 

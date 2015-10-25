@@ -1,5 +1,6 @@
 package se.joelpet.android.toyreaderforreddit.activities;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -156,6 +157,13 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                 .subscribe(new Action1<Intent>() {
                     @Override
                     public void call(Intent intent) {
+                        AccountManagerHelper.AddAccountResult result = new
+                                AccountManagerHelper.AddAccountResult(intent.getExtras());
+                        Timber.d("Adding account explicitly from result: %s", result);
+                        Account account = new Account(result.getName(), result.getAccountType());
+                        mAccountManagerHelper.addAccountExplicitly(account,
+                                result.getAccessToken().getRefreshToken(), null);
+                        mAccountManagerHelper.setAuthToken(account, result.getAuthToken());
                         setAccountAuthenticatorResult(intent.getExtras());
                         setResult(RESULT_OK, intent);
                         finish();
