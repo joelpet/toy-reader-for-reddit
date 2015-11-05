@@ -78,8 +78,9 @@ public class ApplicationModule {
 
     @Provides
     AccountAuthenticator provideAccountAuthenticator(@ForApplication Context context,
-                                                     AccountManagerHelper accountManagerHelper) {
-        return new AccountAuthenticator(context, accountManagerHelper);
+                                                     AccountManagerHelper accountManagerHelper,
+                                                     RedditApi redditApi) {
+        return new AccountAuthenticator(context, accountManagerHelper, redditApi);
     }
 
     @Provides

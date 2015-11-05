@@ -21,12 +21,12 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
 
     public static final String REQUEST_URI_PATH = "api/v1/access_token";
 
-    private final AccessToken mAccessToken;
+    private final String mRefreshToken;
     private final RequestFuture<AccessToken> mResponseListener;
 
-    public RefreshTokenRequest(AccessToken accessToken, RequestFuture<AccessToken> future) {
+    public RefreshTokenRequest(String refreshToken, RequestFuture<AccessToken> future) {
         super(Method.POST, buildUrl(), future, null);
-        mAccessToken = accessToken;
+        mRefreshToken = refreshToken;
         mResponseListener = future;
     }
 
@@ -48,7 +48,7 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
             params = new HashMap<>(2);
         }
         params.put("grant_type", "refresh_token");
-        params.put("refresh_token", mAccessToken.getRefreshToken());
+        params.put("refresh_token", mRefreshToken);
         Timber.d("Using params: %s", params);
         return params;
     }
@@ -59,7 +59,7 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
             JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
             AccessToken accessToken = AccessToken.from(jsonObject);
             // "refresh_token" is absent in response from server, so add it back here
-            accessToken.setRefreshToken(mAccessToken.getRefreshToken());
+            accessToken.setRefreshToken(mRefreshToken);
             return Response.success(accessToken, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));

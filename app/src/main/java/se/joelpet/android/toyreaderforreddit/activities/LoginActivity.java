@@ -164,6 +164,8 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                         mAccountManagerHelper.addAccountExplicitly(account,
                                 result.getAccessToken().getRefreshToken(), null);
                         mAccountManagerHelper.setAuthToken(account, result.getAuthToken());
+                        mAccountManagerHelper.setRefreshToken(account, result.getAccessToken()
+                                .getRefreshToken());
                         setAccountAuthenticatorResult(intent.getExtras());
                         setResult(RESULT_OK, intent);
                         finish();

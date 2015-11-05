@@ -20,12 +20,14 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
+import timber.log.Timber;
 
 public class AccountManagerHelper {
 
@@ -110,6 +112,7 @@ public class AccountManagerHelper {
                                 try {
                                     Bundle result = future.getResult();
                                     subscriber.onNext(result);
+                                    subscriber.onCompleted();
                                 } catch (OperationCanceledException | IOException |
                                         AuthenticatorException e) {
                                     subscriber.onError(e);
@@ -131,6 +134,17 @@ public class AccountManagerHelper {
 
     public void setAuthToken(Account account, String authToken) {
         mAccountManager.setAuthToken(account, mAuthTokenType, authToken);
+    }
+
+    public void invalidateAuthToken() {
+        // TODO: Return Observable<Void>
+        getAuthToken().subscribe(new Action1<String>() {
+            @Override
+            public void call(String authToken) {
+                Timber.d("Invalidating auth token: %s", authToken);
+                mAccountManager.invalidateAuthToken(mAccountType, authToken);
+            }
+        });
     }
 
     public Observable<Account> removeAccount() {
@@ -166,6 +180,14 @@ public class AccountManagerHelper {
                 }
             }
         }).compose(CacheAndSubscribeTransformer.<Account>getInstance());
+    }
+
+    public void setRefreshToken(Account account, String refreshToken) {
+        mAccountManager.setPassword(account, refreshToken);
+    }
+
+    public String getRefreshToken(Account account) {
+        return mAccountManager.getPassword(account);
     }
 
     public static class AddAccountResult {

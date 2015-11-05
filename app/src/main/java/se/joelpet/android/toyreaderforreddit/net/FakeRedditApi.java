@@ -42,6 +42,11 @@ public class FakeRedditApi implements RedditApi {
     }
 
     @Override
+    public Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
     public Observable<Me> getMe(Object tag) {
         return Observable.error(new Exception("Not yet implemented"));
     }

@@ -12,6 +12,8 @@ public interface RedditApi {
 
     Observable<AccessToken> getAccessToken(String code, Object tag);
 
+    Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag);
+
     Observable<Me> getMe(Object tag);
 
     void cancelAll(Object tag);

@@ -1,5 +1,6 @@
 package se.joelpet.android.toyreaderforreddit.fragments;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.ImageLoader;
 
 import android.net.Uri;
@@ -21,9 +22,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
@@ -63,6 +66,9 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Inject
     protected ImageLoader mImageLoader;
+
+    @Inject
+    protected AccountManagerHelper mAccountManagerHelper;
 
     /** The path part of the URI pointing to the link listing of this fragment. */
     private String mListingPath;
@@ -228,6 +234,21 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
         if (mRootViewSwitcher.getDisplayedChild() == VIEW_SWITCHER_CHILD_LOAD_INDICATOR) {
             mRootViewSwitcher.showNext();
+        }
+
+        if (throwable.getCause() instanceof AuthFailureError) {
+            // TODO: Tidy up and provide better UX
+            Toast.makeText(getActivity(), "Credentials have expired", Toast.LENGTH_LONG).show();
+            mAccountManagerHelper
+                    .addAccount(getActivity())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
+                        @Override
+                        public void call(AccountManagerHelper.AddAccountResult addAccountResult) {
+                            Timber.d("Account added. Queueing another listing request.");
+                            queueListingRequest();
+                        }
+                    });
         }
     }
 

@@ -1,5 +1,6 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.RequestFuture;
 
@@ -39,11 +40,29 @@ public class RealRedditApi implements RedditApi {
     }
 
     @Override
-    public Observable<Listing<Link>> getLinkListing(final String path, final String after, final
-    Object tag) {
+    public Observable<Listing<Link>> getLinkListing(final String path, final String after,
+                                                    final Object tag) {
+        return getLinkListingUsingStoredAuthToken(path, after, tag)
+                .onErrorResumeNext(new Func1<Throwable, Observable<? extends Listing<Link>>>() {
+                    @Override
+                    public Observable<? extends Listing<Link>> call(Throwable throwable) {
+                        if (throwable.getCause() instanceof AuthFailureError) {
+                            Timber.d("First auth failure; invalidate auth token and retry");
+                            mAccountManagerHelper.invalidateAuthToken();
+                            return getLinkListingUsingStoredAuthToken(path, after, tag);
+                        }
+                        return Observable.error(throwable);
+                    }
+                });
+    }
+
+    public Observable<Listing<Link>> getLinkListingUsingStoredAuthToken(final String path,
+                                                                        final String after,
+                                                                        final Object tag) {
         final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
         mAccountManagerHelper
                 .getAuthToken()
+                .single()
                 .onErrorReturn(new Func1<Throwable, String>() {
                     @Override
                     public String call(Throwable throwable) {
@@ -56,14 +75,13 @@ public class RealRedditApi implements RedditApi {
                         return new ListingRequest<>(path, after, accessToken, future);
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ListingRequest<Link>>() {
                     @Override
-                    public void call(ListingRequest<Link> request) {
-                        addToRequestQueueWithTag(request, tag);
+                    public void call(ListingRequest<Link> linkListingRequest) {
+                        Timber.d("Adding to request queue: %s", linkListingRequest);
+                        addToRequestQueueWithTag(linkListingRequest, tag);
                     }
                 });
-        // TOOD: Take care of 40x responses -- invalidate token
         return Observable.from(future, Schedulers.io());
     }
 
@@ -75,15 +93,16 @@ public class RealRedditApi implements RedditApi {
         return Observable.from(future, Schedulers.io());
     }
 
-    public Observable<AccessToken> refreshAccessToken(AccessToken accessToken, Object tag) {
+    public Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
-        RefreshTokenRequest request = new RefreshTokenRequest(accessToken, future);
+        RefreshTokenRequest request = new RefreshTokenRequest(refreshToken, future);
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io())
                 // Store the refreshed access token when received before emitting to subscribers
                 .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
                     @Override
                     public Observable<AccessToken> call(AccessToken accessToken) {
+                        // TODO: Remove from here -- use only AccountManager for tokens
                         return mLocalDataStore.putAccessToken(accessToken);
                     }
                 });
