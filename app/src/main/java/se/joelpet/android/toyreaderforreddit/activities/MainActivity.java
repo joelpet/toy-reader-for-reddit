@@ -28,11 +28,9 @@ import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
@@ -141,22 +139,16 @@ public class MainActivity extends BaseActivity implements NavigationView
     @OnClick(R.id.account_drop_down_arrow)
     protected void onAccountDropDownArrowClick(View view) {
         switchToAccountMenuModeInDrawerWithOptionsHidden();
-        addSubscription(bindToActivity(mLocalDataStore.getAccessToken()).first().map(new Func1<AccessToken, Boolean>() {
-            @Override
-            public Boolean call(AccessToken accessToken) {
-                return accessToken != null && !accessToken.isExpired();
-            }
-        }).onErrorReturn(new Func1<Throwable, Boolean>() {
-            @Override
-            public Boolean call(Throwable throwable) {
-                return false;
-            }
-        }).subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean signedIn) {
-                switchToAccountMenuModeInDrawerAs(signedIn);
-            }
-        }));
+        addSubscription(bindToActivity(mAccountManagerHelper
+                .getAccount()
+                .isEmpty())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isNoAccountAvailable) {
+                        boolean signedIn = !isNoAccountAvailable;
+                        switchToAccountMenuModeInDrawerAs(signedIn);
+                    }
+                }));
     }
 
     @OnClick(R.id.account_drop_up_arrow)

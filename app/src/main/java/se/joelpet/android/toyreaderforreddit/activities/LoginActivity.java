@@ -25,6 +25,7 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import se.joelpet.android.toyreaderforreddit.volley.AccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.BaseRequest;
@@ -104,38 +105,20 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
             return;
         }
 
-        // store auth code
-        mLocalDataStore.putAuthCode(authCode)
-                // request Me object from Reddit API
-                .flatMap(new Func1<String, Observable<AccessToken>>() {
-                    @Override
-                    public Observable<AccessToken> call(String authCode) {
-                        return mRedditApi.getAccessToken(authCode, TAG);
-                    }
-                }) // cache token to avoid multiple API requests
-                .compose(new Observable.Transformer<AccessToken, AccessToken>() {
-                    @Override
-                    public Observable<AccessToken> call(Observable<AccessToken> observable) {
-                        return observable.cache(1);
-                    }
-                }) // store access token
-                .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
-                    @Override
-                    public Observable<AccessToken> call(AccessToken accessToken) {
-                        Timber.d("Storing access token: %s", accessToken);
-                        return mLocalDataStore.putAccessToken(accessToken);
-                    }
-                })
+        mRedditApi.getAccessToken(authCode, TAG)
+                // cache token to avoid multiple API requests when reused later
+                .compose(CacheAndSubscribeTransformer.<AccessToken>getInstance())
                 .compose(new Observable.Transformer<AccessToken, Intent>() {
                     @Override
                     public Observable<Intent> call(Observable<AccessToken> tokenObservable) {
                         return Observable.zip(
+                                // original observable emitting access token from API
                                 tokenObservable,
-                                // get Me object from Reddit API and store it
+                                // get Me object from Reddit API (and store it)
                                 tokenObservable.flatMap(new Func1<AccessToken, Observable<Me>>() {
                                     @Override
                                     public Observable<Me> call(AccessToken accessToken) {
-                                        return mRedditApi.getMe(TAG);
+                                        return mRedditApi.getMe(accessToken.getAccessToken(), TAG);
                                     }
                                 }).flatMap(new Func1<Me, Observable<Me>>() {
                                     @Override

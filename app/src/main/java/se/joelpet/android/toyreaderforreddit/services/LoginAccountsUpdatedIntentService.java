@@ -38,19 +38,21 @@ public class LoginAccountsUpdatedIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        mAccountManagerHelper.getAccount().isEmpty()
-                .flatMap(new Func1<Boolean, Observable<?>>() {
+        deleteUserDetailsIfAccountIsMissing();
+    }
+
+    private void deleteUserDetailsIfAccountIsMissing() {
+        mAccountManagerHelper.getAccount()
+                .isEmpty()
+                .flatMap(new Func1<Boolean, Observable<Void>>() {
                     @Override
-                    public Observable<?> call(Boolean isEmpty) {
-                        if (isEmpty) {
-                            return Observable.merge(
-                                    mLocalDataStore.deleteAccessToken(),
-                                    mLocalDataStore.deleteMe());
+                    public Observable<Void> call(Boolean noAccountAvailable) {
+                        if (noAccountAvailable) {
+                            return mLocalDataStore.deleteMe();
                         } else {
                             return Observable.empty();
                         }
                     }
                 }).subscribe();
-
     }
 }

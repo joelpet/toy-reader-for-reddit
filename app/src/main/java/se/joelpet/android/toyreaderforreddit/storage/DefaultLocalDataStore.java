@@ -8,12 +8,9 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.subjects.BehaviorSubject;
 import se.joelpet.android.toyreaderforreddit.Preferences;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultLocalDataStore implements LocalDataStore {
 
@@ -65,60 +62,6 @@ public class DefaultLocalDataStore implements LocalDataStore {
                 if (mMeSubject != null) {
                     mMeSubject.onNext(null);
                 }
-            }
-        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<Void>getInstance()
-        ).compose(CacheAndSubscribeTransformer.<Void>getInstance());
-    }
-
-    @Override
-    public Observable<String> putAuthCode(final String authCode) {
-        checkNotNull(authCode);
-        return Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                mPreferences.putAuthCode(authCode);
-                subscriber.onNext(authCode);
-                subscriber.onCompleted();
-            }
-        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<String>getInstance()
-        ).compose(CacheAndSubscribeTransformer.<String>getInstance());
-    }
-
-    @Override
-    public Observable<AccessToken> getAccessToken() {
-        return Observable.create(new Observable.OnSubscribe<AccessToken>() {
-            @Override
-            public void call(Subscriber<? super AccessToken> subscriber) {
-                AccessToken accessToken = mPreferences.getAccessToken();
-                if (accessToken != null) {
-                    subscriber.onNext(accessToken);
-                }
-                subscriber.onCompleted();
-            }
-        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<AccessToken>getInstance());
-    }
-
-    @Override
-    public Observable<AccessToken> putAccessToken(final AccessToken accessToken) {
-        checkNotNull(accessToken);
-        return Observable.create(new Observable.OnSubscribe<AccessToken>() {
-            @Override
-            public void call(Subscriber<? super AccessToken> subscriber) {
-                mPreferences.putAccessToken(accessToken);
-                subscriber.onNext(accessToken);
-                subscriber.onCompleted();
-            }
-        }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<AccessToken>getInstance()
-        ).compose(CacheAndSubscribeTransformer.<AccessToken>getInstance());
-    }
-
-    @Override
-    public Observable<Void> deleteAccessToken() {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                mPreferences.deleteAccessToken();
-                subscriber.onCompleted();
             }
         }).compose(WorkOnIoAndOnNotifyOnMainTransformer.<Void>getInstance()
         ).compose(CacheAndSubscribeTransformer.<Void>getInstance());

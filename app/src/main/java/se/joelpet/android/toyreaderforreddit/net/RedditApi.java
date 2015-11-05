@@ -1,5 +1,7 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
+import android.support.annotation.NonNull;
+
 import rx.Observable;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
@@ -14,7 +16,7 @@ public interface RedditApi {
 
     Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag);
 
-    Observable<Me> getMe(Object tag);
+    Observable<Me> getMe(@NonNull String accessToken, Object tag);
 
     void cancelAll(Object tag);
 }

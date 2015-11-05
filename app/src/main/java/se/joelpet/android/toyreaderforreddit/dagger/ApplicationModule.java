@@ -88,7 +88,7 @@ public class ApplicationModule {
     RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore,
                                AccountManagerHelper accountManagerHelper) {
         // TODO: Check BuildConfig for test build.
-        return true ? new RealRedditApi(volleySingleton, localDataStore, accountManagerHelper) :
+        return true ? new RealRedditApi(volleySingleton, accountManagerHelper) :
                 new FakeRedditApi();
     }
 

@@ -1,5 +1,7 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 
 import rx.Observable;
@@ -47,7 +49,7 @@ public class FakeRedditApi implements RedditApi {
     }
 
     @Override
-    public Observable<Me> getMe(Object tag) {
+    public Observable<Me> getMe(@NonNull String accessToken, Object tag) {
         return Observable.error(new Exception("Not yet implemented"));
     }
 

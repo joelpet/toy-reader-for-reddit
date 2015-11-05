@@ -132,6 +132,19 @@ public class AccountManagerHelper {
         return mAccountManager.addAccountExplicitly(account, password, userdata);
     }
 
+    // TODO: Rename to match Reddit API naming, i.e. setAccessToken(Value/String/...)
+    public Observable<Void> setAuthToken(final String authToken) {
+        return getAccount()
+                .single()
+                .flatMap(new Func1<Account, Observable<Void>>() {
+                    @Override
+                    public Observable<Void> call(Account account) {
+                        setAuthToken(account, authToken);
+                        return Observable.empty();
+                    }
+                }).compose(CacheAndSubscribeTransformer.<Void>getInstance());
+    }
+
     public void setAuthToken(Account account, String authToken) {
         mAccountManager.setAuthToken(account, mAuthTokenType, authToken);
     }
