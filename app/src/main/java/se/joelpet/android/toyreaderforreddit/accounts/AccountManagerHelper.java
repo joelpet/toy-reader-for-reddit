@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
@@ -149,15 +148,16 @@ public class AccountManagerHelper {
         mAccountManager.setAuthToken(account, mAuthTokenType, authToken);
     }
 
-    public void invalidateAuthToken() {
-        // TODO: Return Observable<Void>
-        getAuthToken().subscribe(new Action1<String>() {
-            @Override
-            public void call(String authToken) {
-                Timber.d("Invalidating auth token: %s", authToken);
-                mAccountManager.invalidateAuthToken(mAccountType, authToken);
-            }
-        });
+    public Observable<Void> invalidateAuthToken() {
+        return getAuthToken()
+                .flatMap(new Func1<String, Observable<Void>>() {
+                    @Override
+                    public Observable<Void> call(String authToken) {
+                        Timber.d("Invalidating auth token: %s", authToken);
+                        mAccountManager.invalidateAuthToken(mAccountType, authToken);
+                        return Observable.empty();
+                    }
+                }).compose(CacheAndSubscribeTransformer.<Void>getInstance());
     }
 
     public Observable<Account> removeAccount() {

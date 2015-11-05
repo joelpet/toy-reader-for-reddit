@@ -41,13 +41,19 @@ public class RealRedditApi implements RedditApi {
     public Observable<Listing<Link>> getLinkListing(final String path, final String after,
                                                     final Object tag) {
         return getLinkListingUsingStoredAuthToken(path, after, tag)
-                .onErrorResumeNext(new Func1<Throwable, Observable<? extends Listing<Link>>>() {
+                .onErrorResumeNext(new Func1<Throwable, Observable<Listing<Link>>>() {
                     @Override
-                    public Observable<? extends Listing<Link>> call(Throwable throwable) {
+                    public Observable<Listing<Link>> call(Throwable throwable) {
                         if (throwable.getCause() instanceof AuthFailureError) {
                             Timber.d("First auth failure; invalidate auth token and retry");
-                            mAccountManagerHelper.invalidateAuthToken();
-                            return getLinkListingUsingStoredAuthToken(path, after, tag);
+                            return mAccountManagerHelper.invalidateAuthToken()
+                                    .concatMap(new Func1<Void, Observable<Listing<Link>>>() {
+                                        @Override
+                                        public Observable<Listing<Link>> call(Void aVoid) {
+                                            return getLinkListingUsingStoredAuthToken(path,
+                                                    after, tag);
+                                        }
+                                    });
                         }
                         return Observable.error(throwable);
                     }
