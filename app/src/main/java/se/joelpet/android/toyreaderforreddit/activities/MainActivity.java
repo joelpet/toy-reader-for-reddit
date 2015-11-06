@@ -26,7 +26,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.R;
@@ -256,15 +255,11 @@ public class MainActivity extends BaseActivity implements NavigationView
     }
 
     private void removeAccountUsingAccountManager() {
-        addSubscription(AndroidObservable.bindActivity(this, mAccountManagerHelper.removeAccount()
-        ).doOnCompleted(new Action0() {
-            @Override
-            public void call() {
-                Toast.makeText(MainActivity.this, R.string.toast_signed_out, Toast.LENGTH_SHORT)
-                        .show();
-                switchToDefaultMenuModeInDrawer();
-            }
-        }).subscribe());
+        Toast.makeText(this, R.string.toast_signing_out, Toast.LENGTH_SHORT).show();
+
+        addSubscription(AndroidObservable.bindActivity(this,
+                mAccountManagerHelper.removeAccount())
+                .subscribe());
     }
 
     // TODO: Move to text.format.MeFormat

@@ -18,7 +18,7 @@
     <string name="navigation_sign_out">Sign out</string>
 
     <string name="redditor_for_years_months">redditor for %1$s %2$s</string>
-    <string name="toast_signed_out">Signed out</string>
+    <string name="toast_signing_out">Signing out</string>
     <string name="toast_sign_in_canceled">Sign in canceled</string>
 
     <plurals name="years">

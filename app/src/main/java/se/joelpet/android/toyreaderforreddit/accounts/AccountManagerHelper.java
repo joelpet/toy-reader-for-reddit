@@ -179,6 +179,7 @@ public class AccountManagerHelper {
                         try {
                             future.getResult();
                             subscriber.onNext(account);
+                            subscriber.onCompleted();
                         } catch (OperationCanceledException | IOException |
                                 AuthenticatorException e) {
                             subscriber.onError(e);
