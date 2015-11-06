@@ -20,8 +20,10 @@
     <string name="redditor_for_years_months">redditor for %1$s %2$s</string>
     <string name="toast_signing_out">Signing out</string>
     <string name="toast_sign_in_canceled">Sign in canceled</string>
+    <string name="snackbar_could_not_get_new_data">Could not get new data</string>
     <string name="snackbar_account_credentials_expired">Account credentials expired</string>
     <string name="sign_in_again">Sign in again</string>
+    <string name="retry">Retry</string>
 
     <plurals name="years">
         <item quantity="one">1 year</item>

@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import javax.inject.Inject;
@@ -230,7 +229,17 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     private void handleListingRequestError(Throwable throwable) {
         Timber.e(throwable, "Listing request failed");
-        Toast.makeText(getActivity(), "Could not get new data", Toast.LENGTH_SHORT).show();
+
+        // TODO: Change to LENGTH_INDEFINITE when available in Design Library
+        Snackbar.make(mRootViewSwitcher, R.string.snackbar_could_not_get_new_data,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.retry, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        queueListingRequest();
+                    }
+                }).show();
+
         mSwipeRefreshLayout.setRefreshing(false);
 
         if (mRootViewSwitcher.getDisplayedChild() == VIEW_SWITCHER_CHILD_LOAD_INDICATOR) {
