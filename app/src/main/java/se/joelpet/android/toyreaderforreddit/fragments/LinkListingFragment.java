@@ -6,6 +6,7 @@ import com.android.volley.toolbox.ImageLoader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -237,19 +238,28 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         }
 
         if (throwable.getCause() instanceof AuthFailureError) {
-            // TODO: Tidy up and provide better UX
-            Toast.makeText(getActivity(), "Credentials have expired", Toast.LENGTH_LONG).show();
-            mAccountManagerHelper
-                    .addAccount(getActivity())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
-                        @Override
-                        public void call(AccountManagerHelper.AddAccountResult addAccountResult) {
-                            Timber.d("Account added. Queueing another listing request.");
-                            queueListingRequest();
-                        }
-                    });
+            showCredentialsExpiredSnackbar();
         }
+    }
+
+    private void showCredentialsExpiredSnackbar() {
+        // TODO: Change to LENGTH_INDEFINITE when available in Design Library
+        Snackbar.make(mRootViewSwitcher, R.string.snackbar_account_credentials_expired,
+                Snackbar.LENGTH_LONG).setAction(R.string.sign_in_again, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAccountManagerHelper
+                        .addAccount(getActivity())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
+                            @Override
+                            public void call(AccountManagerHelper.AddAccountResult result) {
+                                Timber.d("Account added; queueing new listing request.");
+                                queueListingRequest();
+                            }
+                        });
+            }
+        }).show();
     }
 
     @Override
