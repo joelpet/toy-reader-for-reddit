@@ -76,6 +76,8 @@ public class LinkListingRecyclerViewAdapter
 
         vh.score.setText(String.valueOf(link.getScore()));
 
+        vh.starButton.setVisibility(link.getGilded() > 0 ? View.VISIBLE : View.GONE);
+
         vh.commentsButton
                 .setText(context.getString(R.string.num_comments, link.getNumComments()));
 
@@ -148,6 +150,9 @@ public class LinkListingRecyclerViewAdapter
 
         @InjectView(R.id.score)
         TextView score;
+
+        @InjectView(R.id.star_button)
+        TextView starButton;
 
         @InjectView(R.id.comments_button)
         TextView commentsButton;

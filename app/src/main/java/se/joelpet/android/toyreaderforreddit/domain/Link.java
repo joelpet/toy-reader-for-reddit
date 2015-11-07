@@ -39,6 +39,8 @@ public class Link extends Thing {
 
     public static final String NAME_NUM_COMMENTS = "num_comments";
 
+    public static final String NAME_GILDED = "gilded";
+
     String domain;
 
     String subreddit;
@@ -72,6 +74,8 @@ public class Link extends Thing {
     String ups;
 
     Integer numComments;
+
+    int gilded;
 
     public String getDomain() {
         return domain;
@@ -193,6 +197,15 @@ public class Link extends Thing {
         this.numComments = numComments;
     }
 
+    /** @return the number of times this comment received reddit gold */
+    public int getGilded() {
+        return gilded;
+    }
+
+    public void setGilded(int gilded) {
+        this.gilded = gilded;
+    }
+
     public static Link fromJson(JSONObject jsonObject) throws JSONException {
         Link link = new Link();
 
@@ -213,6 +226,7 @@ public class Link extends Thing {
         link.setCreatedUtc(jsonObject.getDouble(NAME_CREATED_UTC));
         link.setUps(jsonObject.getString(NAME_UPS));
         link.setNumComments(jsonObject.getInt(NAME_NUM_COMMENTS));
+        link.setGilded(jsonObject.getInt(NAME_GILDED));
 
         return link;
     }
@@ -237,6 +251,7 @@ public class Link extends Thing {
                 ", createdUtc=" + createdUtc +
                 ", ups='" + ups + '\'' +
                 ", numComments=" + numComments +
+                ", gilded=" + gilded +
                 '}';
     }
 }
