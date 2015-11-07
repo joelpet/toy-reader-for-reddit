@@ -32,7 +32,7 @@ import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
-import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
 import timber.log.Timber;
 
 public class LinkListingFragment extends BaseFragment implements SwipeRefreshLayout
@@ -63,7 +63,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     protected RecyclerView mRecyclerView;
 
     @Inject
-    protected RedditApi mRedditApi;
+    protected OAuthRedditApi mRedditApi;
 
     @Inject
     protected ImageLoader mImageLoader;

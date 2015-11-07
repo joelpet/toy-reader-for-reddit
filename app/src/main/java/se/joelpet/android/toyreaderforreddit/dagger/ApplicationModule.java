@@ -14,9 +14,10 @@ import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.net.FakeRedditApi;
-import se.joelpet.android.toyreaderforreddit.net.RealRedditApi;
-import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
+import se.joelpet.android.toyreaderforreddit.net.FakeBaseRedditApi;
+import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
+import se.joelpet.android.toyreaderforreddit.net.RealBaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.services.LoginAccountsUpdatedIntentService;
 import se.joelpet.android.toyreaderforreddit.services.RedditOAuthAuthenticatorService;
 import se.joelpet.android.toyreaderforreddit.storage.DefaultLocalDataStore;
@@ -25,8 +26,9 @@ import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 @Module(
         injects = {
                 DefaultLocalDataStore.class,
-                FakeRedditApi.class,
-                RealRedditApi.class,
+                FakeBaseRedditApi.class,
+                RealBaseRedditApi.class,
+                OAuthRedditApi.class,
                 LoginAccountsUpdatedIntentService.class,
                 RedditOAuthAuthenticatorService.class,
         },
@@ -79,17 +81,23 @@ public class ApplicationModule {
     @Provides
     AccountAuthenticator provideAccountAuthenticator(@ForApplication Context context,
                                                      AccountManagerHelper accountManagerHelper,
-                                                     RedditApi redditApi) {
-        return new AccountAuthenticator(context, accountManagerHelper, redditApi);
+                                                     BaseRedditApi baseRedditApi) {
+        return new AccountAuthenticator(context, accountManagerHelper, baseRedditApi);
     }
 
     @Provides
     @Singleton
-    RedditApi provideRedditApi(VolleySingleton volleySingleton, LocalDataStore localDataStore,
-                               AccountManagerHelper accountManagerHelper) {
-        // TODO: Check BuildConfig for test build.
-        return true ? new RealRedditApi(volleySingleton, accountManagerHelper) :
-                new FakeRedditApi();
+    BaseRedditApi provideBaseRedditApi(VolleySingleton volleySingleton,
+                                       LocalDataStore localDataStore,
+                                       AccountManagerHelper accountManagerHelper) {
+        return new RealBaseRedditApi(volleySingleton, accountManagerHelper);
+    }
+
+    @Provides
+    @Singleton
+    OAuthRedditApi provideOAuthRedditApi(BaseRedditApi baseRedditApi,
+                                         AccountManagerHelper accountManagerHelper) {
+        return new OAuthRedditApi(baseRedditApi, accountManagerHelper);
     }
 
     @Provides

@@ -12,6 +12,8 @@ import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 
 public class ApplicationAccessTokenRequest extends AccessTokenRequest {
 
+    public static final String DEVICE_ID_DO_NOT_TRACK = "DO_NOT_TRACK_THIS_DEVICE";
+
     private final String mDeviceId;
 
     /**

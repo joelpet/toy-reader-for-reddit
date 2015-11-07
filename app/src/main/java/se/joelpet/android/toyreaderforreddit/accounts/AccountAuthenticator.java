@@ -16,7 +16,7 @@ import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import timber.log.Timber;
 
 import static se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper.sanitizeResult;
@@ -27,7 +27,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     private Context mContext;
     private AccountManagerHelper mAccountManagerHelper;
-    private RedditApi mRedditApi;
+    private BaseRedditApi mRedditApi;
 
     public static String getAccountType(Context context) {
         return context.getString(R.string.authenticator_account_type);
@@ -35,11 +35,11 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Inject
     public AccountAuthenticator(Context context, AccountManagerHelper accountManagerHelper,
-                                RedditApi redditApi) {
+                                BaseRedditApi baseRedditApi) {
         super(context);
         mContext = context;
         mAccountManagerHelper = accountManagerHelper;
-        mRedditApi = redditApi;
+        mRedditApi = baseRedditApi;
     }
 
     @Override

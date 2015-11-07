@@ -1,6 +1,7 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -10,10 +11,31 @@ import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 
-public class FakeRedditApi implements RedditApi {
+public class FakeBaseRedditApi implements BaseRedditApi {
 
     @Override
-    public Observable<Listing<Link>> getLinkListing(String path, String after, Object tag) {
+    public Observable<AccessToken> getApplicationAccessToken(Object tag) {
+        return null;
+    }
+
+    @Override
+    public Observable<AccessToken> getUserAccessToken(String code, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
+    public Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
+    public Observable<Me> getMe(@NonNull String accessToken, Object tag) {
+        return Observable.error(new Exception("Not yet implemented"));
+    }
+
+    @Override
+    public Observable<Listing<Link>> getLinkListing(@Nullable String accessToken, String path,
+                                                    String after, Object tag) {
         Listing<Link> linkListing = new Listing<>();
         linkListing.setChildren(new ArrayList<Link>());
         linkListing.setAfter("t3_2vfezo");
@@ -36,21 +58,6 @@ public class FakeRedditApi implements RedditApi {
         }
 
         return Observable.just(linkListing);
-    }
-
-    @Override
-    public Observable<AccessToken> getUserAccessToken(String code, Object tag) {
-        return Observable.error(new Exception("Not yet implemented"));
-    }
-
-    @Override
-    public Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag) {
-        return Observable.error(new Exception("Not yet implemented"));
-    }
-
-    @Override
-    public Observable<Me> getMe(@NonNull String accessToken, Object tag) {
-        return Observable.error(new Exception("Not yet implemented"));
     }
 
     @Override

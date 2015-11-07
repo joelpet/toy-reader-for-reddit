@@ -25,7 +25,7 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
-import se.joelpet.android.toyreaderforreddit.net.RedditApi;
+import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
     AccountManagerHelper mAccountManagerHelper;
 
     @Inject
-    protected RedditApi mRedditApi;
+    protected BaseRedditApi mRedditApi;
 
     @Inject
     protected AppConnectWebViewClient mAppConnectWebViewClient;
