@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.io.IOException;
 
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
@@ -150,10 +152,15 @@ public class AccountManagerHelper {
 
     public Observable<Void> invalidateAuthToken() {
         return getAuthToken()
+                .doOnNext(new Action1<String>() {
+                    @Override
+                    public void call(String authToken) {
+                        Timber.d("Invalidating auth token");
+                    }
+                })
                 .flatMap(new Func1<String, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(String authToken) {
-                        Timber.d("Invalidating auth token: %s", authToken);
                         mAccountManager.invalidateAuthToken(mAccountType, authToken);
                         return Observable.empty();
                     }
@@ -204,6 +211,18 @@ public class AccountManagerHelper {
         return mAccountManager.getPassword(account);
     }
 
+    public static Bundle sanitizeResult(Bundle result) {
+        if (result != null) {
+            if (result.containsKey(AccountManager.KEY_AUTHTOKEN)
+                    && !TextUtils.isEmpty(result.getString(AccountManager.KEY_AUTHTOKEN))) {
+                final Bundle newResult = new Bundle(result);
+                newResult.putString(AccountManager.KEY_AUTHTOKEN, "<omitted for logging purposes>");
+                return newResult;
+            }
+        }
+        return result;
+    }
+
     public static class AddAccountResult {
         private final Bundle result;
 
@@ -235,7 +254,7 @@ public class AccountManagerHelper {
         @Override
         public String toString() {
             return "AddAccountResult{" +
-                    "result=" + result +
+                    "result=" + sanitizeResult(result) +
                     '}';
         }
     }

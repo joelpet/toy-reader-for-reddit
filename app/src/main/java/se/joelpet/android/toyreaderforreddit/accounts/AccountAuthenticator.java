@@ -19,6 +19,8 @@ import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
 import timber.log.Timber;
 
+import static se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper.sanitizeResult;
+
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     public static final String AUTH_TOKEN_TYPE_DEFAULT = "default";
@@ -60,49 +62,42 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                                String authTokenType, Bundle options) throws NetworkErrorException {
         Timber.d("getAuthToken(_, %s, %s, _)", account, authTokenType);
 
-        // TODO: Throw this out? When would it ever work?
         String authToken = mAccountManagerHelper.peekAuthToken(account, authTokenType);
+
         if (!TextUtils.isEmpty(authToken)) {
             Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-            Timber.d("Returning peeked auth token: %s", result);
+            Timber.d("Cached auth token result: %s", sanitizeResult(result));
             return result;
         }
 
         String refreshToken = mAccountManagerHelper.getRefreshToken(account);
 
         if (refreshToken != null) {
-            Timber.d("Attempt to refresh token using: %s", refreshToken);
+            Timber.d("Attempt to refresh token for %s", account);
             mRedditApi.refreshAccessToken(refreshToken, this).first()
                     .subscribe(new Action1<AccessToken>() {
                         @Override
                         public void call(AccessToken accessToken) {
-                            Timber.d("Refreshed access token: %s", accessToken);
                             Bundle result = mAccountManagerHelper.createAddAccountResultIntent(
                                     accessToken, account.name).getExtras();
-                            Timber.v("Result bundle handed to response callback: %s", result);
+                            Timber.d("Access token refresh result: %s", sanitizeResult(result));
                             response.onResult(result);
                         }
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
+                            Timber.i(throwable, "Access token refresh failed");
                             response.onError(0, throwable.getMessage());
                         }
                     });
             return null;
         }
 
-        Intent intent = LoginActivity.createIntent(mContext);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-
-        Timber.d("Fall back to returning intent: %s", intent);
-
-        return bundle;
+        Timber.d("Falling back to adding account");
+        return addAccount(response, getAccountType(mContext), authTokenType, null, null);
     }
 
     @Override
