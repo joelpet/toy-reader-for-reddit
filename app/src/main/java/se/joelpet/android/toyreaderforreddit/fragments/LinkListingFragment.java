@@ -95,9 +95,6 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         return fragment;
     }
 
-    public LinkListingFragment() {
-    }
-
     //region Fragment lifecycle
 
     @Override
