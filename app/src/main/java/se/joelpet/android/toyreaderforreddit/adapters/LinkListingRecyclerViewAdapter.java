@@ -33,7 +33,7 @@ public class LinkListingRecyclerViewAdapter
     private ClickListener mClickListener;
 
     public LinkListingRecyclerViewAdapter(ImageLoader imageLoader, List<Link> links,
-            ClickListener clickListener) {
+                                          ClickListener clickListener) {
         mImageLoader = imageLoader;
         mLinks = links;
         mClickListener = clickListener;
@@ -73,6 +73,8 @@ public class LinkListingRecyclerViewAdapter
         vh.submittedInfoText.setText(submittedInfoText);
 
         vh.over18tag.setVisibility(link.getOver18() ? View.VISIBLE : View.GONE);
+
+        vh.score.setText(String.valueOf(link.getScore()));
 
         vh.commentsButton
                 .setText(context.getString(R.string.num_comments, link.getNumComments()));
@@ -143,6 +145,9 @@ public class LinkListingRecyclerViewAdapter
 
         @InjectView(R.id.over_18_tag)
         TextView over18tag;
+
+        @InjectView(R.id.score)
+        TextView score;
 
         @InjectView(R.id.comments_button)
         TextView commentsButton;
