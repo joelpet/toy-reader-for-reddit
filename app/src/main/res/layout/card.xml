@@ -111,7 +111,7 @@
             android:orientation="horizontal">
 
             <com.devspark.robototextview.widget.RobotoButton
-                style="@style/TextAppearance.AppCompat.Medium"
+                style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -119,8 +119,15 @@
                 android:text="↑"
                 app:typeface="roboto_bold" />
 
+            <com.devspark.robototextview.widget.RobotoTextView
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:typeface="roboto_regular"
+                tools:text="1337" />
+
             <com.devspark.robototextview.widget.RobotoButton
-                style="@style/TextAppearance.AppCompat.Medium"
+                style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -129,12 +136,16 @@
                 app:typeface="roboto_bold" />
 
             <com.devspark.robototextview.widget.RobotoButton
-                style="@style/TextAppearance.AppCompat.Medium"
+                android:id="@+id/star_button"
+                style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="false"
                 android:minWidth="48dp"
                 android:text="☆"
+                android:textColor="@color/golden_yellow"
+                android:visibility="gone"
                 app:typeface="roboto_bold" />
 
             <Space
