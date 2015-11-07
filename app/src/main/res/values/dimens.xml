@@ -4,5 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_horizontal_margin">16dp</dimen>
     <dimen name="navigation_vertical_margin">16dp</dimen>
+    <dimen name="navigation_padding_bottom">8dp</dimen>
+    <dimen name="navigation_padding_top_default">0dp</dimen>
+    <dimen name="navigation_separator_vertical_padding">8dp</dimen>
     <dimen name="content_spacing">8dp</dimen>
 </resources>
