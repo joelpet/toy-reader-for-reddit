@@ -57,4 +57,7 @@
     <!-- Misc -->
     <color name="golden_yellow">#ffd700</color>
 
+    <color name="link_text_material_dark">@color/material_deep_teal_200</color>
+    <color name="link_text_material_light">@color/material_deep_teal_500</color>
+
 </resources>
