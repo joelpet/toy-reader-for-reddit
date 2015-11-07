@@ -11,8 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.IOException;
@@ -82,7 +80,7 @@ public class AccountManagerHelper {
         result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
 
         Bundle userData = new Bundle();
-        userData.putSerializable("access_token", accessToken);
+        userData.putString(AddAccountResult.KEY_REFRESH_TOKEN, accessToken.getRefreshToken());
 
         result.putExtra(AccountManager.KEY_USERDATA, userData);
 
@@ -222,41 +220,4 @@ public class AccountManagerHelper {
         }
         return result;
     }
-
-    public static class AddAccountResult {
-        private final Bundle result;
-
-        public AddAccountResult(@NonNull Bundle result) {
-            this.result = result;
-        }
-
-        @Nullable
-        public String getName() {
-            return result.getString(AccountManager.KEY_ACCOUNT_NAME);
-        }
-
-        @Nullable
-        public String getAccountType() {
-            return result.getString(AccountManager.KEY_ACCOUNT_TYPE);
-        }
-
-        @Nullable
-        public String getAuthToken() {
-            return result.getString(AccountManager.KEY_AUTHTOKEN);
-        }
-
-        @Nullable
-        public AccessToken getAccessToken() {
-            Bundle userdata = result.getBundle(AccountManager.KEY_USERDATA);
-            return (AccessToken) userdata.getSerializable("access_token");
-        }
-
-        @Override
-        public String toString() {
-            return "AddAccountResult{" +
-                    "result=" + sanitizeResult(result) +
-                    '}';
-        }
-    }
-
 }

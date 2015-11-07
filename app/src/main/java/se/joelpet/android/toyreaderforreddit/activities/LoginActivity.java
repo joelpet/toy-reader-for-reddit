@@ -22,6 +22,7 @@ import rx.functions.Func2;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
+import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
@@ -140,15 +141,13 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
                 .subscribe(new Action1<Intent>() {
                     @Override
                     public void call(Intent intent) {
-                        AccountManagerHelper.AddAccountResult result = new
-                                AccountManagerHelper.AddAccountResult(intent.getExtras());
+                        AddAccountResult result = new AddAccountResult(intent.getExtras());
                         Timber.d("Adding account explicitly from result: %s", result);
                         Account account = new Account(result.getName(), result.getAccountType());
                         mAccountManagerHelper.addAccountExplicitly(account,
-                                result.getAccessToken().getRefreshToken(), null);
+                                result.getRefreshToken(), null);
                         mAccountManagerHelper.setAuthToken(account, result.getAuthToken());
-                        mAccountManagerHelper.setRefreshToken(account, result.getAccessToken()
-                                .getRefreshToken());
+                        mAccountManagerHelper.setRefreshToken(account, result.getRefreshToken());
                         setAccountAuthenticatorResult(intent.getExtras());
                         setResult(RESULT_OK, intent);
                         finish();

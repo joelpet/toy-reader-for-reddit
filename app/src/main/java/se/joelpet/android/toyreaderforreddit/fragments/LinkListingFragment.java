@@ -27,6 +27,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
+import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
@@ -260,9 +261,9 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                 mAccountManagerHelper
                         .addAccount(getActivity())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<AccountManagerHelper.AddAccountResult>() {
+                        .subscribe(new Action1<AddAccountResult>() {
                             @Override
-                            public void call(AccountManagerHelper.AddAccountResult result) {
+                            public void call(AddAccountResult result) {
                                 Timber.d("Account added; queueing new listing request.");
                                 queueListingRequest();
                             }

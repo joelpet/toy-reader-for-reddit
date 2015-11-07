@@ -30,6 +30,7 @@ import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
+import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
@@ -236,9 +237,9 @@ public class MainActivity extends BaseActivity implements NavigationView
     private void addAccountUsingAccountManager() {
         addSubscription(AndroidObservable.bindActivity(this,
                 mAccountManagerHelper.addAccount(this)).subscribe(
-                new Action1<AccountManagerHelper.AddAccountResult>() {
+                new Action1<AddAccountResult>() {
                     @Override
-                    public void call(AccountManagerHelper.AddAccountResult result) {
+                    public void call(AddAccountResult result) {
                         Timber.d("Result: %s", result);
                         switchToDefaultMenuModeInDrawer();
                     }
