@@ -18,10 +18,10 @@ import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
-import se.joelpet.android.toyreaderforreddit.volley.AccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.ListingRequest;
 import se.joelpet.android.toyreaderforreddit.volley.MeRequest;
 import se.joelpet.android.toyreaderforreddit.volley.RefreshTokenRequest;
+import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
 import timber.log.Timber;
 
 public class RealRedditApi implements RedditApi {
@@ -90,9 +90,9 @@ public class RealRedditApi implements RedditApi {
     }
 
     @Override
-    public Observable<AccessToken> getAccessToken(String code, Object tag) {
+    public Observable<AccessToken> getUserAccessToken(String code, Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
-        AccessTokenRequest request = new AccessTokenRequest(code, future, future);
+        UserAccessTokenRequest request = new UserAccessTokenRequest(code, future, future);
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }

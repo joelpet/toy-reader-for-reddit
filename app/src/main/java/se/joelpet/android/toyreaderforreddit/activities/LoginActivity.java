@@ -28,7 +28,7 @@ import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.RedditApi;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
-import se.joelpet.android.toyreaderforreddit.volley.AccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.BaseRequest;
 import timber.log.Timber;
 
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
             uri.appendQueryParameter("client_id", BaseRequest.CLIENT_ID);
             uri.appendQueryParameter("response_type", "code");
             uri.appendQueryParameter("state", mUniqueAuthState);
-            uri.appendQueryParameter("redirect_uri", AccessTokenRequest.AUTH_REDIRECT_URI);
+            uri.appendQueryParameter("redirect_uri", UserAccessTokenRequest.AUTH_REDIRECT_URI);
             uri.appendQueryParameter("duration", "permanent");
             uri.appendQueryParameter("scope", "read,identity");
 
@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
             return;
         }
 
-        mRedditApi.getAccessToken(authCode, TAG)
+        mRedditApi.getUserAccessToken(authCode, TAG)
                 // cache token to avoid multiple API requests when reused later
                 .compose(CacheAndSubscribeTransformer.<AccessToken>getInstance())
                 .compose(new Observable.Transformer<AccessToken, Intent>() {

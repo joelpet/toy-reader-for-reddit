@@ -1,11 +1,10 @@
 package se.joelpet.android.toyreaderforreddit;
 
 import android.net.Uri;
-import android.view.accessibility.AccessibilityRecord;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import se.joelpet.android.toyreaderforreddit.volley.AccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
 import timber.log.Timber;
 
 public class AppConnectWebViewClient extends WebViewClient {
@@ -29,7 +28,7 @@ public class AppConnectWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Timber.d("shouldOverrideUrlLoading(%s, %s)", view, url);
         Uri uri = Uri.parse(url);
-        Uri authRedirectUri = Uri.parse(AccessTokenRequest.AUTH_REDIRECT_URI);
+        Uri authRedirectUri = Uri.parse(UserAccessTokenRequest.AUTH_REDIRECT_URI);
 
         if (authRedirectUri.getScheme().equals(uri.getScheme())) {
             String error = uri.getQueryParameter("error");

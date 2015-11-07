@@ -12,7 +12,7 @@ public interface RedditApi {
 
     Observable<Listing<Link>> getLinkListing(String path, String after, Object tag);
 
-    Observable<AccessToken> getAccessToken(String code, Object tag);
+    Observable<AccessToken> getUserAccessToken(String code, Object tag);
 
     Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag);
 
