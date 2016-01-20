@@ -23,7 +23,7 @@ import android.widget.ViewSwitcher;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
@@ -43,22 +43,22 @@ public class MainActivity extends BaseActivity implements NavigationView
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN = 0;
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP = 1;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     protected Toolbar mToolbar;
 
-    @InjectView(R.id.drawer_layout)
+    @Bind(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
 
-    @InjectView(R.id.navigation_view)
+    @Bind(R.id.navigation_view)
     protected NavigationView mNavigationView;
 
-    @InjectView(R.id.user_name)
+    @Bind(R.id.user_name)
     protected TextView mUserNameView;
 
-    @InjectView(R.id.user_email)
+    @Bind(R.id.user_email)
     protected TextView mUserEmailView;
 
-    @InjectView(R.id.account_toggle_arrow)
+    @Bind(R.id.account_toggle_arrow)
     protected ViewSwitcher mAccountToggleArrowSwitcher;
 
     private ActionBarDrawerToggle mDrawerToggle;
@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close);

@@ -18,8 +18,8 @@ import android.widget.ViewSwitcher;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -53,13 +53,13 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     public static final String STATE_STRING_AFTER = "mAfter";
 
-    @InjectView(R.id.root_view_switcher)
+    @Bind(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
 
-    @InjectView(R.id.my_swipe_refresh_layout)
+    @Bind(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @InjectView(R.id.my_recycler_view)
+    @Bind(R.id.my_recycler_view)
     protected RecyclerView mRecyclerView;
 
     @Inject
@@ -126,7 +126,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         return view;
     }
 
@@ -155,7 +155,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
     }
 
     @Override

@@ -15,8 +15,8 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import timber.log.Timber;
@@ -124,42 +124,42 @@ public class LinkListingRecyclerViewAdapter
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @InjectView(R.id.card_view)
+        @Bind(R.id.card_view)
         View root;
 
-        @InjectView(R.id.domain)
+        @Bind(R.id.domain)
         TextView domain;
 
-        @InjectView(R.id.subreddit)
+        @Bind(R.id.subreddit)
         TextView subreddit;
 
-        @InjectView(R.id.main_content_area)
+        @Bind(R.id.main_content_area)
         View mainContentArea;
 
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.thumbnail)
+        @Bind(R.id.thumbnail)
         NetworkImageView thumbnail;
 
-        @InjectView(R.id.submitted_info_text)
+        @Bind(R.id.submitted_info_text)
         TextView submittedInfoText;
 
-        @InjectView(R.id.over_18_tag)
+        @Bind(R.id.over_18_tag)
         TextView over18tag;
 
-        @InjectView(R.id.score)
+        @Bind(R.id.score)
         TextView score;
 
-        @InjectView(R.id.star_button)
+        @Bind(R.id.star_button)
         TextView starButton;
 
-        @InjectView(R.id.comments_button)
+        @Bind(R.id.comments_button)
         TextView commentsButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, root = itemView);
+            ButterKnife.bind(this, root = itemView);
         }
     }
 }

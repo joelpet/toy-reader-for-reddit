@@ -15,7 +15,7 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.fragments.WebFragment;
 import timber.log.Timber;
@@ -24,10 +24,10 @@ public class WebActivity extends BaseActivity implements WebFragment.WebViewCall
 
     public static final String ARG_URI = "uri";
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @InjectView(R.id.toolbar_progress_bar)
+    @Bind(R.id.toolbar_progress_bar)
     ProgressBar mProgressBar;
 
     public static void startActivity(Context context, Uri uri) {
@@ -47,7 +47,7 @@ public class WebActivity extends BaseActivity implements WebFragment.WebViewCall
         Timber.d("%s.onCreate(%s); intent=%s", this, savedInstanceState, getIntent());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         updateActionBarTitle(getSupportActionBar(), getUriArgument());
 
