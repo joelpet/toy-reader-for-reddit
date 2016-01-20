@@ -6,6 +6,7 @@ import com.android.volley.toolbox.ImageLoader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
+import se.joelpet.android.toyreaderforreddit.customtabs.CustomTabActivityHelper;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
@@ -70,6 +72,12 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Inject
     protected AccountManagerHelper mAccountManagerHelper;
+
+    @Inject
+    protected CustomTabActivityHelper mCustomTabActivityHelper;
+
+    @Inject
+    protected CustomTabActivityHelper.CustomTabFallback customTabFallback;
 
     /** The path part of the URI pointing to the link listing of this fragment. */
     private String mListingPath;
@@ -142,6 +150,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Override
     public void onStart() {
         super.onStart();
+        mCustomTabActivityHelper.bindCustomTabsService(getActivity());
         queueListingRequest();
     }
 
@@ -150,6 +159,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         super.onStop();
         mRedditApi.cancelAll(TAG);
         mRequestInProgress = false;
+        mCustomTabActivityHelper.unbindCustomTabsService(getActivity());
     }
 
     @Override
@@ -273,13 +283,23 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public void onClickCommentsButton(Link link) {
         Uri uri = Uri.parse("http://i.reddit.com" + link.getPermalink());
         Timber.d("Clicked comments button for %s", link);
-        WebActivity.startActivity(getActivity(), uri);
+        openUri(uri);
+    }
+
+    private void openUri(@NonNull Uri uri) {
+        CustomTabActivityHelper
+                .openCustomTab(getActivity(), getCustomTabsIntent(), uri, customTabFallback);
+    }
+
+    @NonNull
+    private CustomTabsIntent getCustomTabsIntent() {
+        return new CustomTabsIntent.Builder(mCustomTabActivityHelper.getSession()).build();
     }
 
     @Override
     public void onClickMainContentArea(Link link) {
         Timber.d("Clicked main content area for %s", link.getUrl());
-        WebActivity.startActivity(getActivity(), Uri.parse(link.getUrl()));
+        openUri(Uri.parse(link.getUrl()));
     }
 
     @Override

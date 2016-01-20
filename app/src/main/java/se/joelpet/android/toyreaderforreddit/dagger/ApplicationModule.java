@@ -14,6 +14,8 @@ import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountAuthenticator;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
+import se.joelpet.android.toyreaderforreddit.customtabs.CustomTabActivityHelper;
+import se.joelpet.android.toyreaderforreddit.customtabs.WebviewFallback;
 import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.FakeBaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
@@ -110,5 +112,17 @@ public class ApplicationModule {
     @Singleton
     Preferences providePreferences(@ForApplication Context context) {
         return new Preferences(context);
+    }
+
+    @Provides
+    @Singleton
+    CustomTabActivityHelper provideCustomTabActivityHelper() {
+        return new CustomTabActivityHelper();
+    }
+
+    @Provides
+    @Singleton
+    CustomTabActivityHelper.CustomTabFallback provideCustomTabFallback() {
+        return new WebviewFallback();
     }
 }
