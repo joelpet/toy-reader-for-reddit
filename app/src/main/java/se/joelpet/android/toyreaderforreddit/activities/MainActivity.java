@@ -52,14 +52,18 @@ public class MainActivity extends BaseActivity implements NavigationView
     @Bind(R.id.navigation_view)
     protected NavigationView mNavigationView;
 
-    @Bind(R.id.user_name)
-    protected TextView mUserNameView;
+    protected class NavigationHeaderViews {
+        @Bind(R.id.user_name)
+        protected TextView mUserNameView;
 
-    @Bind(R.id.user_email)
-    protected TextView mUserEmailView;
+        @Bind(R.id.user_email)
+        protected TextView mUserEmailView;
 
-    @Bind(R.id.account_toggle_arrow)
-    protected ViewSwitcher mAccountToggleArrowSwitcher;
+        @Bind(R.id.account_toggle_arrow)
+        protected ViewSwitcher mAccountToggleArrowSwitcher;
+    }
+
+    protected NavigationHeaderHolder mNavigationHeaderHolder = new NavigationHeaderHolder();
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -74,6 +78,7 @@ public class MainActivity extends BaseActivity implements NavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        ButterKnife.bind(mNavigationHeaderHolder, mNavigationView.getHeaderView(0));
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close);
@@ -124,36 +129,43 @@ public class MainActivity extends BaseActivity implements NavigationView
         super.onBackPressed();
     }
 
-    @OnClick(R.id.navigation_header_root)
-    protected void onNavigationHeaderRootClick(View view) {
-        View currentToggleArrowSwitcherView = mAccountToggleArrowSwitcher.getCurrentView();
-        boolean accountDropDownArrowDisplayed = currentToggleArrowSwitcherView.getId() == R.id
-                .account_drop_down_arrow;
-        if (accountDropDownArrowDisplayed) {
-            onAccountDropDownArrowClick(currentToggleArrowSwitcherView);
-        } else {
-            onAccountDropUpArrowClick(currentToggleArrowSwitcherView);
+    protected class NavigationHeaderHolder extends NavigationHeaderListeners {
+    }
+
+    protected class NavigationHeaderListeners extends NavigationHeaderViews {
+
+        @OnClick(R.id.navigation_header_root)
+        protected void onNavigationHeaderRootClick(View view) {
+            View currentToggleArrowSwitcherView = mAccountToggleArrowSwitcher.getCurrentView();
+            boolean accountDropDownArrowDisplayed = currentToggleArrowSwitcherView.getId() == R.id
+                    .account_drop_down_arrow;
+            if (accountDropDownArrowDisplayed) {
+                onAccountDropDownArrowClick(currentToggleArrowSwitcherView);
+            } else {
+                onAccountDropUpArrowClick(currentToggleArrowSwitcherView);
+            }
         }
-    }
 
-    @OnClick(R.id.account_drop_down_arrow)
-    protected void onAccountDropDownArrowClick(View view) {
-        switchToAccountMenuModeInDrawerWithOptionsHidden();
-        addSubscription(bindToActivity(mAccountManagerHelper
-                .getAccount()
-                .isEmpty())
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean isNoAccountAvailable) {
-                        boolean signedIn = !isNoAccountAvailable;
-                        switchToAccountMenuModeInDrawerAs(signedIn);
-                    }
-                }));
-    }
 
-    @OnClick(R.id.account_drop_up_arrow)
-    protected void onAccountDropUpArrowClick(View view) {
-        switchToDefaultMenuModeInDrawer();
+        @OnClick(R.id.account_drop_down_arrow)
+        protected void onAccountDropDownArrowClick(View view) {
+            switchToAccountMenuModeInDrawerWithOptionsHidden();
+            addSubscription(bindToActivity(mAccountManagerHelper
+                    .getAccount()
+                    .isEmpty())
+                    .subscribe(new Action1<Boolean>() {
+                        @Override
+                        public void call(Boolean isNoAccountAvailable) {
+                            boolean signedIn = !isNoAccountAvailable;
+                            switchToAccountMenuModeInDrawerAs(signedIn);
+                        }
+                    }));
+        }
+
+        @OnClick(R.id.account_drop_up_arrow)
+        protected void onAccountDropUpArrowClick(View view) {
+            switchToDefaultMenuModeInDrawer();
+        }
     }
 
     @Override
@@ -209,11 +221,13 @@ public class MainActivity extends BaseActivity implements NavigationView
     }
 
     private void displayAccountToggleDropDownArrow() {
-        mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
+        mNavigationHeaderHolder.mAccountToggleArrowSwitcher
+                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
     }
 
     private void displayAccountToggleDropUpArrow() {
-        mAccountToggleArrowSwitcher.setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
+        mNavigationHeaderHolder.mAccountToggleArrowSwitcher
+                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
     }
 
     private void setAccountGroupInDrawerMenuVisible(boolean visible) {
@@ -291,8 +305,8 @@ public class MainActivity extends BaseActivity implements NavigationView
             CharSequence userEmail = signedIn ? getFormattedAccountAge(me) : getString(R.string
                     .navigation_header_user_email_unauthenticated);
 
-            mUserNameView.setText(userName);
-            mUserEmailView.setText(userEmail);
+            mNavigationHeaderHolder.mUserNameView.setText(userName);
+            mNavigationHeaderHolder.mUserEmailView.setText(userEmail);
 
             if (isAccountMenuOptionsDisplayed()) {
                 displayAccountMenuOptionsAs(signedIn);
