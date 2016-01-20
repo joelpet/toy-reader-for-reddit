@@ -25,8 +25,6 @@ import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 public class WebviewFallback implements CustomTabActivityHelper.CustomTabFallback {
     @Override
     public void openUri(Activity activity, Uri uri) {
-        Intent intent = new Intent(activity, WebActivity.class);
-        intent.putExtra(WebActivity.ARG_URI, uri.toString());
-        activity.startActivity(intent);
+        WebActivity.startActivity(activity, uri);
     }
 }
