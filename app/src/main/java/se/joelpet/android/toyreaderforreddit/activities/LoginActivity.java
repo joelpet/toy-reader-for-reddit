@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -39,10 +39,10 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
 
     public static final String BASE_URL_AUTH = "https://www.reddit.com/api/v1/authorize.compact";
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     protected Toolbar mToolbar;
 
-    @InjectView(R.id.web_view)
+    @Bind(R.id.web_view)
     protected WebView mWebView;
 
     @Inject
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
         mAppConnectWebViewClient.setOnAppConnectListener(this);

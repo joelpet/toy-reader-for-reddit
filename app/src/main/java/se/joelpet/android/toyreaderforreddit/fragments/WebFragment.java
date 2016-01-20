@@ -18,14 +18,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import se.joelpet.android.toyreaderforreddit.R;
 import timber.log.Timber;
 
 public class WebFragment extends BaseFragment {
 
-    @InjectView(R.id.web_view)
+    @Bind(R.id.web_view)
     protected WebView mWebView;
 
     private WebViewCallback mWebViewCallback;
@@ -66,9 +66,9 @@ public class WebFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_web, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
