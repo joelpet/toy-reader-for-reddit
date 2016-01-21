@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsService;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,8 @@ import android.widget.ViewSwitcher;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.ImageLoader;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -58,6 +61,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     public static final String STATE_STRING_AFTER = "mAfter";
 
+    public static final String BASE_URL_COMMENTS = "http://i.reddit.com";
+
     @Bind(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
 
@@ -93,6 +98,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     private LinearLayoutManager mLinearLayoutManager;
     private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
+    private MayLaunchOnScrollListener mayLaunchOnScrollListener;
+    private LoadMoreOnScrollListener loadMoreOnScrollListener;
 
     private Bitmap mCustomTabCloseButton;
 
@@ -167,7 +174,12 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         mSwipeRefreshLayout.setColorSchemeResources(R.color.accent);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.setOnScrollListener(new OnScrollListener());
+
+        loadMoreOnScrollListener = new LoadMoreOnScrollListener();
+        mRecyclerView.addOnScrollListener(loadMoreOnScrollListener);
+
+        mayLaunchOnScrollListener = new MayLaunchOnScrollListener();
+        mRecyclerView.addOnScrollListener(mayLaunchOnScrollListener);
     }
 
     @Override
@@ -189,6 +201,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        mRecyclerView.removeOnScrollListener(loadMoreOnScrollListener);
+        mRecyclerView.removeOnScrollListener(mayLaunchOnScrollListener);
     }
 
     @Override
@@ -301,9 +315,13 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Override
     public void onClickCommentsButton(Link link) {
-        Uri uri = Uri.parse("http://i.reddit.com" + link.getPermalink());
         Timber.d("Clicked comments button for %s", link);
-        openUri(uri);
+        openUri(getCommentsUri(link));
+    }
+
+    @NonNull
+    private static Uri getCommentsUri(@NonNull Link link) {
+        return Uri.parse(BASE_URL_COMMENTS + link.getPermalink());
     }
 
     private void openUri(@NonNull Uri uri) {
@@ -330,7 +348,12 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Override
     public void onClickMainContentArea(Link link) {
         Timber.d("Clicked main content area for %s", link.getUrl());
-        openUri(Uri.parse(link.getUrl()));
+        openUri(getLinkUri(link));
+    }
+
+    @NonNull
+    private static Uri getLinkUri(Link link) {
+        return Uri.parse(link.getUrl());
     }
 
     @Override
@@ -339,7 +362,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         return true;
     }
 
-    private class OnScrollListener extends RecyclerView.OnScrollListener {
+    private class LoadMoreOnScrollListener extends RecyclerView.OnScrollListener {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -360,6 +383,33 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                 // start loading new items
                 queueListingRequest();
             }
+        }
+    }
+
+    private class MayLaunchOnScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (RecyclerView.SCROLL_STATE_IDLE != newState)
+                return;
+
+            int layoutPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+            if (layoutPosition == RecyclerView.NO_POSITION) {
+                layoutPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+            }
+
+            int adapterPosition = recyclerView.findViewHolderForLayoutPosition(layoutPosition)
+                    .getAdapterPosition();
+
+            Link link = mLinkListingRecyclerViewAdapter.getItem(adapterPosition);
+
+            Uri commentsUri = getCommentsUri(link);
+
+            Bundle otherLikelyBundle = new Bundle();
+            otherLikelyBundle.putParcelable(CustomTabsService.KEY_URL, getLinkUri(link));
+
+            mCustomTabActivityHelper.mayLaunchUrl(commentsUri, null,
+                    Collections.singletonList(otherLikelyBundle));
         }
     }
 }

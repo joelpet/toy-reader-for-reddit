@@ -4,6 +4,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -111,6 +112,11 @@ public class LinkListingRecyclerViewAdapter
     public void addItems(List<Link> links, int position) {
         mLinks.addAll(position, links);
         notifyItemRangeInserted(position, links.size());
+    }
+
+    @NonNull
+    public Link getItem(int position) {
+        return mLinks.get(position);
     }
 
     public static interface ClickListener {
