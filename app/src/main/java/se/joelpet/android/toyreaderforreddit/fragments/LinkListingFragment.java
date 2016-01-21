@@ -26,8 +26,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -92,9 +90,6 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     /** Flag indicating that a Listing request is in progress. */
     private boolean mRequestInProgress;
-
-    /** Subscription to the current Listing request. */
-    private Subscription mSubscription;
 
     private LinearLayoutManager mLinearLayoutManager;
     private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
@@ -199,9 +194,6 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
         unsubscribeFromAll();
     }
 
@@ -218,8 +210,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     private void queueListingRequest() {
         mRequestInProgress = true;
-        mSubscription = AndroidObservable
-                .bindFragment(this, mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
+        addSubscription(bindToFragment(mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
                 .subscribe(new Action1<Listing<Link>>() {
                     @Override
                     public void call(Listing<Link> linkListing) {
@@ -236,7 +227,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                     public void call() {
                         mRequestInProgress = false;
                     }
-                });
+                }));
     }
 
     /**
