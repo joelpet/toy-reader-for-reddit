@@ -199,10 +199,10 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
         mRecyclerView.removeOnScrollListener(loadMoreOnScrollListener);
         mRecyclerView.removeOnScrollListener(mayLaunchOnScrollListener);
+        ButterKnife.unbind(this);
+        super.onDestroyView();
     }
 
     @Override
