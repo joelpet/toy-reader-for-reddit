@@ -1,11 +1,13 @@
 package se.joelpet.android.toyreaderforreddit.fragments;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.toolbox.ImageLoader;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsService;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,20 +18,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewSwitcher;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.toolbox.ImageLoader;
+
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscription;
-import rx.android.observables.AndroidObservable;
+import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
-import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
+import se.joelpet.android.toyreaderforreddit.customtabs.CustomTabActivityHelper;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
@@ -53,6 +61,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     public static final String STATE_STRING_AFTER = "mAfter";
 
+    public static final String BASE_URL_COMMENTS = "http://i.reddit.com";
+
     @Bind(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
 
@@ -71,6 +81,12 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     @Inject
     protected AccountManagerHelper mAccountManagerHelper;
 
+    @Inject
+    protected CustomTabActivityHelper mCustomTabActivityHelper;
+
+    @Inject
+    protected CustomTabActivityHelper.CustomTabFallback customTabFallback;
+
     /** The path part of the URI pointing to the link listing of this fragment. */
     private String mListingPath;
 
@@ -80,11 +96,12 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     /** Flag indicating that a Listing request is in progress. */
     private boolean mRequestInProgress;
 
-    /** Subscription to the current Listing request. */
-    private Subscription mSubscription;
-
     private LinearLayoutManager mLinearLayoutManager;
     private LinkListingRecyclerViewAdapter mLinkListingRecyclerViewAdapter;
+    private MayLaunchOnScrollListener mayLaunchOnScrollListener;
+    private LoadMoreOnScrollListener loadMoreOnScrollListener;
+
+    private Bitmap mCustomTabCloseButton;
 
     public static LinkListingFragment newInstance(String listing, String sort) {
         LinkListingFragment fragment = new LinkListingFragment();
@@ -120,6 +137,27 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                 Timber.d("Restored mAfter state to '%s'", mAfter);
             }
         }
+
+        addSubscription(bindToFragment(decodeBitmapResource(R.drawable.ic_arrow_back_black_24dp))
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Bitmap>() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        mCustomTabCloseButton = bitmap;
+                    }
+                }));
+    }
+
+    @NonNull
+    private Observable<Bitmap> decodeBitmapResource(@DrawableRes final int id) {
+        return Observable.create(new Observable.OnSubscribe<Bitmap>() {
+            @Override
+            public void call(Subscriber<? super Bitmap> subscriber) {
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+                if (bitmap != null) subscriber.onNext(bitmap);
+                subscriber.onCompleted();
+            }
+        });
     }
 
     @Override
@@ -136,12 +174,18 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         mSwipeRefreshLayout.setColorSchemeResources(R.color.accent);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.setOnScrollListener(new OnScrollListener());
+
+        loadMoreOnScrollListener = new LoadMoreOnScrollListener();
+        mRecyclerView.addOnScrollListener(loadMoreOnScrollListener);
+
+        mayLaunchOnScrollListener = new MayLaunchOnScrollListener();
+        mRecyclerView.addOnScrollListener(mayLaunchOnScrollListener);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        mCustomTabActivityHelper.bindCustomTabsService(getActivity());
         queueListingRequest();
     }
 
@@ -150,20 +194,21 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         super.onStop();
         mRedditApi.cancelAll(TAG);
         mRequestInProgress = false;
+        mCustomTabActivityHelper.unbindCustomTabsService(getActivity());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        mRecyclerView.removeOnScrollListener(loadMoreOnScrollListener);
+        mRecyclerView.removeOnScrollListener(mayLaunchOnScrollListener);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
+        unsubscribeFromAll();
     }
 
     //endregion
@@ -179,8 +224,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     private void queueListingRequest() {
         mRequestInProgress = true;
-        mSubscription = AndroidObservable
-                .bindFragment(this, mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
+        addSubscription(bindToFragment(mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
                 .subscribe(new Action1<Listing<Link>>() {
                     @Override
                     public void call(Listing<Link> linkListing) {
@@ -197,7 +241,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                     public void call() {
                         mRequestInProgress = false;
                     }
-                });
+                }));
     }
 
     /**
@@ -271,15 +315,45 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     @Override
     public void onClickCommentsButton(Link link) {
-        Uri uri = Uri.parse("http://i.reddit.com" + link.getPermalink());
         Timber.d("Clicked comments button for %s", link);
-        WebActivity.startActivity(getActivity(), uri);
+        openUri(getCommentsUri(link));
+    }
+
+    @NonNull
+    private static Uri getCommentsUri(@NonNull Link link) {
+        return Uri.parse(BASE_URL_COMMENTS + link.getPermalink());
+    }
+
+    private void openUri(@NonNull Uri uri) {
+        CustomTabActivityHelper
+                .openCustomTab(getActivity(), getCustomTabsIntent(), uri, customTabFallback);
+    }
+
+    @NonNull
+    private CustomTabsIntent getCustomTabsIntent() {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent
+                .Builder(mCustomTabActivityHelper.getSession())
+                .enableUrlBarHiding()
+                .setShowTitle(true)
+                .setToolbarColor(getResources().getColor(R.color.primary))
+                .setStartAnimations(getContext(), R.anim.slide_in_right, R.anim.slide_out_left)
+                .setExitAnimations(getContext(), R.anim.slide_in_left, R.anim.slide_out_right);
+
+        if (mCustomTabCloseButton != null)
+            builder.setCloseButtonIcon(mCustomTabCloseButton);
+
+        return builder.build();
     }
 
     @Override
     public void onClickMainContentArea(Link link) {
         Timber.d("Clicked main content area for %s", link.getUrl());
-        WebActivity.startActivity(getActivity(), Uri.parse(link.getUrl()));
+        openUri(getLinkUri(link));
+    }
+
+    @NonNull
+    private static Uri getLinkUri(Link link) {
+        return Uri.parse(link.getUrl());
     }
 
     @Override
@@ -288,7 +362,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         return true;
     }
 
-    private class OnScrollListener extends RecyclerView.OnScrollListener {
+    private class LoadMoreOnScrollListener extends RecyclerView.OnScrollListener {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -309,6 +383,33 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
                 // start loading new items
                 queueListingRequest();
             }
+        }
+    }
+
+    private class MayLaunchOnScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (RecyclerView.SCROLL_STATE_IDLE != newState)
+                return;
+
+            int layoutPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+            if (layoutPosition == RecyclerView.NO_POSITION) {
+                layoutPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+            }
+
+            int adapterPosition = recyclerView.findViewHolderForLayoutPosition(layoutPosition)
+                    .getAdapterPosition();
+
+            Link link = mLinkListingRecyclerViewAdapter.getItem(adapterPosition);
+
+            Uri commentsUri = getCommentsUri(link);
+
+            Bundle otherLikelyBundle = new Bundle();
+            otherLikelyBundle.putParcelable(CustomTabsService.KEY_URL, getLinkUri(link));
+
+            mCustomTabActivityHelper.mayLaunchUrl(commentsUri, null,
+                    Collections.singletonList(otherLikelyBundle));
         }
     }
 }
