@@ -2,10 +2,12 @@ package se.joelpet.android.toyreaderforreddit.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.TimedMetaData;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsService;
 import android.support.design.widget.Snackbar;
@@ -21,7 +23,10 @@ import android.widget.ViewSwitcher;
 import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.ImageLoader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -386,30 +391,91 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
         }
     }
 
-    private class MayLaunchOnScrollListener extends RecyclerView.OnScrollListener {
+    private class MayLaunchOnScrollListener<T> extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (RecyclerView.SCROLL_STATE_IDLE != newState)
-                return;
+            if (RecyclerView.SCROLL_STATE_IDLE != newState) return;
 
-            int layoutPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+            List<Integer> likelyAdapterPositions = findLikelyAdapterPositions();
+            Uri[] mayLaunchUrls = getMayLaunchUrlsFrom(likelyAdapterPositions);
 
-            if (layoutPosition == RecyclerView.NO_POSITION) {
-                layoutPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+            hintUrlsMayLaunch(Arrays.asList(mayLaunchUrls));
+        }
+
+        @NonNull
+        private List<Integer> findLikelyAdapterPositions() {
+            int firstVisible = mLinearLayoutManager.findFirstVisibleItemPosition();
+            int lastVisible = mLinearLayoutManager.findLastVisibleItemPosition();
+
+            if (firstVisible == RecyclerView.NO_POSITION || lastVisible == RecyclerView.NO_POSITION)
+                return Collections.emptyList();
+
+            int visibleItemsCount = lastVisible - firstVisible + 1;
+            List<Integer> likelyLayoutPositions = new ArrayList<>(visibleItemsCount);
+
+            int firstCompletelyVisible = mLinearLayoutManager
+                    .findFirstCompletelyVisibleItemPosition();
+
+            if (firstCompletelyVisible != RecyclerView.NO_POSITION)
+                likelyLayoutPositions.add(firstCompletelyVisible);
+
+            for (int position = firstVisible; position <= lastVisible; position++)
+                if (position != firstCompletelyVisible)
+                    likelyLayoutPositions.add(position);
+
+            return likelyLayoutPositions;
+        }
+
+        @NonNull
+        private Uri[] getMayLaunchUrlsFrom(@NonNull List<Integer> adapterPositions) {
+            int mayLaunchUrlsCount = 2 * adapterPositions.size();
+            Uri[] mayLaunchUrls = new Uri[mayLaunchUrlsCount];
+
+            for (int i = 0, length = adapterPositions.size(); i < length; i++) {
+                Link link = mLinkListingRecyclerViewAdapter.getItem(adapterPositions.get(i));
+
+                mayLaunchUrls[2 * i] = getCommentsUri(link);
+                mayLaunchUrls[2 * i + 1] = getLinkUri(link);
             }
 
-            int adapterPosition = recyclerView.findViewHolderForLayoutPosition(layoutPosition)
-                    .getAdapterPosition();
+            return mayLaunchUrls;
+        }
 
-            Link link = mLinkListingRecyclerViewAdapter.getItem(adapterPosition);
+        private void hintUrlsMayLaunch(@NonNull List<Uri> mayLaunchUrls) {
+            if (mayLaunchUrls.isEmpty()) return;
+            Timber.d("Hinting URLs may launch: %s", mayLaunchUrls);
 
-            Uri commentsUri = getCommentsUri(link);
+            Uri mostLikelyUrl = getMostLikelyUrlFrom(mayLaunchUrls);
+            List<Uri> otherLikelyUrls = getOtherLikelyUrlsFrom(mayLaunchUrls);
+            List<Bundle> otherLikelyUrlBundles = bundleUrlsForCustomTabsService(otherLikelyUrls);
 
-            Bundle otherLikelyBundle = new Bundle();
-            otherLikelyBundle.putParcelable(CustomTabsService.KEY_URL, getLinkUri(link));
+            if (mostLikelyUrl != null)
+                mCustomTabActivityHelper.mayLaunchUrl(mostLikelyUrl, null, otherLikelyUrlBundles);
+        }
 
-            mCustomTabActivityHelper.mayLaunchUrl(commentsUri, null,
-                    Collections.singletonList(otherLikelyBundle));
+        @Nullable
+        private Uri getMostLikelyUrlFrom(@NonNull List<Uri> mayLaunchUrls) {
+            return mayLaunchUrls.isEmpty() ? null : mayLaunchUrls.get(0);
+        }
+
+        private List<Uri> getOtherLikelyUrlsFrom(@NonNull List<Uri> mayLaunchUrls) {
+            return mayLaunchUrls.size() <= 1 ? Collections.<Uri>emptyList() :
+                    mayLaunchUrls.subList(1, mayLaunchUrls.size());
+        }
+
+        @NonNull
+        private List<Bundle> bundleUrlsForCustomTabsService(@NonNull List<Uri> urls) {
+            if (urls.isEmpty()) return Collections.emptyList();
+
+            List<Bundle> bundles = new ArrayList<>(urls.size());
+
+            for (Uri url : urls) {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(CustomTabsService.KEY_URL, url);
+                bundles.add(bundle);
+            }
+
+            return bundles;
         }
     }
 }
