@@ -66,7 +66,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     public static final String STATE_STRING_AFTER = "mAfter";
 
-    public static final String BASE_URL_COMMENTS = "http://i.reddit.com";
+    public static final String BASE_URL_COMMENTS = "http://m.reddit.com";
 
     @Bind(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
