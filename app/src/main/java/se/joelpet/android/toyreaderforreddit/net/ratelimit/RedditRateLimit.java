@@ -11,7 +11,7 @@ public class RedditRateLimit {
 
     private static final int MIN_ALLOWED_RATELIMIT_REMAINING = 1;
 
-    public void checkRemaining(Map<String, String> headers) throws RedditRateLimitExceeded {
+    public void checkRemaining(Map<String, String> headers) throws RedditRateLimitExceededError {
         String rawRemaining;
         boolean remainingFound = (rawRemaining = headers.get(X_RATELIMIT_REMAINING)) != null ||
                 (rawRemaining = headers.get(X_RATELIMIT_REMAINING.toLowerCase())) != null;
@@ -22,7 +22,7 @@ public class RedditRateLimit {
         Float remaining = Float.parseFloat(rawRemaining);
 
         if (remaining < MIN_ALLOWED_RATELIMIT_REMAINING) {
-            throw new RedditRateLimitExceeded();
+            throw new RedditRateLimitExceededError();
         }
     }
 }
