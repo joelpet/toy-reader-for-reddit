@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.joelpet.android.toyreaderforreddit.BuildConfig;
+import se.joelpet.android.toyreaderforreddit.net.ratelimit.RedditRateLimit;
 import timber.log.Timber;
 
 public abstract class BaseRequest<T> extends Request<T> {
@@ -42,6 +43,8 @@ public abstract class BaseRequest<T> extends Request<T> {
     private static final String USER_AGENT = "android:" + BuildConfig.APPLICATION_ID + ":" +
             BuildConfig.VERSION_NAME + " (by /u/iMoM)";
 
+    private final RedditRateLimit mRedditRateLimit;
+
     @Nullable
     private final Response.Listener<T> mResponseListener;
     @Nullable
@@ -56,6 +59,7 @@ public abstract class BaseRequest<T> extends Request<T> {
     public BaseRequest(int method, String url, @Nullable RequestFuture<T> future,
                        @Nullable String accessToken) {
         super(method, url, future);
+        mRedditRateLimit = new RedditRateLimit();
         mResponseListener = future;
         mAccessToken = accessToken;
     }
@@ -67,6 +71,8 @@ public abstract class BaseRequest<T> extends Request<T> {
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         Timber.d("Response headers: %s", response.headers);
+
+        mRedditRateLimit.checkRemaining(response.headers);
 
         try {
             String charset = HttpHeaderParser.parseCharset(response.headers);
