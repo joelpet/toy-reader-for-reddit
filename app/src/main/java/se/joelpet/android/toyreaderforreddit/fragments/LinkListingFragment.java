@@ -191,7 +191,9 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public void onStart() {
         super.onStart();
         mCustomTabActivityHelper.bindCustomTabsService(getActivity());
-        queueListingRequest();
+        if (mAfter == null) {
+            queueListingRequest();
+        }
     }
 
     @Override
