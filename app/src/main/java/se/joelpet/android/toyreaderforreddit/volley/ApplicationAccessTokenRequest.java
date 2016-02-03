@@ -1,9 +1,10 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Response;
-
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.toolbox.RequestFuture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +24,8 @@ public class ApplicationAccessTokenRequest extends AccessTokenRequest {
      *                 anonymous should use the value DO_NOT_TRACK_THIS_DEVICE.
      */
     public ApplicationAccessTokenRequest(@NonNull String deviceId,
-                                         Response.Listener<AccessToken> listener,
-                                         Response.ErrorListener errorListener) {
-        super(listener, errorListener);
+                                         @Nullable RequestFuture<AccessToken> future) {
+        super(future);
         mDeviceId = deviceId;
     }
 

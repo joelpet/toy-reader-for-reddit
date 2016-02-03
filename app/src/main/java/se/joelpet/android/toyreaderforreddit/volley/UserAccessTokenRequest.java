@@ -1,7 +1,9 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
+import android.support.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
-import com.android.volley.Response;
+import com.android.volley.toolbox.RequestFuture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +17,8 @@ public class UserAccessTokenRequest extends AccessTokenRequest {
 
     private final String mCode;
 
-    public UserAccessTokenRequest(String code, Response.Listener<AccessToken> listener,
-                                  Response.ErrorListener errorListener) {
-        super(listener, errorListener);
+    public UserAccessTokenRequest(String code, @Nullable RequestFuture<AccessToken> future) {
+        super(future);
         mCode = code;
     }
 

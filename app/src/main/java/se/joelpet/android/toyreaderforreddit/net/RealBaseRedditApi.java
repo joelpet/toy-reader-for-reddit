@@ -1,10 +1,10 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
-import com.android.volley.Request;
-import com.android.volley.toolbox.RequestFuture;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.RequestFuture;
 
 import javax.inject.Inject;
 
@@ -40,7 +40,7 @@ public class RealBaseRedditApi implements BaseRedditApi {
     public Observable<AccessToken> getApplicationAccessToken(Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
         Request request = new ApplicationAccessTokenRequest(
-                ApplicationAccessTokenRequest.DEVICE_ID_DO_NOT_TRACK, future, future);
+                ApplicationAccessTokenRequest.DEVICE_ID_DO_NOT_TRACK, future);
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }
@@ -48,7 +48,7 @@ public class RealBaseRedditApi implements BaseRedditApi {
     @Override
     public Observable<AccessToken> getUserAccessToken(String code, Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
-        UserAccessTokenRequest request = new UserAccessTokenRequest(code, future, future);
+        UserAccessTokenRequest request = new UserAccessTokenRequest(code, future);
         addToRequestQueueWithTag(request, tag);
         return Observable.from(future, Schedulers.io());
     }

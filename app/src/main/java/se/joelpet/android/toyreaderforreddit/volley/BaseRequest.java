@@ -1,19 +1,22 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Base64;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.RequestFuture;
+import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -40,6 +43,8 @@ public abstract class BaseRequest<T> extends Request<T> {
             BuildConfig.VERSION_NAME + " (by /u/iMoM)";
 
     @Nullable
+    private final Response.Listener<T> mResponseListener;
+    @Nullable
     private String mAccessToken;
 
     private static String getAuthorizationValue() {
@@ -48,9 +53,10 @@ public abstract class BaseRequest<T> extends Request<T> {
         return "Basic " + credentialsBase64;
     }
 
-    public BaseRequest(int method, String url, Response.ErrorListener listener,
+    public BaseRequest(int method, String url, @Nullable RequestFuture<T> future,
                        @Nullable String accessToken) {
-        super(method, url, listener);
+        super(method, url, future);
+        mResponseListener = future;
         mAccessToken = accessToken;
     }
 
@@ -58,11 +64,33 @@ public abstract class BaseRequest<T> extends Request<T> {
         return token != null ? BASE_OAUTH_URI.buildUpon() : BASE_URI.buildUpon();
     }
 
-    protected static JSONObject jsonObjectFromNetworkResponse(NetworkResponse response) throws
-            UnsupportedEncodingException, JSONException {
-        String json = new String(response.data,
-                HttpHeaderParser.parseCharset(response.headers));
-        return (JSONObject) new JSONTokener(json).nextValue();
+    @Override
+    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+        Timber.d("Response headers: %s", response.headers);
+
+        try {
+            String charset = HttpHeaderParser.parseCharset(response.headers);
+            String json = new String(response.data, charset);
+            T result = mapJsonObjectToResult(new JSONObject(json));
+            return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        } catch (JsonSyntaxException e) {
+            return Response.error(new ParseError(e));
+        } catch (JSONException e) {
+            return Response.error(new ParseError(e));
+        }
+    }
+
+    @NonNull
+    protected abstract T mapJsonObjectToResult(JSONObject jsonObject) throws JSONException;
+
+    @Override
+    protected void deliverResponse(T response) {
+        if (mResponseListener != null) {
+            Timber.v("Delivering response: %s", response);
+            mResponseListener.onResponse(response);
+        }
     }
 
     @Override

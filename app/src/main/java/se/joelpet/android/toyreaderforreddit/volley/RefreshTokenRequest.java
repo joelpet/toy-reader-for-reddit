@@ -1,16 +1,14 @@
 package se.joelpet.android.toyreaderforreddit.volley;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
-import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.RequestFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +20,10 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
     public static final String REQUEST_URI_PATH = "api/v1/access_token";
 
     private final String mRefreshToken;
-    private final RequestFuture<AccessToken> mResponseListener;
 
-    public RefreshTokenRequest(String refreshToken, RequestFuture<AccessToken> future) {
+    public RefreshTokenRequest(String refreshToken, @Nullable RequestFuture<AccessToken> future) {
         super(Method.POST, buildUrl(), future, null);
         mRefreshToken = refreshToken;
-        mResponseListener = future;
     }
 
     private static String buildUrl() {
@@ -53,23 +49,12 @@ public class RefreshTokenRequest extends BaseRequest<AccessToken> {
         return params;
     }
 
+    @NonNull
     @Override
-    protected Response<AccessToken> parseNetworkResponse(NetworkResponse response) {
-        try {
-            JSONObject jsonObject = jsonObjectFromNetworkResponse(response);
-            AccessToken accessToken = AccessToken.from(jsonObject);
-            // "refresh_token" is absent in response from server, so add it back here
-            accessToken.setRefreshToken(mRefreshToken);
-            return Response.success(accessToken, HttpHeaderParser.parseCacheHeaders(response));
-        } catch (UnsupportedEncodingException e) {
-            return Response.error(new ParseError(e));
-        } catch (JSONException e) {
-            return Response.error(new ParseError(e));
-        }
-    }
-
-    @Override
-    protected void deliverResponse(AccessToken accessToken) {
-        mResponseListener.onResponse(accessToken);
+    protected AccessToken mapJsonObjectToResult(JSONObject jsonObject) throws JSONException {
+        AccessToken accessToken = AccessToken.from(jsonObject);
+        // "refresh_token" is absent in response from server, so add it back here
+        accessToken.setRefreshToken(mRefreshToken);
+        return accessToken;
     }
 }
