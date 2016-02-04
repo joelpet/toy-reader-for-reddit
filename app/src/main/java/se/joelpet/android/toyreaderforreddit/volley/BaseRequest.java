@@ -68,7 +68,7 @@ public abstract class BaseRequest<T> extends Request<T> {
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         Timber.d("Response headers: %s", response.headers);
-        RedditRateLimit.INSTANCE.update(response.headers);
+        RedditRateLimit.GLOBAL.update(response.headers);
 
         try {
             String charset = HttpHeaderParser.parseCharset(response.headers);

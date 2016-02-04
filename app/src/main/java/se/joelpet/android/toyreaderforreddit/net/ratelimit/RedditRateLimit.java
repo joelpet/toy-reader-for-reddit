@@ -14,14 +14,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public enum RedditRateLimit {
 
-    INSTANCE;
+    GLOBAL;
 
     /** Response header: Approximate number of requests left to use */
     public static final String X_RATELIMIT_REMAINING = "X-Ratelimit-Remaining";
     /** Response header: Approximate number of seconds to end of period */
     public static final String X_RATELIMIT_RESET = "X-Ratelimit-Reset";
 
-    private static final int MIN_ALLOWED_RATELIMIT_REMAINING = 1;
+    private static final int MIN_ALLOWED_REMAINING = 1;
 
     @NonNull
     private Map<String, String> mHeaders = Collections.emptyMap();
@@ -31,7 +31,7 @@ public enum RedditRateLimit {
     private DateTime mReset = DateTime.now();
 
     public boolean isExceeded() {
-        return mReset.isAfterNow() && mRemaining < MIN_ALLOWED_RATELIMIT_REMAINING;
+        return mReset.isAfterNow() && mRemaining < MIN_ALLOWED_REMAINING;
     }
 
     public void update(@NonNull Map<String, String> headers) {

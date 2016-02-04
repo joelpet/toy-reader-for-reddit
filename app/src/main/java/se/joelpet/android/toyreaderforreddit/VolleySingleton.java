@@ -9,9 +9,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-import se.joelpet.android.toyreaderforreddit.net.ratelimit.RateLimitExceededError;
-import se.joelpet.android.toyreaderforreddit.net.ratelimit.RedditRateLimit;
-
 public class VolleySingleton {
 
     private static final int LRU_CACHE_MAX_SIZE = 20;
@@ -23,8 +20,6 @@ public class VolleySingleton {
     private RequestQueue mRequestQueue;
 
     private final ImageLoader mImageLoader;
-
-    private final RedditRateLimit mRedditRateLimit = RedditRateLimit.INSTANCE;
 
     private VolleySingleton(Context context) {
         mContext = context;
@@ -64,10 +59,7 @@ public class VolleySingleton {
         return mRequestQueue;
     }
 
-    public <T> Request<T> addToRequestQueue(Request<T> req) throws RateLimitExceededError {
-        if (mRedditRateLimit.isExceeded()) {
-            throw new RateLimitExceededError();
-        }
+    public <T> Request<T> addToRequestQueue(Request<T> req) {
         return getRequestQueue().add(req);
     }
 

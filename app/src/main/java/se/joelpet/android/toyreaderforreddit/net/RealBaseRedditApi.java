@@ -18,6 +18,7 @@ import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.ratelimit.RateLimitExceededError;
+import se.joelpet.android.toyreaderforreddit.net.ratelimit.RedditRateLimit;
 import se.joelpet.android.toyreaderforreddit.volley.ApplicationAccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.ListingRequest;
 import se.joelpet.android.toyreaderforreddit.volley.MeRequest;
@@ -87,11 +88,10 @@ public class RealBaseRedditApi implements BaseRedditApi {
 
     private <T> Observable<T> enqueueRequestWithTag(RequestFuture<T> future, Request<T> request,
                                                     Object tag) {
-        try {
-            mVolleySingleton.addToRequestQueue(request.setTag(tag));
-        } catch (RateLimitExceededError e) {
-            return Observable.error(e);
+        if (RedditRateLimit.GLOBAL.isExceeded()) {
+            return Observable.error(new RateLimitExceededError());
         }
+        mVolleySingleton.addToRequestQueue(request.setTag(tag));
         return Observable.from(future, Schedulers.io());
     }
 
