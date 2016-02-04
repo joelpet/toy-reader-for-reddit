@@ -30,13 +30,13 @@ public enum RedditRateLimit {
     @NonNull
     private DateTime mReset = DateTime.now();
 
-    public void update(@NonNull Map<String, String> headers) {
-        mHeaders = checkNotNull(headers);
+    public boolean isExceeded() {
+        return mReset.isAfterNow() && mRemaining < MIN_ALLOWED_RATELIMIT_REMAINING;
     }
 
-    public boolean isExceeded() {
+    public void update(@NonNull Map<String, String> headers) {
+        mHeaders = checkNotNull(headers);
         refresh();
-        return mReset.isAfterNow() && mRemaining < MIN_ALLOWED_RATELIMIT_REMAINING;
     }
 
     private void refresh() {
