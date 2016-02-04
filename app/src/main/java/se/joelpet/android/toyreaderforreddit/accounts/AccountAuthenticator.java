@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import javax.inject.Inject;
 
 import rx.functions.Action1;
+import se.joelpet.android.toyreaderforreddit.BuildConfig;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
 import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
@@ -30,7 +31,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private BaseRedditApi mRedditApi;
 
     public static String getAccountType(Context context) {
-        return context.getString(R.string.authenticator_account_type);
+        return context.getString(R.string.authenticator_account_type, BuildConfig.BUILD_TYPE);
     }
 
     @Inject
