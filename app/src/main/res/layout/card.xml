@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorAccent"
                     app:typeface="roboto_regular"
-                    tools:text="NSFW" />
+                    android:text="@string/nsfw" />
 
             </LinearLayout>
         </LinearLayout>
