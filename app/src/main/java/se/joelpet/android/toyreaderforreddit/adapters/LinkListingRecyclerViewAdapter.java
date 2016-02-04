@@ -58,7 +58,7 @@ public class LinkListingRecyclerViewAdapter
         vh.title.setText(Html.fromHtml(link.getTitle()));
 
         if (VALID_URL_PATTERN.matcher(link.getThumbnail()).matches()) {
-            Timber.d("Settings thumbnail image: %s", link.getThumbnail());
+            Timber.v("Settings thumbnail image: %s", link.getThumbnail());
             vh.thumbnail.setImageUrl(link.getThumbnail(), mImageLoader);
             vh.thumbnail.setVisibility(View.VISIBLE);
         } else {
