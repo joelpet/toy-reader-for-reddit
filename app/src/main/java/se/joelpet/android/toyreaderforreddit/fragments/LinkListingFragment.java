@@ -2,7 +2,6 @@ package se.joelpet.android.toyreaderforreddit.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.TimedMetaData;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -279,9 +278,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     private void handleListingRequestError(Throwable throwable) {
         Timber.e(throwable, "Listing request failed");
 
-        // TODO: Change to LENGTH_INDEFINITE when available in Design Library
         Snackbar.make(mRootViewSwitcher, R.string.snackbar_could_not_get_new_data,
-                Snackbar.LENGTH_LONG)
+                Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
