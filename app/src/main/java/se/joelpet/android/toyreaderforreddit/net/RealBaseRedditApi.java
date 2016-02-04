@@ -17,12 +17,12 @@ import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.net.ratelimit.RateLimitExceededError;
 import se.joelpet.android.toyreaderforreddit.volley.ApplicationAccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.ListingRequest;
 import se.joelpet.android.toyreaderforreddit.volley.MeRequest;
 import se.joelpet.android.toyreaderforreddit.volley.RefreshTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
-import timber.log.Timber;
 
 public class RealBaseRedditApi implements BaseRedditApi {
 
@@ -38,27 +38,24 @@ public class RealBaseRedditApi implements BaseRedditApi {
 
     @Override
     public Observable<AccessToken> getApplicationAccessToken(Object tag) {
-        RequestFuture<AccessToken> future = RequestFuture.newFuture();
-        Request request = new ApplicationAccessTokenRequest(
+        RequestFuture<AccessToken> future = newFuture();
+        Request<AccessToken> request = new ApplicationAccessTokenRequest(
                 ApplicationAccessTokenRequest.DEVICE_ID_DO_NOT_TRACK, future);
-        addToRequestQueueWithTag(request, tag);
-        return Observable.from(future, Schedulers.io());
+        return enqueueRequestWithTag(future, request, tag);
     }
 
     @Override
     public Observable<AccessToken> getUserAccessToken(String code, Object tag) {
         RequestFuture<AccessToken> future = RequestFuture.newFuture();
         UserAccessTokenRequest request = new UserAccessTokenRequest(code, future);
-        addToRequestQueueWithTag(request, tag);
-        return Observable.from(future, Schedulers.io());
+        return enqueueRequestWithTag(future, request, tag);
     }
 
     @Override
     public Observable<AccessToken> refreshAccessToken(String refreshToken, Object tag) {
-        RequestFuture<AccessToken> future = RequestFuture.newFuture();
+        RequestFuture<AccessToken> future = newFuture();
         RefreshTokenRequest request = new RefreshTokenRequest(refreshToken, future);
-        addToRequestQueueWithTag(request, tag);
-        return Observable.from(future, Schedulers.io())
+        return enqueueRequestWithTag(future, request, tag)
                 // Store the refreshed access token when received before emitting to subscribers
                 .flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
                     @Override
@@ -71,26 +68,31 @@ public class RealBaseRedditApi implements BaseRedditApi {
 
     @Override
     public Observable<Me> getMe(@NonNull String accessToken, final Object tag) {
-        final RequestFuture<Me> future = RequestFuture.newFuture();
+        RequestFuture<Me> future = newFuture();
         MeRequest request = new MeRequest(accessToken, future);
-        addToRequestQueueWithTag(request, future);
-        return Observable.from(future, Schedulers.io());
+        return enqueueRequestWithTag(future, request, tag);
     }
 
     @Override
     public Observable<Listing<Link>> getLinkListing(@Nullable String accessToken, String path,
                                                     String after, Object tag) {
-        final RequestFuture<Listing<Link>> future = RequestFuture.newFuture();
+        RequestFuture<Listing<Link>> future = newFuture();
         ListingRequest<Link> request = new ListingRequest<>(path, after, accessToken, future);
-        Timber.d("Adding to request queue: %s", request);
-        addToRequestQueueWithTag(request, tag);
-        return Observable.from(future, Schedulers.io());
+        return enqueueRequestWithTag(future, request, tag);
     }
 
-    private <T> Request<T> addToRequestQueueWithTag(Request<T> request, Object tag) {
-        Timber.d("Adding request to queue: %s", request);
-        request.setTag(tag);
-        return mVolleySingleton.addToRequestQueue(request);
+    public static <T> RequestFuture<T> newFuture() {
+        return RequestFuture.newFuture();
+    }
+
+    private <T> Observable<T> enqueueRequestWithTag(RequestFuture<T> future, Request<T> request,
+                                                    Object tag) {
+        try {
+            mVolleySingleton.addToRequestQueue(request.setTag(tag));
+        } catch (RateLimitExceededError e) {
+            return Observable.error(e);
+        }
+        return Observable.from(future, Schedulers.io());
     }
 
     @Override
