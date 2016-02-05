@@ -7,8 +7,8 @@ android {
         applicationId "se.joelpet.android.toyreaderforreddit"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.2.0"
+        versionCode 5
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
