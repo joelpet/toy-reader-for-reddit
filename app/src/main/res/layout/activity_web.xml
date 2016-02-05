@@ -2,12 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="se.joelpet.android.toyredditreader.activities.WebActivity"
+    tools:context="se.joelpet.android.toyreaderforreddit.activities.WebActivity"
     tools:ignore="MergeRootFrame">
 
     <include
         android:id="@+id/layout_toolbar"
-        layout="@layout/layout_toolbar" />
+        layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/container"

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_header_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimaryDark"
+    android:paddingBottom="@dimen/content_spacing"
+    android:paddingEnd="@dimen/navigation_horizontal_margin"
+    android:paddingLeft="@dimen/navigation_horizontal_margin"
+    android:paddingRight="@dimen/navigation_horizontal_margin"
+    android:paddingStart="@dimen/navigation_horizontal_margin"
+    android:paddingTop="@dimen/content_spacing">
+
+    <Space
+        android:id="@+id/top_space"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/navigation_vertical_margin" />
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_space"
+        android:text="@string/navigation_header_user_name_unauthenticated"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="#FFFFFF"
+        app:typeface="roboto_medium" />
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/user_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_name"
+        android:text="@string/navigation_header_user_email_unauthenticated"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="#FFFFFF"
+        app:typeface="roboto_regular" />
+
+    <ViewSwitcher
+        android:id="@+id/account_toggle_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/top_space">
+
+        <ImageView
+            android:id="@+id/account_drop_down_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/content_spacing"
+            android:src="@drawable/ic_arrow_drop_down_white" />
+
+        <ImageView
+            android:id="@+id/account_drop_up_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/content_spacing"
+            android:src="@drawable/ic_arrow_drop_up_white" />
+    </ViewSwitcher>
+
+</RelativeLayout>

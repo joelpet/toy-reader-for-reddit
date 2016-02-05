@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="se.joelpet.android.toyredditreader"
+    package="se.joelpet.android.toyreaderforreddit"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
-        android:name="se.joelpet.android.toyredditreader.RedditApp"
+        android:name=".RedditApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
@@ -21,20 +25,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="se.joelpet.android.toyredditreader.activities.WebActivity"
+            android:name=".activities.WebActivity"
             android:label="@string/title_activity_web"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
+                android:value="se.joelpet.android.toyreaderforreddit.activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.LoginActivity"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
+                android:value="se.joelpet.android.toyreaderforreddit.activities.MainActivity" />
         </activity>
+
+        <service android:name=".services.RedditOAuthAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service android:name=".services.LoginAccountsUpdatedIntentService" />
+
+        <receiver android:name=".receivers.LoginAccountsChangedReceiver">
+            <intent-filter>
+                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="se.joelpet.android.toyredditreader.activities.LoginActivity">
+    tools:context="se.joelpet.android.toyreaderforreddit.activities.LoginActivity">
 
     <include
         android:id="@+id/layout_toolbar"
-        layout="@layout/layout_toolbar" />
+        layout="@layout/toolbar" />
 
     <WebView
         android:id="@+id/web_view"

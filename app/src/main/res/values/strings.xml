@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Toy Reddit Reader</string>
+    <string name="app_name">Toy Reader for Reddit</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="submitted_info_text">"%1$s\nby <b>%2$s</b>"</string>
     <string name="num_comments">%d comments</string>
+    <string name="nsfw">NSFW</string>
     <string name="title_activity_web">WebActivity</string>
 
     <string name="drawer_open">Open drawer</string>
@@ -18,7 +19,12 @@
     <string name="navigation_sign_out">Sign out</string>
 
     <string name="redditor_for_years_months">redditor for %1$s %2$s</string>
-    <string name="toast_signed_out">Signed out</string>
+    <string name="toast_signing_out">Signing out</string>
+    <string name="toast_sign_in_canceled">Sign in canceled</string>
+    <string name="snackbar_could_not_get_new_data">Could not get new data</string>
+    <string name="snackbar_account_credentials_expired">Account credentials expired</string>
+    <string name="sign_in_again">Sign in again</string>
+    <string name="retry">Retry</string>
 
     <plurals name="years">
         <item quantity="one">1 year</item>
