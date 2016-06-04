@@ -3,9 +3,7 @@ package se.joelpet.android.toyreaderforreddit.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import rx.Observable;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.subscriptions.CompositeSubscription;
 import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
 import timber.log.Timber;
@@ -44,10 +42,6 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Timber.v("%s###onDestroy()", this);
-    }
-
-    protected <T> Observable<T> bindToFragment(Observable<T> source) {
-        return AndroidObservable.bindFragment(this, source);
     }
 
     protected void addSubscription(Subscription subscription) {
