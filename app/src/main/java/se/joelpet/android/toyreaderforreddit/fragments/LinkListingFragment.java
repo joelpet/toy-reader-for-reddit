@@ -36,7 +36,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
@@ -45,6 +44,7 @@ import se.joelpet.android.toyreaderforreddit.customtabs.CustomTabActivityHelper;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
 import se.joelpet.android.toyreaderforreddit.domain.Listing;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 import timber.log.Timber;
 
 public class LinkListingFragment extends BaseFragment implements SwipeRefreshLayout
@@ -142,8 +142,8 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
             }
         }
 
-        addSubscription(bindToFragment(decodeBitmapResource(R.drawable.ic_arrow_back_black_24dp))
-                .subscribeOn(Schedulers.io())
+        addSubscription(decodeBitmapResource(R.drawable.ic_arrow_back_black_24dp)
+                .compose(WorkOnIoAndOnNotifyOnMainTransformer.<Bitmap>getInstance())
                 .subscribe(new Action1<Bitmap>() {
                     @Override
                     public void call(Bitmap bitmap) {
@@ -230,7 +230,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     private void queueListingRequest() {
         mRequestInProgress = true;
-        addSubscription(bindToFragment(mRedditApi.getLinkListing(mListingPath, mAfter, TAG))
+        addSubscription(mRedditApi.getLinkListing(mListingPath, mAfter, TAG)
                 .subscribe(new Action1<Listing<Link>>() {
                     @Override
                     public void call(Listing<Link> linkListing) {

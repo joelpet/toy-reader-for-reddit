@@ -1,9 +1,5 @@
 package se.joelpet.android.toyreaderforreddit.activities;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Period;
-
 import android.accounts.OperationCanceledException;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -20,12 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
+
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.R;
@@ -33,6 +32,7 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import timber.log.Timber;
 
@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements NavigationView
                             LinkListingFragment.ARG_SORT_HOT)).commit();
         }
 
-        addSubscription(bindToActivity(mLocalDataStore.observeMe()).subscribe(new MeObserver()));
+        addSubscription(mLocalDataStore.observeMe().subscribe(new MeObserver()));
     }
 
     @Override
@@ -150,9 +150,9 @@ public class MainActivity extends BaseActivity implements NavigationView
         @OnClick(R.id.account_drop_down_arrow)
         protected void onAccountDropDownArrowClick(View view) {
             switchToAccountMenuModeInDrawerWithOptionsHidden();
-            addSubscription(bindToActivity(mAccountManagerHelper
+            addSubscription(mAccountManagerHelper
                     .getAccount()
-                    .isEmpty())
+                    .isEmpty()
                     .subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean isNoAccountAvailable) {
@@ -249,8 +249,7 @@ public class MainActivity extends BaseActivity implements NavigationView
     }
 
     private void addAccountUsingAccountManager() {
-        addSubscription(AndroidObservable.bindActivity(this,
-                mAccountManagerHelper.addAccount(this)).subscribe(
+        addSubscription(mAccountManagerHelper.addAccount(this).subscribe(
                 new Action1<AddAccountResult>() {
                     @Override
                     public void call(AddAccountResult result) {
@@ -272,9 +271,7 @@ public class MainActivity extends BaseActivity implements NavigationView
     private void removeAccountUsingAccountManager() {
         Toast.makeText(this, R.string.toast_signing_out, Toast.LENGTH_SHORT).show();
 
-        addSubscription(AndroidObservable.bindActivity(this,
-                mAccountManagerHelper.removeAccount())
-                .subscribe());
+        addSubscription(mAccountManagerHelper.removeAccount().subscribe());
     }
 
     // TODO: Move to text.format.MeFormat

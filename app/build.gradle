@@ -52,7 +52,10 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
-    compile 'io.reactivex:rxandroid:0.23.0'
+    compile 'io.reactivex:rxandroid:1.2.0'
+    // Because RxAndroid releases are few and far between, we also explicitly depend on RxJava's
+    // latest version for bug fixes and new features.
+    compile 'io.reactivex:rxjava:1.1.5'
     compile 'net.danlew:android.joda:2.8.1'
     androidTestCompile 'com.android.support.test:runner:0.4'
     // Set this dependency to use JUnit 4 rules

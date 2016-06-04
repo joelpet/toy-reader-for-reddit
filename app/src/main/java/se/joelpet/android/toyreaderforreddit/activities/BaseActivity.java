@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import dagger.ObjectGraph;
-import rx.Observable;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.subscriptions.CompositeSubscription;
 import se.joelpet.android.toyreaderforreddit.RedditApplication;
 import se.joelpet.android.toyreaderforreddit.dagger.ActivityModule;
@@ -46,10 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public <T> void inject(T object) {
         mActivityGraph.inject(object);
-    }
-
-    protected <T> Observable<T> bindToActivity(Observable<T> source) {
-        return AndroidObservable.bindActivity(this, source);
     }
 
     protected void addSubscription(Subscription subscription) {
