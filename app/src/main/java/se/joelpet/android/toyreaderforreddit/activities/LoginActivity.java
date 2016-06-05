@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscription;
@@ -28,8 +28,8 @@ import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
-import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
 import se.joelpet.android.toyreaderforreddit.volley.BaseRequest;
+import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
 import timber.log.Timber;
 
 public class LoginActivity extends AppCompatAccountAuthenticatorActivity
@@ -39,10 +39,10 @@ public class LoginActivity extends AppCompatAccountAuthenticatorActivity
 
     public static final String BASE_URL_AUTH = "https://www.reddit.com/api/v1/authorize.compact";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
 
-    @Bind(R.id.web_view)
+    @BindView(R.id.web_view)
     protected WebView mWebView;
 
     @Inject

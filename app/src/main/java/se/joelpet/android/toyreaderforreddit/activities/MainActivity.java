@@ -22,7 +22,7 @@ import org.joda.time.Period;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.functions.Action1;
@@ -32,7 +32,6 @@ import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.domain.Me;
 import se.joelpet.android.toyreaderforreddit.fragments.LinkListingFragment;
-import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import timber.log.Timber;
 
@@ -43,23 +42,23 @@ public class MainActivity extends BaseActivity implements NavigationView
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN = 0;
     public static final int ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP = 1;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
 
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.navigation_view)
+    @BindView(R.id.navigation_view)
     protected NavigationView mNavigationView;
 
     protected class NavigationHeaderViews {
-        @Bind(R.id.user_name)
+        @BindView(R.id.user_name)
         protected TextView mUserNameView;
 
-        @Bind(R.id.user_email)
+        @BindView(R.id.user_email)
         protected TextView mUserEmailView;
 
-        @Bind(R.id.account_toggle_arrow)
+        @BindView(R.id.account_toggle_arrow)
         protected ViewSwitcher mAccountToggleArrowSwitcher;
     }
 

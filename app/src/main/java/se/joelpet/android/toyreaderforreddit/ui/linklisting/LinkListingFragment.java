@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -49,13 +49,13 @@ public class LinkListingFragment extends BaseFragment implements LinkListingCont
     private static final int VIEW_SWITCHER_CHILD_LOAD_INDICATOR = 0;
     private static final int VIEW_SWITCHER_CHILD_RECYCLER_VIEW = 1;
 
-    @Bind(R.id.root_view_switcher)
+    @BindView(R.id.root_view_switcher)
     protected ViewSwitcher rootViewSwitcher;
 
-    @Bind(R.id.my_swipe_refresh_layout)
+    @BindView(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout swipeRefreshLayout;
 
-    @Bind(R.id.my_recycler_view)
+    @BindView(R.id.my_recycler_view)
     protected RecyclerView recyclerView;
 
     @Inject

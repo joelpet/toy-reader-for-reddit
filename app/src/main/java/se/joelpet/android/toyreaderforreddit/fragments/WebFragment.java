@@ -18,14 +18,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import se.joelpet.android.toyreaderforreddit.R;
 import timber.log.Timber;
 
 public class WebFragment extends BaseFragment {
 
-    @Bind(R.id.web_view)
+    @BindView(R.id.web_view)
     protected WebView mWebView;
 
     private WebViewCallback mWebViewCallback;

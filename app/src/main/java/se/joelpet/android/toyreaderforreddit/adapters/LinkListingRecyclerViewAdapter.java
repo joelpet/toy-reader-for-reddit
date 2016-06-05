@@ -1,8 +1,5 @@
 package se.joelpet.android.toyreaderforreddit.adapters;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.domain.Link;
@@ -130,37 +130,37 @@ public class LinkListingRecyclerViewAdapter
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.card_view)
+        @BindView(R.id.card_view)
         View root;
 
-        @Bind(R.id.domain)
+        @BindView(R.id.domain)
         TextView domain;
 
-        @Bind(R.id.subreddit)
+        @BindView(R.id.subreddit)
         TextView subreddit;
 
-        @Bind(R.id.main_content_area)
+        @BindView(R.id.main_content_area)
         View mainContentArea;
 
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         TextView title;
 
-        @Bind(R.id.thumbnail)
+        @BindView(R.id.thumbnail)
         NetworkImageView thumbnail;
 
-        @Bind(R.id.submitted_info_text)
+        @BindView(R.id.submitted_info_text)
         TextView submittedInfoText;
 
-        @Bind(R.id.over_18_tag)
+        @BindView(R.id.over_18_tag)
         TextView over18tag;
 
-        @Bind(R.id.score)
+        @BindView(R.id.score)
         TextView score;
 
-        @Bind(R.id.star_button)
+        @BindView(R.id.star_button)
         TextView starButton;
 
-        @Bind(R.id.comments_button)
+        @BindView(R.id.comments_button)
         TextView commentsButton;
 
         public ViewHolder(View itemView) {

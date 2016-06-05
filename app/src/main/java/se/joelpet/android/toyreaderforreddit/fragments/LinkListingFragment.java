@@ -29,8 +29,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,14 +68,16 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
 
     public static final String BASE_URL_COMMENTS = "http://m.reddit.com";
 
-    @Bind(R.id.root_view_switcher)
+    @BindView(R.id.root_view_switcher)
     protected ViewSwitcher mRootViewSwitcher;
 
-    @Bind(R.id.my_swipe_refresh_layout)
+    @BindView(R.id.my_swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @Bind(R.id.my_recycler_view)
+    @BindView(R.id.my_recycler_view)
     protected RecyclerView mRecyclerView;
+
+    private Unbinder viewUnbinder;
 
     @Inject
     protected OAuthRedditApi mRedditApi;
@@ -168,7 +171,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subreddit, container, false);
-        ButterKnife.bind(this, view);
+        viewUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -207,7 +210,7 @@ public class LinkListingFragment extends BaseFragment implements SwipeRefreshLay
     public void onDestroyView() {
         mRecyclerView.removeOnScrollListener(loadMoreOnScrollListener);
         mRecyclerView.removeOnScrollListener(mayLaunchOnScrollListener);
-        ButterKnife.unbind(this);
+        viewUnbinder.unbind();
         super.onDestroyView();
     }
 

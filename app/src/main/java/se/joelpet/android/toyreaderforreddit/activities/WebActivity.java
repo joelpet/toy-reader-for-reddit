@@ -14,8 +14,8 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Bind;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.fragments.WebFragment;
 import timber.log.Timber;
@@ -24,10 +24,10 @@ public class WebActivity extends BaseActivity implements WebFragment.WebViewCall
 
     public static final String ARG_URI = "uri";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.toolbar_progress_bar)
+    @BindView(R.id.toolbar_progress_bar)
     ProgressBar mProgressBar;
 
     public static void startActivity(Context context, Uri uri) {
