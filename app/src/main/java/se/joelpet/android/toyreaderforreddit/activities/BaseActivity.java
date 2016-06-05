@@ -24,7 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         mActivityGraph = ((RedditApplication) getApplication()).getApplicationGraph()
                 .plus(getModules().toArray());
-        mActivityGraph.inject(this);
+        inject(this);
 
         mCompositeSubscription = new CompositeSubscription();
     }
