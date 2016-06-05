@@ -34,6 +34,5 @@ public class LinkListingActivity extends BaseActivity {
 
         // TODO: Inject Presenter with Dagger
         presenter = new LinkListingPresenter(linkListingFragment, oAuthRedditApi);
-        linkListingFragment.setPresenter(presenter);
     }
 }

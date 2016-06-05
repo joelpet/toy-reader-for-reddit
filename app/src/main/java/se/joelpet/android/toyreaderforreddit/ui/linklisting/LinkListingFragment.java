@@ -46,6 +46,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class LinkListingFragment extends BaseFragment implements LinkListingContract.View,
         LinkListingRecyclerViewAdapter.ClickListener {
 
+    private static final String ARGUMENT_LISTING = "argument_listing";
+    public static final String ARG_LISTING_EVERYTHING = "r/all/";
+    public static final String ARG_LISTING_SUBSCRIBED = "/";
+
+    private static final String ARGUMENT_SORT = "argument_sort";
+    public static final String ARG_SORT_HOT = "hot";
+    public static final String ARG_SORT_NEW = "new";
+
     private static final int VIEW_SWITCHER_CHILD_LOAD_INDICATOR = 0;
     private static final int VIEW_SWITCHER_CHILD_RECYCLER_VIEW = 1;
 
@@ -74,6 +82,16 @@ public class LinkListingFragment extends BaseFragment implements LinkListingCont
     private LinearLayoutManager linearLayoutManager;
     private LinkListingRecyclerViewAdapter linkListingRecyclerViewAdapter;
     private LinkListingContract.Presenter presenter;
+
+    @NonNull
+    public static LinkListingFragment newInstance(String listing, String sort) {
+        LinkListingFragment fragment = new LinkListingFragment();
+        Bundle arguments = new Bundle();
+        fragment.setArguments(arguments);
+        arguments.putString(ARGUMENT_LISTING, listing);
+        arguments.putString(ARGUMENT_SORT, sort);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

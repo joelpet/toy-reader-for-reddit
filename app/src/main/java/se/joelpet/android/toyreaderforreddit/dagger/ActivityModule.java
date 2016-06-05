@@ -10,12 +10,12 @@ import dagger.Module;
 import dagger.Provides;
 import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
-import se.joelpet.android.toyreaderforreddit.activities.MainActivity;
 import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
 import se.joelpet.android.toyreaderforreddit.adapters.LinkListingRecyclerViewAdapter;
 import se.joelpet.android.toyreaderforreddit.fragments.WebFragment;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingActivity;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingFragment;
+import se.joelpet.android.toyreaderforreddit.ui.main.MainActivity;
 
 @Module(
         injects = {

@@ -37,6 +37,8 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
         this.linkListingView = checkNotNull(linkListingView);
         this.oAuthRedditApi = checkNotNull(oAuthRedditApi);
         this.compositeSubscription = new CompositeSubscription();
+
+        this.linkListingView.setPresenter(this);
     }
 
     @Override
