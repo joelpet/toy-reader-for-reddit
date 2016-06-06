@@ -9,6 +9,9 @@ public class LinkUtils {
 
     private static final String BASE_URL_COMMENTS = "https://m.reddit.com";
 
+    public static final String LISTING_PATH_ALL = "r/all/";
+    public static final String LISTING_PATH_SUBSCRIBED = "/";
+
     @NonNull
     public static Uri getLinkUri(Link link) {
         return Uri.parse(link.getUrl());

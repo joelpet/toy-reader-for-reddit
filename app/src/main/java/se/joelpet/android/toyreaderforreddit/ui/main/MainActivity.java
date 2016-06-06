@@ -28,6 +28,7 @@ import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingFragment;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingPresenter;
+import se.joelpet.android.toyreaderforreddit.util.LinkUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -285,12 +286,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                 .findFragmentByTag(TAG_EVERYTHING);
 
         if (fragment == null) {
-            fragment = LinkListingFragment.newInstance(
-                    LinkListingFragment.ARG_LISTING_EVERYTHING,
-                    LinkListingFragment.ARG_SORT_HOT);
+            fragment = new LinkListingFragment();
         }
 
-        new LinkListingPresenter(fragment, oAuthRedditApi, accountManagerHelper);
+        new LinkListingPresenter(LinkUtils.LISTING_PATH_ALL, oAuthRedditApi, accountManagerHelper,
+                fragment);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, TAG_EVERYTHING).commit();
@@ -302,12 +302,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                 .findFragmentByTag(TAG_SUBSCRIBED);
 
         if (fragment == null) {
-            fragment = LinkListingFragment.newInstance(
-                    LinkListingFragment.ARG_LISTING_SUBSCRIBED,
-                    LinkListingFragment.ARG_SORT_HOT);
+            fragment = new LinkListingFragment();
         }
 
-        new LinkListingPresenter(fragment, oAuthRedditApi, accountManagerHelper);
+        new LinkListingPresenter(LinkUtils.LISTING_PATH_SUBSCRIBED, oAuthRedditApi,
+                accountManagerHelper, fragment);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, TAG_SUBSCRIBED).commit();

@@ -8,6 +8,7 @@ import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
 import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
+import se.joelpet.android.toyreaderforreddit.util.LinkUtils;
 
 public class LinkListingActivity extends BaseActivity {
 
@@ -35,6 +36,7 @@ public class LinkListingActivity extends BaseActivity {
         }
 
         // TODO: Inject Presenter with Dagger
-        new LinkListingPresenter(linkListingFragment, oAuthRedditApi, accountManagerHelper);
+        new LinkListingPresenter(LinkUtils.LISTING_PATH_ALL, oAuthRedditApi, accountManagerHelper,
+                linkListingFragment);
     }
 }

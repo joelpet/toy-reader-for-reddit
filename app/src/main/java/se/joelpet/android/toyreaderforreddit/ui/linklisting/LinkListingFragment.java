@@ -80,16 +80,6 @@ public class LinkListingFragment extends BaseFragment implements LinkListingCont
     private LinkListingRecyclerViewAdapter linkListingRecyclerViewAdapter;
     private LinkListingContract.Presenter presenter;
 
-    @NonNull
-    public static LinkListingFragment newInstance(String listing, String sort) {
-        LinkListingFragment fragment = new LinkListingFragment();
-        Bundle arguments = new Bundle();
-        fragment.setArguments(arguments);
-        arguments.putString(ARGUMENT_LISTING, listing);
-        arguments.putString(ARGUMENT_SORT, sort);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -22,27 +22,29 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LinkListingPresenter implements LinkListingContract.Presenter {
 
-    private final LinkListingContract.View linkListingView;
+    /** The path part of the URI pointing to the link listing of this fragment. */
+    private final String listingPath;
     private final OAuthRedditApi oAuthRedditApi;
     private final AccountManagerHelper accountManagerHelper;
-    private final CompositeSubscription compositeSubscription;
+    private final LinkListingContract.View linkListingView;
+
+    private final CompositeSubscription subscriptions;
 
     /** The "after" portion received in the response to the last made request. */
     private String after;
 
-    /** The path part of the URI pointing to the link listing of this fragment. */
-    private String listingPath = "r/all/";
-
     /** Flag indicating that a Listing request is in progress. */
     private boolean requestInProgress;
 
-    public LinkListingPresenter(@NonNull LinkListingContract.View linkListingView,
-                                @NonNull OAuthRedditApi oAuthRedditApi,
-                                @NonNull AccountManagerHelper accountManagerHelper) {
-        this.linkListingView = checkNotNull(linkListingView);
+    public LinkListingPresenter(@NonNull String listingPath, @NonNull OAuthRedditApi oAuthRedditApi,
+                                @NonNull AccountManagerHelper accountManagerHelper,
+                                @NonNull LinkListingContract.View linkListingView) {
+        this.listingPath = checkNotNull(listingPath);
         this.oAuthRedditApi = checkNotNull(oAuthRedditApi);
         this.accountManagerHelper = checkNotNull(accountManagerHelper);
-        this.compositeSubscription = new CompositeSubscription();
+        this.linkListingView = checkNotNull(linkListingView);
+
+        this.subscriptions = new CompositeSubscription();
 
         this.linkListingView.setPresenter(this);
     }
@@ -56,7 +58,7 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
     public void loadLinks() {
         if (requestInProgress) return;
 
-        compositeSubscription.add(oAuthRedditApi
+        subscriptions.add(oAuthRedditApi
                 .getLinkListing(listingPath, after, this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Action0() {
@@ -133,7 +135,7 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
 
     @Override
     public void renewCredentials(Activity activity) {
-        compositeSubscription.add(accountManagerHelper
+        subscriptions.add(accountManagerHelper
                 .addAccount(activity)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<AddAccountResult>() {
