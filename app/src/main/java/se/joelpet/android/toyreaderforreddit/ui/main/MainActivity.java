@@ -23,11 +23,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingFragment;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingPresenter;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MainActivity extends BaseActivity implements MainContract.View,
         NavigationView.OnNavigationItemSelectedListener {
@@ -247,8 +249,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     @Override
-    public void setPresenter(MainContract.Presenter presenter) {
-        this.mainPresenter = presenter;
+    public void setPresenter(@NonNull MainContract.Presenter presenter) {
+        this.mainPresenter = checkNotNull(presenter);
     }
 
     @Override

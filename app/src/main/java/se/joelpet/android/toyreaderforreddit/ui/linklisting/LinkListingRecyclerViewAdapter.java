@@ -121,11 +121,11 @@ public class LinkListingRecyclerViewAdapter
 
     public interface ClickListener {
 
-        void onClickCommentsButton(Link link);
+        void onClickCommentsButton(@NonNull Link link);
 
-        void onClickMainContentArea(Link link);
+        void onClickMainContentArea(@NonNull Link link);
 
-        boolean onLongClickMainContentArea(Link link);
+        boolean onLongClickMainContentArea(@NonNull Link link);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

@@ -230,24 +230,22 @@ public class LinkListingFragment extends BaseFragment implements LinkListingCont
     }
 
     @Override
-    public void setPresenter(LinkListingContract.Presenter presenter) {
-        this.presenter = presenter;
+    public void setPresenter(@NonNull LinkListingContract.Presenter presenter) {
+        this.presenter = checkNotNull(presenter);
     }
 
     @Override
-    public void onClickCommentsButton(Link link) {
-        // TODO: Ensure link is @NonNull
-        presenter.openLinkComments(link);
+    public void onClickCommentsButton(@NonNull Link link) {
+        presenter.openLinkComments(checkNotNull(link));
     }
 
     @Override
-    public void onClickMainContentArea(Link link) {
-        // TODO: Ensure link is @NonNull
-        presenter.openLink(link);
+    public void onClickMainContentArea(@NonNull Link link) {
+        presenter.openLink(checkNotNull(link));
     }
 
     @Override
-    public boolean onLongClickMainContentArea(Link link) {
+    public boolean onLongClickMainContentArea(@NonNull Link link) {
         // no-op for now
         return false;
     }
