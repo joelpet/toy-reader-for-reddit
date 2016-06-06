@@ -2,7 +2,7 @@ package se.joelpet.android.toyreaderforreddit;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import se.joelpet.android.toyreaderforreddit.activities.MainActivity;
+import se.joelpet.android.toyreaderforreddit.ui.main.MainActivity;
 
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 

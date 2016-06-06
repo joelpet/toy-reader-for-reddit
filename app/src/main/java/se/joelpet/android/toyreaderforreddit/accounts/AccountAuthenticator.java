@@ -14,8 +14,8 @@ import javax.inject.Inject;
 
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.activities.LoginActivity;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import se.joelpet.android.toyreaderforreddit.ui.login.LoginActivity;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
 import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import timber.log.Timber;
 

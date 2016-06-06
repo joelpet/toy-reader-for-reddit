@@ -21,9 +21,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.dagger.ForApplication;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 import timber.log.Timber;
@@ -65,7 +64,7 @@ public class AccountManagerHelper {
                             }
                         }, null);
             }
-        }).observeOn(Schedulers.io()); // TODO: Really?
+        });
     }
 
     public String peekAuthToken(Account account, String authTokenType) {
