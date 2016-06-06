@@ -8,6 +8,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
@@ -88,8 +90,22 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void removeAccount() {
-        subscriptions.add(accountManagerHelper.removeAccount().subscribe());
-        mainView.showSigningOutMessage();
+        subscriptions.add(accountManagerHelper
+                .removeAccount()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mainView.showSigningOutMessage();
+                    }
+                })
+                .doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        mainView.showDefaultMenu();
+                    }
+                })
+                .subscribe());
     }
 
     @Override
