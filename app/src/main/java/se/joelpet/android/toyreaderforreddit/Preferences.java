@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 
 public class Preferences {
 

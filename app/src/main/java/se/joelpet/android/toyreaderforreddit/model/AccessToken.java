@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.domain;
+package se.joelpet.android.toyreaderforreddit.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;

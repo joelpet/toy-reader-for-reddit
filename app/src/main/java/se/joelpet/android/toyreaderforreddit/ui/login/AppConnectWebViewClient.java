@@ -1,10 +1,10 @@
-package se.joelpet.android.toyreaderforreddit;
+package se.joelpet.android.toyreaderforreddit.ui.login;
 
 import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.UserAccessTokenRequest;
 import timber.log.Timber;
 
 public class AppConnectWebViewClient extends WebViewClient {

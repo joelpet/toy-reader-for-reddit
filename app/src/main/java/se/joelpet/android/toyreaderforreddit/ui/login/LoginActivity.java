@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.activities;
+package se.joelpet.android.toyreaderforreddit.ui.login;
 
 import android.accounts.Account;
 import android.content.Context;
@@ -19,17 +19,16 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import se.joelpet.android.toyreaderforreddit.AppConnectWebViewClient;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
-import se.joelpet.android.toyreaderforreddit.volley.BaseRequest;
-import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.BaseRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.UserAccessTokenRequest;
 import timber.log.Timber;
 
 public class LoginActivity extends AppCompatAccountAuthenticatorActivity

@@ -1,11 +1,11 @@
-package se.joelpet.android.toyreaderforreddit.fragments;
+package se.joelpet.android.toyreaderforreddit.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import timber.log.Timber;
 
 public abstract class BaseFragment extends Fragment {

@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.volley;
+package se.joelpet.android.toyreaderforreddit.net.requests;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
 import timber.log.Timber;
 
 public class RefreshTokenRequest extends BaseRequest<AccessToken> {

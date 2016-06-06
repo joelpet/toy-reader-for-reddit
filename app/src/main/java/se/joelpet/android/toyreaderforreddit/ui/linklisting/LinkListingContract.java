@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import se.joelpet.android.toyreaderforreddit.domain.Link;
+import se.joelpet.android.toyreaderforreddit.model.Link;
 import se.joelpet.android.toyreaderforreddit.ui.BasePresenter;
 import se.joelpet.android.toyreaderforreddit.ui.BaseView;
 

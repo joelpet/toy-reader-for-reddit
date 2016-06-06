@@ -10,9 +10,9 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.domain.Link;
-import se.joelpet.android.toyreaderforreddit.domain.Listing;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.Link;
+import se.joelpet.android.toyreaderforreddit.model.Listing;
 import timber.log.Timber;
 
 public class OAuthRedditApi {

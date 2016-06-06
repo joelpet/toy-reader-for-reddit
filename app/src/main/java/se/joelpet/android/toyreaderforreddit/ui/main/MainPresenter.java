@@ -10,10 +10,10 @@ import org.joda.time.Period;
 
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
-import se.joelpet.android.toyreaderforreddit.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.Me;
+import se.joelpet.android.toyreaderforreddit.rx.AbstractObserver;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import timber.log.Timber;

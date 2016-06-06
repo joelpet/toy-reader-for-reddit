@@ -8,7 +8,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.subjects.BehaviorSubject;
 import se.joelpet.android.toyreaderforreddit.Preferences;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
 import se.joelpet.android.toyreaderforreddit.rx.transformers.WorkOnIoAndOnNotifyOnMainTransformer;
 

@@ -14,10 +14,9 @@
 package se.joelpet.android.toyreaderforreddit.customtabs;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.Uri;
 
-import se.joelpet.android.toyreaderforreddit.activities.WebActivity;
+import se.joelpet.android.toyreaderforreddit.ui.web.WebActivity;
 
 /**
  * A Fallback that opens a Webview when Custom Tabs is not available

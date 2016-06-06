@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.activities;
+package se.joelpet.android.toyreaderforreddit.ui.login;
 
 import android.accounts.AccountAuthenticatorActivity;
 import android.content.res.Configuration;

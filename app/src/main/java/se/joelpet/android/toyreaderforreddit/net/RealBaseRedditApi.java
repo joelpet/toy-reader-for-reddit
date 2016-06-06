@@ -13,17 +13,17 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import se.joelpet.android.toyreaderforreddit.VolleySingleton;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.domain.Link;
-import se.joelpet.android.toyreaderforreddit.domain.Listing;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.Link;
+import se.joelpet.android.toyreaderforreddit.model.Listing;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 import se.joelpet.android.toyreaderforreddit.net.ratelimit.RateLimitExceededError;
 import se.joelpet.android.toyreaderforreddit.net.ratelimit.RedditRateLimit;
-import se.joelpet.android.toyreaderforreddit.volley.ApplicationAccessTokenRequest;
-import se.joelpet.android.toyreaderforreddit.volley.ListingRequest;
-import se.joelpet.android.toyreaderforreddit.volley.MeRequest;
-import se.joelpet.android.toyreaderforreddit.volley.RefreshTokenRequest;
-import se.joelpet.android.toyreaderforreddit.volley.UserAccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.ApplicationAccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.ListingRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.MeRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.RefreshTokenRequest;
+import se.joelpet.android.toyreaderforreddit.net.requests.UserAccessTokenRequest;
 
 public class RealBaseRedditApi implements BaseRedditApi {
 

@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.volley;
+package se.joelpet.android.toyreaderforreddit.net.requests;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;

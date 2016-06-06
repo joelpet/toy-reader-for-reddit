@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
 import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingFragment;
@@ -94,7 +94,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
-        // TODO: Ensure the active fragment in @id/container has a Presenter
         new MainPresenter(this, accountManagerHelper, localDataStore);
     }
 

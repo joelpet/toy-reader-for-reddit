@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.activities;
+package se.joelpet.android.toyreaderforreddit.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

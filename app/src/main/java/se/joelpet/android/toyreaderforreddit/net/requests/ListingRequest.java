@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.volley;
+package se.joelpet.android.toyreaderforreddit.net.requests;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -10,9 +10,9 @@ import com.android.volley.toolbox.RequestFuture;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.joelpet.android.toyreaderforreddit.domain.Listing;
-import se.joelpet.android.toyreaderforreddit.domain.RedditObject;
-import se.joelpet.android.toyreaderforreddit.domain.Thing;
+import se.joelpet.android.toyreaderforreddit.model.Listing;
+import se.joelpet.android.toyreaderforreddit.model.RedditObject;
+import se.joelpet.android.toyreaderforreddit.model.Thing;
 
 public class ListingRequest<T extends Thing> extends BaseRequest<Listing<T>> {
 

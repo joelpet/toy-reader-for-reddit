@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.WebActivity"
+            android:name=".ui.web.WebActivity"
             android:label="@string/title_activity_web"
             android:parentActivityName=".ui.main.MainActivity">
             <meta-data
@@ -32,7 +32,7 @@
                 android:value=".ui.main.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:parentActivityName=".ui.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

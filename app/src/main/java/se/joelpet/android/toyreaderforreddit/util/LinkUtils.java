@@ -3,7 +3,7 @@ package se.joelpet.android.toyreaderforreddit.util;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import se.joelpet.android.toyreaderforreddit.domain.Link;
+import se.joelpet.android.toyreaderforreddit.model.Link;
 
 public class LinkUtils {
 

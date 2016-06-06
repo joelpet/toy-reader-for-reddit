@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.adapters;
+package se.joelpet.android.toyreaderforreddit.ui.linklisting;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.domain.Link;
+import se.joelpet.android.toyreaderforreddit.model.Link;
 import timber.log.Timber;
 
 public class LinkListingRecyclerViewAdapter
@@ -119,7 +119,7 @@ public class LinkListingRecyclerViewAdapter
         return mLinks.get(position);
     }
 
-    public static interface ClickListener {
+    public interface ClickListener {
 
         void onClickCommentsButton(Link link);
 

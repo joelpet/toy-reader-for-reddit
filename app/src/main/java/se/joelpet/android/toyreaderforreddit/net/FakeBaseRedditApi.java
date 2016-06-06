@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 
 import rx.Observable;
-import se.joelpet.android.toyreaderforreddit.domain.AccessToken;
-import se.joelpet.android.toyreaderforreddit.domain.Link;
-import se.joelpet.android.toyreaderforreddit.domain.Listing;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.AccessToken;
+import se.joelpet.android.toyreaderforreddit.model.Link;
+import se.joelpet.android.toyreaderforreddit.model.Listing;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 
 public class FakeBaseRedditApi implements BaseRedditApi {
 

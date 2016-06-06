@@ -9,7 +9,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import se.joelpet.android.toyreaderforreddit.domain.Listing;
+import se.joelpet.android.toyreaderforreddit.model.Listing;
 
 public class ListingDeserializer implements JsonDeserializer<Listing> {
 

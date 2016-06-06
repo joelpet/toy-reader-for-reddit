@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.fragments;
+package se.joelpet.android.toyreaderforreddit.ui.web;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -21,6 +21,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import se.joelpet.android.toyreaderforreddit.R;
+import se.joelpet.android.toyreaderforreddit.ui.BaseFragment;
 import timber.log.Timber;
 
 public class WebFragment extends BaseFragment {

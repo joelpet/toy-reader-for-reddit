@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.volley;
+package se.joelpet.android.toyreaderforreddit.net.requests;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,7 +8,7 @@ import com.android.volley.toolbox.RequestFuture;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 
 public class MeRequest extends BaseRequest<Me> {
 

@@ -1,7 +1,7 @@
 package se.joelpet.android.toyreaderforreddit.storage;
 
 import rx.Observable;
-import se.joelpet.android.toyreaderforreddit.domain.Me;
+import se.joelpet.android.toyreaderforreddit.model.Me;
 
 public interface LocalDataStore {
 

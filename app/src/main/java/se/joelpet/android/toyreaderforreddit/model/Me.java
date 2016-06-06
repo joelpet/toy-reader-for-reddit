@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.domain;
+package se.joelpet.android.toyreaderforreddit.model;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

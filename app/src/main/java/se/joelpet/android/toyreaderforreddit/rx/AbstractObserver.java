@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit;
+package se.joelpet.android.toyreaderforreddit.rx;
 
 import rx.Observer;
 import timber.log.Timber;

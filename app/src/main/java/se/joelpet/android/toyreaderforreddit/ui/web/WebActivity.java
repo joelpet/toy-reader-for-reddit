@@ -1,4 +1,4 @@
-package se.joelpet.android.toyreaderforreddit.activities;
+package se.joelpet.android.toyreaderforreddit.ui.web;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.fragments.WebFragment;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import timber.log.Timber;
 
 public class WebActivity extends BaseActivity implements WebFragment.WebViewCallback {

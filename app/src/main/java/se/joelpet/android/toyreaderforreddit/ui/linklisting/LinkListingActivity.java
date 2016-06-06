@@ -5,7 +5,7 @@ import android.os.Bundle;
 import javax.inject.Inject;
 
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
 
 public class LinkListingActivity extends BaseActivity {
