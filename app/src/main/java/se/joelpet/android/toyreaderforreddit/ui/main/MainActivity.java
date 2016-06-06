@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.activities.BaseActivity;
@@ -151,22 +150,12 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
         @OnClick(R.id.account_drop_down_arrow)
         protected void onAccountDropDownArrowClick(View view) {
-            switchToAccountMenuModeInDrawerWithOptionsHidden();
-            addSubscription(accountManagerHelper
-                    .getAccount()
-                    .isEmpty()
-                    .subscribe(new Action1<Boolean>() {
-                        @Override
-                        public void call(Boolean isNoAccountAvailable) {
-                            boolean signedIn = !isNoAccountAvailable;
-                            switchToAccountMenuModeInDrawerAs(signedIn);
-                        }
-                    }));
+            mainPresenter.openAccountsMenu();
         }
 
         @OnClick(R.id.account_drop_up_arrow)
         protected void onAccountDropUpArrowClick(View view) {
-            switchToDefaultMenuModeInDrawer();
+            mainPresenter.openDefaultMenu();
         }
     }
 
@@ -198,53 +187,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         return true;
     }
 
-    private void switchToDefaultMenuModeInDrawer() {
-        setDefaultGroupInDrawerMenuVisible(true);
-        setAccountGroupInDrawerMenuVisible(false);
-        displayAccountToggleDropDownArrow();
-    }
-
-    private void switchToAccountMenuModeInDrawerWithOptionsHidden() {
-        setDefaultGroupInDrawerMenuVisible(false);
-        setAccountGroupInDrawerMenuVisible(false);
-        displayAccountToggleDropUpArrow();
-    }
-
-    private void switchToAccountMenuModeInDrawerAs(boolean signedIn) {
-        setDefaultGroupInDrawerMenuVisible(false);
-        setAccountGroupInDrawerMenuVisible(true);
-        displayAccountToggleDropUpArrow();
-        displayAccountMenuOptionsAs(signedIn);
-    }
-
-    private void displayAccountToggleDropDownArrow() {
-        navigationHeaderHolder.accountToggleArrowSwitcher
-                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
-    }
-
-    private void displayAccountToggleDropUpArrow() {
-        navigationHeaderHolder.accountToggleArrowSwitcher
-                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
-    }
-
-    private void setAccountGroupInDrawerMenuVisible(boolean visible) {
-        navigationView.getMenu().setGroupVisible(R.id.account_group, visible);
-    }
-
-    private void setDefaultGroupInDrawerMenuVisible(boolean visible) {
-        navigationView.getMenu().setGroupVisible(R.id.default_group, visible);
-    }
-
-    private void displayAccountMenuOptionsAs(boolean signedIn) {
-        navigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
-        navigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
-    }
-
-    private boolean isAccountMenuOptionsDisplayed() {
-        return navigationView.getMenu().findItem(R.id.navigation_sign_in).isVisible() ||
-                navigationView.getMenu().findItem(R.id.navigation_sign_out).isVisible();
-    }
-
     @Override
     public void showSignInCanceledMessage() {
         Toast.makeText(this, R.string.toast_sign_in_canceled, Toast.LENGTH_SHORT).show();
@@ -253,6 +195,56 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     @Override
     public void showSigningOutMessage() {
         Toast.makeText(this, R.string.toast_signing_out, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showDefaultMenu() {
+        setDefaultGroupInDrawerMenuVisible(true);
+        setAccountGroupInDrawerMenuVisible(false);
+        displayAccountToggleDropDownArrow();
+    }
+
+    private void setDefaultGroupInDrawerMenuVisible(boolean visible) {
+        navigationView.getMenu().setGroupVisible(R.id.default_group, visible);
+    }
+
+    private void setAccountGroupInDrawerMenuVisible(boolean visible) {
+        navigationView.getMenu().setGroupVisible(R.id.account_group, visible);
+    }
+
+    private void displayAccountToggleDropDownArrow() {
+        navigationHeaderHolder.accountToggleArrowSwitcher
+                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_DOWN);
+    }
+
+    @Override
+    public void showAccountMenu(boolean signedIn) {
+        setDefaultGroupInDrawerMenuVisible(false);
+        setAccountGroupInDrawerMenuVisible(true);
+        displayAccountToggleDropUpArrow();
+        displayAccountMenuOptionsAs(signedIn);
+    }
+
+    private void displayAccountToggleDropUpArrow() {
+        navigationHeaderHolder.accountToggleArrowSwitcher
+                .setDisplayedChild(ACCOUNT_TOGGLE_ARROW_CHILD_DROP_UP);
+    }
+
+    private void displayAccountMenuOptionsAs(boolean signedIn) {
+        navigationView.getMenu().findItem(R.id.navigation_sign_in).setVisible(!signedIn);
+        navigationView.getMenu().findItem(R.id.navigation_sign_out).setVisible(signedIn);
+    }
+
+    @Override
+    public boolean isAccountMenuShown() {
+        return navigationView.getMenu().findItem(R.id.navigation_sign_in).isVisible() ||
+                navigationView.getMenu().findItem(R.id.navigation_sign_out).isVisible();
+    }
+
+    @Override
+    public void hideMenu() {
+        setDefaultGroupInDrawerMenuVisible(false);
+        setAccountGroupInDrawerMenuVisible(false);
     }
 
     @Override

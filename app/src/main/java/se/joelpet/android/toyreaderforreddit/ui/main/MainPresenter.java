@@ -73,7 +73,7 @@ public class MainPresenter implements MainContract.Presenter {
                     @Override
                     public void call(AddAccountResult result) {
                         Timber.d("Result: %s", result);
-                        // TODO: mainView.switchToDefaultMenuModeInDrawer();
+                        mainView.showDefaultMenu();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -92,6 +92,27 @@ public class MainPresenter implements MainContract.Presenter {
         mainView.showSigningOutMessage();
     }
 
+    @Override
+    public void openAccountsMenu() {
+        mainView.hideMenu();
+
+        subscriptions.add(accountManagerHelper
+                .getAccount()
+                .isEmpty()
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isNoAccountAvailable) {
+                        boolean signedIn = !isNoAccountAvailable;
+                        mainView.showAccountMenu(signedIn);
+                    }
+                }));
+    }
+
+    @Override
+    public void openDefaultMenu() {
+        mainView.showDefaultMenu();
+    }
+
 
     private class MeObserver extends AbstractObserver<Me> {
         @Override
@@ -107,10 +128,9 @@ public class MainPresenter implements MainContract.Presenter {
                 mainView.showUnauthenticatedUserDetails();
             }
 
-            // TODO: Display menu correctly
-//            if (isAccountMenuOptionsDisplayed()) {
-//                displayAccountMenuOptionsAs(signedIn);
-//            }
+            if (mainView.isAccountMenuShown()) {
+                mainView.showAccountMenu(signedIn);
+            }
         }
     }
 }

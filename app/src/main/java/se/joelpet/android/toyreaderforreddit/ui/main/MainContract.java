@@ -26,6 +26,15 @@ public interface MainContract {
         void showSignInCanceledMessage();
 
         void showSigningOutMessage();
+
+        void showDefaultMenu();
+
+        void showAccountMenu(boolean signedIn);
+
+        // FIXME: This is probably something the presenter should know itself
+        boolean isAccountMenuShown();
+
+        void hideMenu();
     }
 
     interface Presenter extends BasePresenter {
@@ -37,5 +46,9 @@ public interface MainContract {
         void addAccount(Activity activity);
 
         void removeAccount();
+
+        void openAccountsMenu();
+
+        void openDefaultMenu();
     }
 }
