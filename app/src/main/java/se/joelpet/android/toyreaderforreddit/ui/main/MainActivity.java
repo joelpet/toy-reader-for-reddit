@@ -288,7 +288,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     LinkListingFragment.ARG_SORT_HOT);
         }
 
-        new LinkListingPresenter(fragment, oAuthRedditApi);
+        new LinkListingPresenter(fragment, oAuthRedditApi, accountManagerHelper);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, TAG_EVERYTHING).commit();
@@ -305,7 +305,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     LinkListingFragment.ARG_SORT_HOT);
         }
 
-        new LinkListingPresenter(fragment, oAuthRedditApi);
+        new LinkListingPresenter(fragment, oAuthRedditApi, accountManagerHelper);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, TAG_SUBSCRIBED).commit();

@@ -28,11 +28,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import se.joelpet.android.toyreaderforreddit.R;
 import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
-import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.customtabs.CustomTabActivityHelper;
 import se.joelpet.android.toyreaderforreddit.model.Link;
 import se.joelpet.android.toyreaderforreddit.ui.BaseFragment;
@@ -211,17 +209,7 @@ public class LinkListingFragment extends BaseFragment implements LinkListingCont
                 .setAction(R.string.sign_in_again, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO: Delegate to presenter
-                        accountManagerHelper
-                                .addAccount(getActivity())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Action1<AddAccountResult>() {
-                                    @Override
-                                    public void call(AddAccountResult result) {
-                                        Timber.d("Account added; queueing new listing request.");
-                                        presenter.loadLinks();
-                                    }
-                                });
+                        presenter.renewCredentials(getActivity());
                     }
                 }).show();
     }

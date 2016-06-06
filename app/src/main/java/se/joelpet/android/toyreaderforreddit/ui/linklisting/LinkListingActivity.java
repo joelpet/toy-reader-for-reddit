@@ -5,17 +5,19 @@ import android.os.Bundle;
 import javax.inject.Inject;
 
 import se.joelpet.android.toyreaderforreddit.R;
-import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
+import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 
 public class LinkListingActivity extends BaseActivity {
 
     private static final String TAG_LINK_LISTING = "LINK_LISTING";
 
     @Inject
-    OAuthRedditApi oAuthRedditApi;
+    protected OAuthRedditApi oAuthRedditApi;
 
-    private LinkListingContract.Presenter presenter;
+    @Inject
+    protected AccountManagerHelper accountManagerHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +35,6 @@ public class LinkListingActivity extends BaseActivity {
         }
 
         // TODO: Inject Presenter with Dagger
-        presenter = new LinkListingPresenter(linkListingFragment, oAuthRedditApi);
+        new LinkListingPresenter(linkListingFragment, oAuthRedditApi, accountManagerHelper);
     }
 }

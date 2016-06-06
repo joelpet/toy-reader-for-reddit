@@ -1,5 +1,6 @@
 package se.joelpet.android.toyreaderforreddit.ui.linklisting;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 
 import com.android.volley.AuthFailureError;
@@ -8,6 +9,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
+import se.joelpet.android.toyreaderforreddit.accounts.AccountManagerHelper;
+import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.model.Link;
 import se.joelpet.android.toyreaderforreddit.model.Listing;
 import se.joelpet.android.toyreaderforreddit.net.OAuthRedditApi;
@@ -21,6 +24,7 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
 
     private final LinkListingContract.View linkListingView;
     private final OAuthRedditApi oAuthRedditApi;
+    private final AccountManagerHelper accountManagerHelper;
     private final CompositeSubscription compositeSubscription;
 
     /** The "after" portion received in the response to the last made request. */
@@ -33,9 +37,11 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
     private boolean requestInProgress;
 
     public LinkListingPresenter(@NonNull LinkListingContract.View linkListingView,
-                                @NonNull OAuthRedditApi oAuthRedditApi) {
+                                @NonNull OAuthRedditApi oAuthRedditApi,
+                                @NonNull AccountManagerHelper accountManagerHelper) {
         this.linkListingView = checkNotNull(linkListingView);
         this.oAuthRedditApi = checkNotNull(oAuthRedditApi);
+        this.accountManagerHelper = checkNotNull(accountManagerHelper);
         this.compositeSubscription = new CompositeSubscription();
 
         this.linkListingView.setPresenter(this);
@@ -123,5 +129,19 @@ public class LinkListingPresenter implements LinkListingContract.Presenter {
     @Override
     public void openLinkComments(@NonNull Link link) {
         linkListingView.showWebUi(LinkUtils.getCommentsUri(link));
+    }
+
+    @Override
+    public void renewCredentials(Activity activity) {
+        compositeSubscription.add(accountManagerHelper
+                .addAccount(activity)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<AddAccountResult>() {
+                    @Override
+                    public void call(AddAccountResult result) {
+                        Timber.d("Account added; queueing new listing request.");
+                        loadLinks();
+                    }
+                }));
     }
 }

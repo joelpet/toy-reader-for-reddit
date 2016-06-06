@@ -1,5 +1,6 @@
 package se.joelpet.android.toyreaderforreddit.ui.linklisting;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -37,5 +38,7 @@ public interface LinkListingContract {
         void openLink(@NonNull Link link);
 
         void openLinkComments(@NonNull Link link);
+
+        void renewCredentials(Activity activity);
     }
 }
