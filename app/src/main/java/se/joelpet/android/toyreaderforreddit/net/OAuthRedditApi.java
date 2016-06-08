@@ -1,8 +1,8 @@
 package se.joelpet.android.toyreaderforreddit.net;
 
-import com.android.volley.AuthFailureError;
-
 import android.support.annotation.NonNull;
+
+import com.android.volley.AuthFailureError;
 
 import javax.inject.Inject;
 

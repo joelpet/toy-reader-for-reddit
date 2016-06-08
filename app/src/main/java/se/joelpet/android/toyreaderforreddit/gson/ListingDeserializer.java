@@ -17,7 +17,7 @@ public class ListingDeserializer implements JsonDeserializer<Listing> {
 
     @Override
     public Listing deserialize(JsonElement json, Type typeOfT,
-            JsonDeserializationContext context) throws JsonParseException {
+                               JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         JsonElement data = jsonObject.get("data");
         return GSON.fromJson(data, Listing.class);
