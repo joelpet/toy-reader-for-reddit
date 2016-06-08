@@ -1,9 +1,9 @@
 package se.joelpet.android.toyreaderforreddit;
 
-import com.google.gson.Gson;
-
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
 
 import se.joelpet.android.toyreaderforreddit.model.Me;
 

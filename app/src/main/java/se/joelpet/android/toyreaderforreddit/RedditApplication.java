@@ -1,8 +1,8 @@
 package se.joelpet.android.toyreaderforreddit;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
 import android.app.Application;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.Arrays;
 import java.util.List;

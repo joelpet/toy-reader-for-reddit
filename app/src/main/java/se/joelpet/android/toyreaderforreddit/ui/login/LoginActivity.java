@@ -25,10 +25,10 @@ import se.joelpet.android.toyreaderforreddit.accounts.AddAccountResult;
 import se.joelpet.android.toyreaderforreddit.model.AccessToken;
 import se.joelpet.android.toyreaderforreddit.model.Me;
 import se.joelpet.android.toyreaderforreddit.net.BaseRedditApi;
-import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
-import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import se.joelpet.android.toyreaderforreddit.net.requests.BaseRequest;
 import se.joelpet.android.toyreaderforreddit.net.requests.UserAccessTokenRequest;
+import se.joelpet.android.toyreaderforreddit.rx.transformers.CacheAndSubscribeTransformer;
+import se.joelpet.android.toyreaderforreddit.storage.LocalDataStore;
 import timber.log.Timber;
 
 public class LoginActivity extends AppCompatAccountAuthenticatorActivity

@@ -1,9 +1,9 @@
 package se.joelpet.android.toyreaderforreddit.dagger;
 
-import com.android.volley.toolbox.ImageLoader;
-
 import android.accounts.AccountManager;
 import android.content.Context;
+
+import com.android.volley.toolbox.ImageLoader;
 
 import javax.inject.Singleton;
 

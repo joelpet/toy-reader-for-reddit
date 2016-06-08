@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import se.joelpet.android.toyreaderforreddit.ui.BaseActivity;
 import timber.log.Timber;
 
 public abstract class BaseFragment extends Fragment {

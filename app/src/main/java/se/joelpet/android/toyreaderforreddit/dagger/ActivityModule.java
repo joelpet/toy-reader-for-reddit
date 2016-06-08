@@ -8,14 +8,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import se.joelpet.android.toyreaderforreddit.ui.login.AppConnectWebViewClient;
-import se.joelpet.android.toyreaderforreddit.ui.login.LoginActivity;
-import se.joelpet.android.toyreaderforreddit.ui.web.WebActivity;
-import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingRecyclerViewAdapter;
-import se.joelpet.android.toyreaderforreddit.ui.web.WebFragment;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingActivity;
 import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingFragment;
+import se.joelpet.android.toyreaderforreddit.ui.linklisting.LinkListingRecyclerViewAdapter;
+import se.joelpet.android.toyreaderforreddit.ui.login.AppConnectWebViewClient;
+import se.joelpet.android.toyreaderforreddit.ui.login.LoginActivity;
 import se.joelpet.android.toyreaderforreddit.ui.main.MainActivity;
+import se.joelpet.android.toyreaderforreddit.ui.web.WebActivity;
+import se.joelpet.android.toyreaderforreddit.ui.web.WebFragment;
 
 @Module(
         injects = {
